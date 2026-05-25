@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>YUVI · YUGANTAR GROWTH · AA-OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#050a0f;--deep:#080f17;--panel:#0a1520;
+  --blade:#0ef6ff;--blade2:#00bfdc;--blade3:#007a9a;
+  --water:rgba(14,246,255,0.07);--water2:rgba(14,246,255,0.14);
+  --edge:rgba(14,246,255,0.25);--edge2:rgba(14,246,255,0.12);
+  --flash:#ff3c5f;--gold:#f0b429;--green:#22d68e;
+  --text:#c8e8f0;--muted:#4a7a8a;--dim:#2a4a5a;
+  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;--disp:'Bebas Neue',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--text);font-family:var(--sans);}
+
+/* BG */
+.bg-a{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 15% 80%,rgba(6,60,90,.55),transparent 70%),radial-gradient(ellipse 60% 50% at 85% 20%,rgba(0,100,140,.3),transparent 65%),var(--ink);}
+.bg-g{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(14,246,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(14,246,255,.03) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 30%,transparent 100%);}
+.bg-s{position:fixed;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.05) 3px,rgba(0,0,0,.05) 4px);}
+
+/* SHELL */
+#shell{position:relative;z-index:1;display:grid;grid-template-rows:52px 1fr;grid-template-columns:200px 1fr;grid-template-areas:"hd hd" "nav main";width:100vw;height:100vh;overflow:hidden;}
+
+/* TOPBAR */
+#topbar{grid-area:hd;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--edge);background:rgba(5,10,15,.9);backdrop-filter:blur(12px);position:relative;z-index:20;}
+#topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blade),transparent);opacity:.4;}
+.tb-left{display:flex;align-items:center;gap:12px;}
+.logo{font-family:var(--disp);font-size:20px;letter-spacing:.1em;color:var(--blade);text-shadow:0 0 20px rgba(14,246,255,.5);}
+.logo-sub{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.25em;border-left:1px solid var(--edge);padding-left:10px;}
+.tb-center{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.2em;display:flex;align-items:center;gap:8px;}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--blade);box-shadow:0 0 6px var(--blade);animation:pd 2s ease-in-out infinite;}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.2}}
+.tb-right{display:flex;align-items:center;gap:12px;}
+#livetime{font-family:var(--mono);font-size:10px;color:var(--blade2);}
+.yuvi-badge{font-family:var(--mono);font-size:8px;letter-spacing:.15em;border:1px solid var(--edge);padding:3px 9px;color:var(--blade);background:rgba(14,246,255,.05);}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:18px;height:1px;background:var(--text);transition:.3s;}
+
+/* SIDEBAR */
+#sidenav{grid-area:nav;display:flex;flex-direction:column;border-right:1px solid var(--edge);background:rgba(5,10,15,.7);backdrop-filter:blur(8px);overflow-y:auto;scrollbar-width:none;padding:8px 0;}
+#sidenav::-webkit-scrollbar{display:none;}
+.nav-sec{padding:12px 14px 3px;font-family:var(--mono);font-size:7px;color:var(--blade3);letter-spacing:.3em;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 14px;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.05em;cursor:pointer;transition:.2s;border-left:2px solid transparent;}
+.nav-item:hover{color:var(--text);background:var(--water);border-left-color:var(--blade3);}
+.nav-item.active{color:var(--blade);background:var(--water2);border-left-color:var(--blade);}
+.ni-icon{font-size:12px;width:14px;text-align:center;}
+.ni-badge{margin-left:auto;font-size:7px;padding:1px 5px;background:rgba(14,246,255,.12);border:1px solid var(--edge);color:var(--blade2);}
+.ni-badge.hot{background:rgba(255,60,95,.12);border-color:rgba(255,60,95,.3);color:var(--flash);}
+.nav-div{height:1px;background:var(--edge2);margin:6px 14px;}
+
+/* API KEY SECTION IN NAV */
+.nav-key-section{padding:10px 14px;margin-top:auto;}
+.nav-key-label{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;margin-bottom:5px;}
+.nav-key-input{width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--blade);font-family:var(--mono);font-size:8px;padding:5px 8px;outline:none;}
+.nav-key-input:focus{border-color:var(--edge);}
+.nav-key-btn{width:100%;margin-top:5px;font-family:var(--mono);font-size:7px;letter-spacing:.15em;padding:5px;border:1px solid var(--edge2);background:transparent;color:var(--muted);cursor:pointer;transition:.2s;}
+.nav-key-btn:hover{border-color:var(--blade);color:var(--blade);}
+
+/* MAIN */
+#main{grid-area:main;overflow:hidden;}
+.view{display:none;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--blade3) transparent;padding:18px;}
+.view.active{display:block;}
+.view::-webkit-scrollbar{width:3px;}
+.view::-webkit-scrollbar-thumb{background:var(--blade3);}
+
+/* PANEL */
+.panel{background:rgba(8,15,23,.75);border:1px solid var(--edge2);backdrop-filter:blur(6px);position:relative;overflow:hidden;}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blade),transparent);opacity:.4;}
+.ptitle{font-family:var(--disp);font-size:15px;letter-spacing:.12em;color:var(--blade);}
+.psub{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;}
+.blade-line{height:1px;background:linear-gradient(90deg,var(--blade),transparent);margin:10px 0;opacity:.4;}
+
+/* BUTTONS */
+.btn{font-family:var(--mono);font-size:8px;letter-spacing:.12em;padding:6px 12px;border:1px solid var(--edge);background:transparent;color:var(--muted);cursor:pointer;transition:.2s;text-transform:uppercase;}
+.btn:hover{border-color:var(--blade);color:var(--blade);}
+.btn.primary{border-color:var(--blade);color:var(--blade);background:rgba(14,246,255,.07);}
+.btn.primary:hover{background:rgba(14,246,255,.15);}
+.btn.danger{border-color:rgba(255,60,95,.3);color:var(--flash);}
+.btn.success{border-color:rgba(34,214,142,.3);color:var(--green);}
+.btn.gold{border-color:rgba(240,180,41,.3);color:var(--gold);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── DASHBOARD ── */
+#v-dash{padding:16px 18px 24px;}
+.dash-greet{margin-bottom:16px;}
+.dash-greet h1{font-family:var(--disp);font-size:clamp(28px,4vw,48px);letter-spacing:.08em;color:#fff;line-height:1;}
+.dash-greet h1 span{color:var(--blade);}
+.dash-greet p{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.2em;margin-top:4px;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.kpi{padding:14px;}
+.kpi-val{font-family:var(--disp);font-size:32px;color:#fff;}
+.kpi-lbl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-top:3px;}
+.kpi-bar{height:2px;background:rgba(255,255,255,.05);margin-top:8px;}
+.kpi-fill{height:100%;background:var(--blade);box-shadow:0 0 6px var(--blade);}
+
+.dash-grid{display:grid;grid-template-columns:1fr 280px;gap:12px;margin-bottom:14px;}
+
+.briefing-panel{padding:16px;}
+.briefing-yuvi{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.yuvi-av{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,var(--blade),var(--blade3));display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:12px;color:var(--ink);box-shadow:0 0 14px rgba(14,246,255,.4);flex-shrink:0;}
+.yuvi-name-big{font-family:var(--disp);font-size:18px;letter-spacing:.1em;color:var(--blade);}
+.yuvi-role-sm{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;}
+.briefing-msg{font-family:var(--mono);font-size:9px;color:var(--text);line-height:1.8;padding:10px;background:rgba(14,246,255,.04);border-left:2px solid var(--blade);margin-bottom:12px;}
+.task-list{display:flex;flex-direction:column;gap:6px;}
+.task-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--edge2);}
+.task-check{width:13px;height:13px;border:1px solid var(--edge);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:7px;transition:.2s;}
+.task-check:hover{border-color:var(--blade);}
+.task-check.done{background:rgba(34,214,142,.2);border-color:var(--green);color:var(--green);}
+.task-text{font-family:var(--mono);font-size:9px;color:var(--text);flex:1;}
+.task-text.done{color:var(--muted);text-decoration:line-through;}
+.task-pri{font-size:7px;padding:1px 5px;font-family:var(--mono);}
+.tp-h{background:rgba(255,60,95,.12);color:var(--flash);}
+.tp-m{background:rgba(240,180,41,.1);color:var(--gold);}
+.tp-l{background:rgba(74,122,138,.12);color:var(--muted);}
+
+.dash-right{display:flex;flex-direction:column;gap:10px;}
+.client-mini{padding:14px;}
+.cm-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--edge2);font-family:var(--mono);font-size:9px;}
+.cm-name{color:var(--text);}
+.cm-status{font-size:7px;padding:2px 6px;}
+.cs-a{background:rgba(34,214,142,.1);color:var(--green);border:1px solid rgba(34,214,142,.2);}
+.cs-w{background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.2);}
+.cs-n{background:rgba(14,246,255,.08);color:var(--blade);border:1px solid var(--edge2);}
+
+.today-targets{padding:14px;}
+.target-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--edge2);font-family:var(--mono);font-size:8px;align-items:flex-start;}
+.target-num{color:var(--blade2);flex-shrink:0;font-size:8px;}
+.target-text{color:var(--text);line-height:1.5;}
+
+/* ── LEADS ── */
+#v-leads .leads-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.search-inp{font-family:var(--mono);font-size:9px;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);padding:6px 10px;outline:none;flex:1;min-width:160px;}
+.search-inp:focus{border-color:var(--edge);}
+.search-inp::placeholder{color:var(--muted);}
+.fpill{font-family:var(--mono);font-size:7px;letter-spacing:.1em;padding:4px 9px;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;transition:.15s;text-transform:uppercase;}
+.fpill:hover{border-color:var(--blade2);color:var(--text);}
+.fpill.active{border-color:var(--blade);color:var(--blade);background:rgba(14,246,255,.06);}
+
+.leads-layout{display:grid;grid-template-columns:1fr 280px;gap:12px;}
+.leads-table-wrap{overflow:auto;max-height:calc(100vh - 180px);}
+.leads-table{width:100%;border-collapse:collapse;}
+.leads-table th{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;padding:7px 8px;text-align:left;border-bottom:1px solid var(--edge);position:sticky;top:0;background:rgba(5,10,15,.95);}
+.leads-table td{font-family:var(--mono);font-size:8px;color:var(--text);padding:8px 8px;border-bottom:1px solid rgba(14,246,255,.04);vertical-align:middle;}
+.leads-table tr:hover td{background:var(--water);}
+.leads-table tr.selected td{background:rgba(14,246,255,.08);}
+
+.lead-status-sel{font-family:var(--mono);font-size:7px;background:rgba(8,15,23,.9);border:1px solid var(--edge2);color:var(--text);padding:2px 4px;outline:none;cursor:pointer;}
+.wa-btn{font-family:var(--mono);font-size:7px;padding:3px 7px;border:1px solid rgba(34,214,142,.3);background:rgba(34,214,142,.06);color:var(--green);cursor:pointer;transition:.15s;white-space:nowrap;}
+.wa-btn:hover{background:rgba(34,214,142,.15);}
+.cat-badge{font-size:7px;padding:2px 5px;border-radius:2px;white-space:nowrap;}
+.cat-web{background:rgba(14,246,255,.08);color:var(--blade);border:1px solid var(--edge2);}
+.cat-seo{background:rgba(240,180,41,.08);color:var(--gold);border:1px solid rgba(240,180,41,.2);}
+.cat-smm{background:rgba(168,85,247,.08);color:#c084fc;border:1px solid rgba(168,85,247,.2);}
+.cat-dig{background:rgba(34,214,142,.08);color:var(--green);border:1px solid rgba(34,214,142,.2);}
+.cat-unk{background:rgba(74,122,138,.08);color:var(--muted);border:1px solid rgba(74,122,138,.2);}
+
+.lead-detail-panel{padding:14px;overflow-y:auto;max-height:calc(100vh - 180px);}
+.ldp-empty{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;padding:30px 0;}
+.ldp-name{font-family:var(--disp);font-size:22px;letter-spacing:.08em;color:#fff;margin-bottom:3px;}
+.ldp-cat{font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:var(--blade2);margin-bottom:12px;}
+.ldp-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;padding:5px 0;border-bottom:1px solid var(--edge2);}
+.ldp-key{color:var(--muted);}
+.ldp-val{color:var(--text);}
+.ldp-actions{display:flex;flex-direction:column;gap:6px;margin-top:12px;}
+.ldp-msg-preview{font-family:var(--mono);font-size:8px;color:var(--muted);line-height:1.7;padding:10px;background:rgba(14,246,255,.03);border:1px solid var(--edge2);margin-top:10px;}
+
+.leads-import{padding:16px;text-align:center;}
+.li-title{font-family:var(--disp);font-size:20px;letter-spacing:.1em;color:var(--blade);margin-bottom:8px;}
+.li-sub{font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:14px;line-height:1.8;}
+.li-drop{border:1px dashed var(--edge);padding:20px;cursor:pointer;transition:.2s;margin-bottom:10px;}
+.li-drop:hover{border-color:var(--blade);background:rgba(14,246,255,.04);}
+.li-drop p{font-family:var(--mono);font-size:9px;color:var(--muted);}
+
+/* ── CHAT ── */
+#v-chat{padding:0;display:flex;flex-direction:column;height:100%;}
+.chat-topbar{padding:12px 18px;border-bottom:1px solid var(--edge2);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.chat-yuvi-info{flex:1;}
+.chat-yuvi-name{font-family:var(--disp);font-size:20px;letter-spacing:.1em;color:var(--blade);}
+.chat-yuvi-sub{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;}
+.mode-pills{display:flex;gap:6px;}
+.mode-pill{font-family:var(--mono);font-size:7px;padding:3px 8px;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;transition:.15s;letter-spacing:.1em;}
+.mode-pill.active{border-color:var(--blade);color:var(--blade);background:rgba(14,246,255,.07);}
+.mode-pill.weekend.active{border-color:var(--gold);color:var(--gold);background:rgba(240,180,41,.07);}
+
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--blade3) transparent;}
+.chat-messages::-webkit-scrollbar{width:3px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--blade3);}
+.msg{max-width:78%;padding:10px 13px;position:relative;}
+.msg.user{align-self:flex-end;background:rgba(14,246,255,.08);border:1px solid var(--edge);}
+.msg.ai{align-self:flex-start;background:rgba(8,15,23,.8);border:1px solid var(--edge2);}
+.msg-label{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.1em;margin-bottom:5px;}
+.msg-text{font-family:var(--sans);font-size:12px;color:var(--text);line-height:1.6;}
+.msg-time{font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:4px;text-align:right;}
+.msg.ai .msg-label{color:var(--blade2);}
+.typing{display:flex;gap:4px;padding:8px;}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--blade3);animation:ty 1.2s ease-in-out infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes ty{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+.chat-input-area{flex-shrink:0;border-top:1px solid var(--edge2);padding:12px 18px;display:flex;gap:8px;align-items:flex-end;}
+.chat-inp{flex:1;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;outline:none;resize:none;min-height:40px;max-height:120px;transition:.2s;line-height:1.5;}
+.chat-inp:focus{border-color:var(--edge);}
+.chat-inp::placeholder{color:var(--muted);}
+.chat-send{font-family:var(--mono);font-size:8px;letter-spacing:.12em;padding:9px 14px;background:rgba(14,246,255,.1);border:1px solid var(--blade);color:var(--blade);cursor:pointer;transition:.2s;white-space:nowrap;}
+.chat-send:hover{background:rgba(14,246,255,.2);}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── PROPOSALS ── */
+#v-proposals .prop-layout{display:grid;grid-template-columns:340px 1fr;gap:14px;}
+.prop-form{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.form-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;}
+.form-inp,.form-sel,.form-ta{width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--sans);font-size:13px;padding:8px 10px;outline:none;transition:.2s;}
+.form-inp:focus,.form-sel:focus,.form-ta:focus{border-color:var(--edge);}
+.form-inp::placeholder,.form-ta::placeholder{color:var(--muted);}
+.form-sel{cursor:pointer;appearance:none;}
+.form-sel option{background:var(--panel);}
+.form-ta{min-height:80px;resize:vertical;font-size:12px;line-height:1.5;}
+.prop-output{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.prop-preview{font-family:var(--mono);font-size:9px;color:var(--text);line-height:2;padding:14px;background:rgba(8,15,23,.5);border:1px solid var(--edge2);min-height:400px;white-space:pre-wrap;word-break:break-word;overflow-y:auto;max-height:500px;}
+.prop-placeholder{color:var(--muted);}
+
+/* ── CLIENTS ── */
+#v-clients .clients-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.client-card{padding:18px;}
+.cc-name{font-family:var(--disp);font-size:24px;letter-spacing:.08em;color:#fff;margin-bottom:3px;}
+.cc-type{font-family:var(--mono);font-size:7px;color:var(--blade2);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;}
+.cc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.ccm{text-align:center;}
+.ccm-v{font-family:var(--disp);font-size:22px;color:#fff;}
+.ccm-k{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.cc-tasks-list{display:flex;flex-direction:column;gap:4px;}
+.cct{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:8px;color:var(--muted);padding:3px 0;}
+.cct-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.cc-add{padding:20px;display:flex;flex-direction:column;gap:10px;border:1px dashed var(--edge2);cursor:pointer;transition:.2s;align-items:center;justify-content:center;text-align:center;}
+.cc-add:hover{border-color:var(--blade);background:rgba(14,246,255,.03);}
+.cc-add-icon{font-size:24px;color:var(--dim);margin-bottom:6px;}
+.cc-add-text{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.15em;}
+
+/* ── OUTREACH ── */
+#v-outreach .out-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.out-stat{padding:14px;text-align:center;}
+.out-stat-val{font-family:var(--disp);font-size:36px;color:#fff;}
+.out-stat-lbl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-top:3px;}
+.template-list{display:flex;flex-direction:column;gap:8px;}
+.tmpl-card{padding:14px;cursor:pointer;transition:.2s;}
+.tmpl-card:hover{border-color:var(--edge);}
+.tmpl-title{font-family:var(--disp);font-size:15px;letter-spacing:.1em;color:var(--blade);margin-bottom:6px;}
+.tmpl-msg{font-family:var(--mono);font-size:8px;color:var(--muted);line-height:1.8;}
+.tmpl-use-btn{margin-top:8px;}
+
+/* MOBILE NAV */
+#mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(5,10,15,.96);border-top:1px solid var(--edge);backdrop-filter:blur(10px);overflow-x:auto;}
+.mn-wrap{display:flex;}
+.mn-item{flex:1;min-width:55px;padding:7px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--mono);font-size:6px;color:var(--muted);cursor:pointer;border-top:2px solid transparent;transition:.2s;}
+.mn-item.active{color:var(--blade);border-top-color:var(--blade);}
+.mn-icon{font-size:13px;}
+
+/* BOOT */
+#boot{position:fixed;inset:0;z-index:999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.boot-logo{font-family:var(--disp);font-size:clamp(48px,8vw,96px);letter-spacing:.15em;color:var(--blade);text-shadow:0 0 40px rgba(14,246,255,.5);}
+.boot-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.4em;}
+.boot-bar{width:180px;height:1px;background:rgba(255,255,255,.05);}
+.boot-fill{height:100%;background:var(--blade);box-shadow:0 0 8px var(--blade);width:0;transition:width 1.8s cubic-bezier(.16,1,.3,1);}
+.boot-status{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(8,15,23,.95);border:1px solid var(--blade);color:var(--blade);font-family:var(--mono);font-size:9px;padding:8px 18px;z-index:1000;opacity:0;transition:.3s;pointer-events:none;letter-spacing:.1em;white-space:nowrap;}
+#toast.show{opacity:1;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  #shell{grid-template-columns:0 1fr;}
+  #sidenav{display:none;}
+  .hamburger{display:flex;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .dash-grid{grid-template-columns:1fr;}
+  .leads-layout{grid-template-columns:1fr;}
+  .lead-detail-panel{display:none;}
+  .prop-layout{grid-template-columns:1fr;}
+  .clients-grid{grid-template-columns:1fr;}
+  .out-grid{grid-template-columns:1fr;}
+  #mobile-nav{display:block;}
+  .view{padding:12px 12px 70px;}
+  .tb-center{display:none;}
+  #v-chat{height:calc(100vh - 52px - 56px);}
+}
+@media(max-width:480px){
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .logo-sub{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-a"></div>
+<div class="bg-g"></div>
+<div class="bg-s"></div>
+<div id="toast"></div>
+
+<!-- BOOT -->
+<div id="boot">
+  <div class="boot-logo">YUGANTAR</div>
+  <div class="boot-sub">AA-OS · YUVI COMMANDER</div>
+  <div class="boot-bar"><div class="boot-fill" id="bfill"></div></div>
+  <div class="boot-status" id="bstatus">LOADING YUVI INTELLIGENCE...</div>
+</div>
+
+<div id="shell">
+
+<!-- TOPBAR -->
+<header id="topbar">
+  <div class="tb-left">
+    <div class="hamburger" onclick="toggleMobileSidebar()" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="logo">YGT</div>
+    <div class="logo-sub">YUGANTAR GROWTH · AA-OS</div>
+  </div>
+  <div class="tb-center">
+    <div class="sdot"></div>
+    <span id="sys-status">YUVI SYSTEMS ONLINE</span>
+  </div>
+  <div class="tb-right">
+    <div id="livetime">00:00:00</div>
+    <div class="yuvi-badge">YUVI CMD</div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav id="sidenav">
+  <div class="nav-sec">COMMAND</div>
+  <div class="nav-item active" onclick="switchView('dash',this)" data-view="dash">
+    <span class="ni-icon">⚡</span>Dashboard
+    <span class="ni-badge">TODAY</span>
+  </div>
+  <div class="nav-item" onclick="switchView('chat',this)" data-view="chat">
+    <span class="ni-icon">💬</span>YUVI Chat
+    <span class="ni-badge hot" id="chat-badge">AI</span>
+  </div>
+  <div class="nav-div"></div>
+  <div class="nav-sec">BUSINESS</div>
+  <div class="nav-item" onclick="switchView('leads',this)" data-view="leads">
+    <span class="ni-icon">🎯</span>Leads
+    <span class="ni-badge" id="leads-badge">170</span>
+  </div>
+  <div class="nav-item" onclick="switchView('clients',this)" data-view="clients">
+    <span class="ni-icon">🏢</span>Clients
+  </div>
+  <div class="nav-item" onclick="switchView('outreach',this)" data-view="outreach">
+    <span class="ni-icon">📤</span>Outreach
+  </div>
+  <div class="nav-item" onclick="switchView('proposals',this)" data-view="proposals">
+    <span class="ni-icon">📋</span>Proposals
+  </div>
+  <div class="nav-div"></div>
+
+  <!-- API KEY -->
+  <div class="nav-key-section">
+    <div class="nav-key-label">GROQ API KEY</div>
+    <input type="password" class="nav-key-input" id="groq-key-input" placeholder="gsk_..."/>
+    <button class="nav-key-btn" onclick="saveGroqKey()">SAVE KEY</button>
+  </div>
+</nav>
+
+<!-- MOBILE SIDEBAR OVERLAY -->
+<div id="mob-sidebar-overlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(5,10,15,.95);backdrop-filter:blur(10px);padding:60px 0 0;overflow-y:auto;" onclick="closeMobileSidebar()">
+  <div onclick="event.stopPropagation()">
+    <div class="nav-sec">COMMAND</div>
+    <div class="nav-item" onclick="switchView('dash');closeMobileSidebar()"><span class="ni-icon">⚡</span>Dashboard</div>
+    <div class="nav-item" onclick="switchView('chat');closeMobileSidebar()"><span class="ni-icon">💬</span>YUVI Chat</div>
+    <div class="nav-div"></div>
+    <div class="nav-sec">BUSINESS</div>
+    <div class="nav-item" onclick="switchView('leads');closeMobileSidebar()"><span class="ni-icon">🎯</span>Leads</div>
+    <div class="nav-item" onclick="switchView('clients');closeMobileSidebar()"><span class="ni-icon">🏢</span>Clients</div>
+    <div class="nav-item" onclick="switchView('outreach');closeMobileSidebar()"><span class="ni-icon">📤</span>Outreach</div>
+    <div class="nav-item" onclick="switchView('proposals');closeMobileSidebar()"><span class="ni-icon">📋</span>Proposals</div>
+    <div class="nav-div"></div>
+    <div class="nav-key-section">
+      <div class="nav-key-label">GROQ API KEY</div>
+      <input type="password" class="nav-key-input" id="groq-key-mob" placeholder="gsk_..."/>
+      <button class="nav-key-btn" onclick="saveGroqKeyMob()">SAVE KEY</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- DASHBOARD -->
+  <div class="view active" id="v-dash">
+    <div class="dash-greet">
+      <h1>GOOD <span id="greet-time">MORNING</span>, SHLOK</h1>
+      <p id="greet-date">LOADING DATE...</p>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi panel">
+        <div class="kpi-val" id="kpi-leads">170</div>
+        <div class="kpi-lbl">Total Leads</div>
+        <div class="kpi-bar"><div class="kpi-fill" style="width:85%"></div></div>
+      </div>
+      <div class="kpi panel">
+        <div class="kpi-val" id="kpi-clients">7+</div>
+        <div class="kpi-lbl">Clients Done</div>
+        <div class="kpi-bar"><div class="kpi-fill" style="width:40%;background:var(--green);box-shadow:0 0 6px var(--green);"></div></div>
+      </div>
+      <div class="kpi panel">
+        <div class="kpi-val" id="kpi-contacted">0</div>
+        <div class="kpi-lbl">Contacted Today</div>
+        <div class="kpi-bar"><div class="kpi-fill" style="width:0%" id="contacted-bar"></div></div>
+      </div>
+      <div class="kpi panel">
+        <div class="kpi-val" id="kpi-revenue">₹0</div>
+        <div class="kpi-lbl">This Month</div>
+        <div class="kpi-bar"><div class="kpi-fill" style="width:20%;background:var(--gold);box-shadow:0 0 6px var(--gold);"></div></div>
+      </div>
+    </div>
+    <div class="dash-grid">
+      <div class="briefing-panel panel">
+        <div class="briefing-yuvi">
+          <div class="yuvi-av">YV</div>
+          <div>
+            <div class="yuvi-name-big">YUVI</div>
+            <div class="yuvi-role-sm">YUGANTAR GROWTH COMMANDER</div>
+          </div>
+        </div>
+        <div class="briefing-msg" id="yuvi-briefing">Loading YUVI intelligence...</div>
+        <div class="blade-line"></div>
+        <div class="ptitle" style="font-size:13px;margin-bottom:8px;">TODAY'S TASKS</div>
+        <div class="task-list" id="task-list">
+          <div class="task-item">
+            <div class="task-check" onclick="toggleTask(this)"></div>
+            <div class="task-text">Contact 10 leads from your Google Maps list</div>
+            <div class="task-pri tp-h">HIGH</div>
+          </div>
+          <div class="task-item">
+            <div class="task-check" onclick="toggleTask(this)"></div>
+            <div class="task-text">Follow up with JFS — ask for referral</div>
+            <div class="task-pri tp-h">HIGH</div>
+          </div>
+          <div class="task-item">
+            <div class="task-check" onclick="toggleTask(this)"></div>
+            <div class="task-text">Prepare 1 proposal for interested lead</div>
+            <div class="task-pri tp-m">MID</div>
+          </div>
+          <div class="task-item">
+            <div class="task-check" onclick="toggleTask(this)"></div>
+            <div class="task-text">Update client status in dashboard</div>
+            <div class="task-pri tp-l">LOW</div>
+          </div>
+          <div class="task-item">
+            <div class="task-check" onclick="toggleTask(this)"></div>
+            <div class="task-text">Post 1 content piece for Yugantar socials</div>
+            <div class="task-pri tp-l">LOW</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="client-mini panel">
+          <div class="ptitle" style="font-size:13px;padding:12px 14px 0;">ACTIVE CLIENTS</div>
+          <div class="blade-line" style="margin:8px 14px;"></div>
+          <div style="padding:0 14px 12px;">
+            <div class="cm-row"><span class="cm-name">Jangid Furniture</span><span class="cm-status cs-a">ACTIVE</span></div>
+            <div class="cm-row"><span class="cm-name">Black Compass</span><span class="cm-status cs-w">SETUP</span></div>
+            <div class="cm-row"><span class="cm-name">Agnivra</span><span class="cm-status cs-a">ACTIVE</span></div>
+            <div class="cm-row"><span class="cm-name">Yaantra Mobility</span><span class="cm-status cs-n">ONBOARD</span></div>
+          </div>
+        </div>
+        <div class="today-targets panel">
+          <div class="ptitle" style="font-size:13px;padding:12px 14px 0;">YUVI'S TARGETS</div>
+          <div class="blade-line" style="margin:8px 14px;"></div>
+          <div style="padding:0 14px 12px;">
+            <div class="target-item"><span class="target-num">01</span><span class="target-text">Call businesses that have no website first — easiest close</span></div>
+            <div class="target-item"><span class="target-num">02</span><span class="target-text">Restaurant / hotel leads are high value — prioritize</span></div>
+            <div class="target-item"><span class="target-num">03</span><span class="target-text">Ask every lead: "Who referred you / how did you find us?"</span></div>
+            <div class="target-item"><span class="target-num">04</span><span class="target-text">Send WhatsApp, wait 2 hours, then follow up by call</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="view" id="v-chat" style="padding:0;display:none;flex-direction:column;">
+    <div class="chat-topbar">
+      <div class="yuvi-av" style="width:32px;height:32px;font-size:10px;">YV</div>
+      <div class="chat-yuvi-info">
+        <div class="chat-yuvi-name">YUVI</div>
+        <div class="chat-yuvi-sub">YUGANTAR GROWTH AI · ALWAYS SHARP · MONEY MINDED</div>
+      </div>
+      <div class="mode-pills">
+        <div class="mode-pill active" onclick="setMode('weekday',this)" id="mode-weekday">WEEKDAY</div>
+        <div class="mode-pill weekend" onclick="setMode('weekend',this)" id="mode-weekend">WEEKEND</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg ai">
+        <div class="msg-label">YUVI · YUGANTAR GROWTH</div>
+        <div class="msg-text">Shlok. Let's get to work. You have 170 leads sitting untouched and 7+ clients who could give you referrals. What's your move today?</div>
+        <div class="msg-time" id="init-time"></div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-inp" id="chat-inp" placeholder="Talk to YUVI..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="chat-send" onclick="sendChat()" id="send-btn">SEND</button>
+    </div>
+  </div>
+
+  <!-- LEADS -->
+  <div class="view" id="v-leads">
+    <div class="leads-controls">
+      <input type="text" class="search-inp" placeholder="Search business name..." id="lead-search" oninput="filterLeads()"/>
+      <div class="fpill active" onclick="filterByCategory('all',this)">ALL</div>
+      <div class="fpill" onclick="filterByCategory('website',this)">WEBSITE</div>
+      <div class="fpill" onclick="filterByCategory('seo',this)">SEO</div>
+      <div class="fpill" onclick="filterByCategory('smm',this)">SMM</div>
+      <div class="fpill" onclick="filterByCategory('digital',this)">DIGITAL</div>
+      <div class="fpill" onclick="filterByCategory('unknown',this)">UNKNOWN</div>
+      <button class="btn primary" onclick="document.getElementById('csv-file').click()">IMPORT CSV</button>
+      <input type="file" id="csv-file" accept=".csv,.xlsx" style="display:none" onchange="importCSV(this)"/>
+    </div>
+    <div class="leads-layout">
+      <div class="panel" style="overflow:hidden;">
+        <div class="leads-table-wrap">
+          <table class="leads-table" id="leads-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>BUSINESS</th>
+                <th>PHONE</th>
+                <th>CATEGORY</th>
+                <th>STATUS</th>
+                <th>WA</th>
+              </tr>
+            </thead>
+            <tbody id="leads-tbody"></tbody>
+          </table>
+          <div id="leads-empty" style="padding:30px;text-align:center;font-family:var(--mono);font-size:9px;color:var(--muted);display:none;">
+            No leads yet. Import your CSV file above.<br><br>
+            <button class="btn primary" onclick="loadSampleLeads()" style="margin-top:8px;">LOAD SAMPLE LEADS</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel lead-detail-panel" id="lead-detail">
+        <div class="ldp-empty">← Select a lead to see details</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div class="view" id="v-clients">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div class="ptitle">CLIENT MATRIX</div>
+      <button class="btn primary" onclick="addNewClient()">+ ADD CLIENT</button>
+    </div>
+    <div class="clients-grid" id="clients-grid"></div>
+  </div>
+
+  <!-- OUTREACH -->
+  <div class="view" id="v-outreach">
+    <div class="ptitle" style="margin-bottom:4px;">OUTREACH SYSTEM</div>
+    <div class="psub" style="margin-bottom:14px;">PRE-WRITTEN MESSAGES · ONE CLICK TO WHATSAPP</div>
+    <div class="out-grid">
+      <div class="out-stat panel">
+        <div class="out-stat-val" id="out-today">0</div>
+        <div class="out-stat-lbl">Contacted Today</div>
+      </div>
+      <div class="out-stat panel">
+        <div class="out-stat-val" id="out-interested">0</div>
+        <div class="out-stat-lbl">Interested</div>
+      </div>
+    </div>
+    <div class="ptitle" style="font-size:14px;margin-bottom:10px;">MESSAGE TEMPLATES</div>
+    <div class="template-list" id="template-list"></div>
+  </div>
+
+  <!-- PROPOSALS -->
+  <div class="view" id="v-proposals">
+    <div class="ptitle" style="margin-bottom:4px;">PROPOSAL BUILDER</div>
+    <div class="psub" style="margin-bottom:14px;">POWERED BY YUVI AI · PROFESSIONAL PROPOSALS IN SECONDS</div>
+    <div class="prop-layout panel" style="overflow:hidden;">
+      <div class="prop-form" style="border-right:1px solid var(--edge2);">
+        <div>
+          <div class="form-lbl">Client Name</div>
+          <input type="text" class="form-inp" id="prop-client" placeholder="Jangid Furniture"/>
+        </div>
+        <div>
+          <div class="form-lbl">Business Type</div>
+          <input type="text" class="form-inp" id="prop-biz" placeholder="Furniture retailer, Ahmedabad"/>
+        </div>
+        <div>
+          <div class="form-lbl">Current Problem</div>
+          <textarea class="form-ta" id="prop-problem" placeholder="No website, low online visibility, losing customers to competitors..."></textarea>
+        </div>
+        <div>
+          <div class="form-lbl">Service to Propose</div>
+          <select class="form-sel" id="prop-service">
+            <option value="digital">Digital Foundation — ₹7,999 one-time</option>
+            <option value="growth">Growth/Lead Machine — ₹14,999/month</option>
+            <option value="scale">Full System/Scale — ₹29,999/month</option>
+            <option value="custom">Custom Package</option>
+          </select>
+        </div>
+        <div>
+          <div class="form-lbl">Extra Notes</div>
+          <textarea class="form-ta" id="prop-notes" placeholder="Any special requirements, budget concerns, timeline..."></textarea>
+        </div>
+        <button class="btn primary" onclick="generateProposal()" id="prop-btn" style="padding:10px;">⚡ GENERATE PROPOSAL</button>
+      </div>
+      <div class="prop-output">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="ptitle" style="font-size:13px;">PROPOSAL OUTPUT</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn" onclick="copyProposal()">COPY</button>
+            <button class="btn success" onclick="sendProposalWA()">SEND VIA WA</button>
+          </div>
+        </div>
+        <div class="prop-preview" id="prop-preview"><span class="prop-placeholder">Fill the form and click Generate. YUVI will write a complete professional proposal ready to send.</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- MOBILE NAV -->
+<div id="mobile-nav">
+  <div class="mn-wrap">
+    <div class="mn-item active" onclick="switchView('dash',null,this)"><div class="mn-icon">⚡</div>DASH</div>
+    <div class="mn-item" onclick="switchView('chat',null,this)"><div class="mn-icon">💬</div>YUVI</div>
+    <div class="mn-item" onclick="switchView('leads',null,this)"><div class="mn-icon">🎯</div>LEADS</div>
+    <div class="mn-item" onclick="switchView('clients',null,this)"><div class="mn-icon">🏢</div>CLIENTS</div>
+    <div class="mn-item" onclick="switchView('outreach',null,this)"><div class="mn-icon">📤</div>OUTREACH</div>
+    <div class="mn-item" onclick="switchView('proposals',null,this)"><div class="mn-icon">📋</div>PROPOSAL</div>
+  </div>
+</div>
+
+<script>
+// ── CORE STATE ──
+const WA_NUMBER = '918460045968';
+let leads = JSON.parse(localStorage.getItem('yuvi_leads') || '[]');
+let clients = JSON.parse(localStorage.getItem('yuvi_clients') || 'null') || getDefaultClients();
+let chatHistory = [];
+let currentMode = 'weekday';
+let selectedLead = null;
+let contactedToday = parseInt(localStorage.getItem('yuvi_contacted_today') || '0');
+let currentFilter = 'all';
+let proposalOutput = '';
+let memory = null;
+
+// ── GITHUB MEMORY SYSTEM ──
+function getGHConfig(){
+  return {
+    username: localStorage.getItem('yuvi_gh_user') || '',
+    repo: localStorage.getItem('yuvi_gh_repo') || '',
+    token: localStorage.getItem('yuvi_gh_token') || ''
+  };
+}
+function saveGHConfig(user, repo, token){
+  localStorage.setItem('yuvi_gh_user', user);
+  localStorage.setItem('yuvi_gh_repo', repo);
+  localStorage.setItem('yuvi_gh_token', token);
+}
+async function loadMemory(){
+  const cfg = getGHConfig();
+  if(!cfg.username || !cfg.repo){ showMemorySetup(); return null; }
+  try{
+    const url = 'https://api.github.com/repos/'+cfg.username+'/'+cfg.repo+'/contents/memory.json';
+    const res = await fetch(url,{headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}});
+    if(!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const content = JSON.parse(atob(data.content.replace(/\n/g,'')));
+    memory = content;
+    localStorage.setItem('yuvi_memory_sha', data.sha);
+    return content;
+  } catch(e){ console.log('Memory load failed:', e.message); return null; }
+}
+async function saveMemory(updates){
+  const cfg = getGHConfig();
+  if(!cfg.token) return;
+  try{
+    const sha = localStorage.getItem('yuvi_memory_sha');
+    const updated = Object.assign({}, memory, updates);
+    const url = 'https://api.github.com/repos/'+cfg.username+'/'+cfg.repo+'/contents/memory.json';
+    const res = await fetch(url,{
+      method:'PUT',
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:'YUVI update '+new Date().toISOString(),content:btoa(unescape(encodeURIComponent(JSON.stringify(updated,null,2)))),sha:sha})
+    });
+    if(res.ok){
+      const d = await res.json();
+      localStorage.setItem('yuvi_memory_sha', d.content.sha);
+      memory = updated;
+      showToast('Memory saved!');
+    }
+  } catch(e){ showToast('Save failed: '+e.message); }
+}
+function showMemorySetup(){
+  if(document.getElementById('mem-modal')) return;
+  const m = document.createElement('div');
+  m.id = 'mem-modal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(5,10,15,.97);display:flex;align-items:center;justify-content:center;padding:20px;';
+  m.innerHTML = `<div style="max-width:380px;width:100%;background:rgba(8,15,23,.9);border:1px solid var(--edge);padding:24px;">
+    <div style="font-family:var(--disp);font-size:24px;letter-spacing:.1em;color:var(--blade);margin-bottom:4px;">CONNECT MEMORY</div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.2em;margin-bottom:20px;">LINK YUVI TO GITHUB MEMORY</div>
+    <div style="margin-bottom:10px;">
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:5px;">GITHUB USERNAME</div>
+      <input id="gh-user" type="text" placeholder="your-username" style="width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--mono);font-size:10px;padding:8px;outline:none;"/>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:5px;">REPO NAME</div>
+      <input id="gh-repo" type="text" placeholder="aa-os-yuvi" style="width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--mono);font-size:10px;padding:8px;outline:none;"/>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:5px;">PERSONAL ACCESS TOKEN</div>
+      <input id="gh-token" type="password" placeholder="ghp_..." style="width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--mono);font-size:10px;padding:8px;outline:none;"/>
+      <div style="font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:4px;">github.com/settings/tokens - New token - repo scope</div>
+    </div>
+    <button onclick="connectMemory()" style="width:100%;font-family:var(--mono);font-size:9px;letter-spacing:.15em;padding:10px;background:rgba(14,246,255,.1);border:1px solid var(--blade);color:var(--blade);cursor:pointer;">CONNECT</button>
+    <button onclick="document.getElementById('mem-modal').remove()" style="width:100%;font-family:var(--mono);font-size:8px;padding:8px;background:transparent;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;margin-top:8px;">SKIP FOR NOW</button>
+  </div>`;
+  document.body.appendChild(m);
+}
+async function connectMemory(){
+  const user = document.getElementById('gh-user').value.trim();
+  const repo = document.getElementById('gh-repo').value.trim();
+  const token = document.getElementById('gh-token').value.trim();
+  if(!user||!repo||!token){showToast('Fill all fields');return;}
+  saveGHConfig(user,repo,token);
+  document.getElementById('mem-modal').remove();
+  showToast('Connecting...');
+  const mem = await loadMemory();
+  if(mem){showToast('Memory connected!');applyMemoryToUI(mem);}
+  else showToast('Check repo name and token');
+}
+function applyMemoryToUI(mem){
+  if(!mem) return;
+  if(mem.clients&&mem.clients.length>0){clients=mem.clients;renderClients();}
+  setYuviBriefingFromMemory(mem);
+}
+function setYuviBriefingFromMemory(mem){
+  if(!mem) return setYuviBriefing();
+  const h = new Date().getHours();
+  const day = new Date().getDay();
+  const isWeekend = day===0||day===6;
+  const ac = mem.clients?mem.clients.filter(c=>c.status==='active').length:0;
+  const lc = mem.leads?mem.leads.total:leads.length;
+  let msg;
+  if(isWeekend) msg='Weekend. '+ac+' active clients, '+lc+' leads. Plan Monday outreach. Review last week.';
+  else if(h<12) msg='Morning Shlok. '+lc+' leads, '+ac+' active clients. Goal: contact 10, get 2 interested, close 1.';
+  else if(h<17) msg='Afternoon. Check WhatsApp replies. Follow up warm leads. Send proposals today.';
+  else msg='Evening. Log today: contacts made, interested leads, any closes. Prepare tomorrow now.';
+  document.getElementById('yuvi-briefing').textContent=msg;
+}
+function getMemoryContext(){
+  if(!memory) return '';
+  return '\n\n=== YUVI MEMORY ===\n'+JSON.stringify({identity:memory.identity,shlok:memory.shlok,clients:memory.clients,leads:memory.leads,plans:memory.plans,velmora:memory.velmora},null,2);
+}
+
+// ── GROQ KEY ──
+function getGroqKey(){ return localStorage.getItem('yuvi_groq_key') || ''; }
+function saveGroqKey(){
+  const k = document.getElementById('groq-key-input').value.trim();
+  if(!k){ showToast('Enter your Groq API key'); return; }
+  localStorage.setItem('yuvi_groq_key', k);
+  showToast('Groq key saved!');
+}
+function saveGroqKeyMob(){
+  const k = document.getElementById('groq-key-mob').value.trim();
+  if(!k){ showToast('Enter your Groq API key'); return; }
+  localStorage.setItem('yuvi_groq_key', k);
+  document.getElementById('groq-key-input').value = k;
+  showToast('Groq key saved!');
+}
+
+// ── BOOT ──
+window.addEventListener('load', () => {
+  const fill = document.getElementById('bfill');
+  const status = document.getElementById('bstatus');
+  const msgs = ['LOADING YUVI INTELLIGENCE...','SYNCING LEAD DATABASE...','CONNECTING GROQ AI...','ARMING OUTREACH SYSTEMS...','YUVI ONLINE'];
+  let i = 0;
+  fill.style.width = '100%';
+  const interval = setInterval(() => {
+    if(i < msgs.length) status.textContent = msgs[i++];
+  }, 360);
+  setTimeout(() => {
+    clearInterval(interval);
+    document.getElementById('boot').style.opacity = '0';
+    document.getElementById('boot').style.transition = 'opacity .5s';
+    setTimeout(() => { document.getElementById('boot').style.display = 'none'; }, 500);
+    initDashboard();
+  }, 1900);
+
+  const savedKey = localStorage.getItem('yuvi_groq_key');
+  if(savedKey) { document.getElementById('groq-key-input').value = savedKey; }
+  // Load GitHub memory
+  const cfg = getGHConfig();
+  if(cfg.username && cfg.repo){
+    loadMemory().then(mem => { if(mem) applyMemoryToUI(mem); });
+  } else {
+    showMemorySetup();
+  }
+});
+
+function initDashboard(){
+  updateClock();
+  setInterval(updateClock, 1000);
+  setGreeting();
+  setYuviBriefing();
+  renderLeads();
+  renderClients();
+  renderTemplates();
+  updateStats();
+  document.getElementById('init-time').textContent = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── CLOCK ──
+function updateClock(){
+  const n = new Date();
+  document.getElementById('livetime').textContent = n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+// ── GREETING ──
+function setGreeting(){
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'MORNING' : h < 17 ? 'AFTERNOON' : 'EVENING';
+  document.getElementById('greet-time').textContent = greet;
+  const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const d = new Date();
+  document.getElementById('greet-date').textContent = `${days[d.getDay()]} · ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} · YUGANTAR GROWTH COMMAND`;
+}
+
+// ── YUVI BRIEFING ──
+function setYuviBriefing(){
+  const h = new Date().getHours();
+  const day = new Date().getDay();
+  const isWeekend = day === 0 || day === 6;
+  let msg;
+  if(isWeekend){
+    msg = `Weekend mode. Good time to plan the week, review what worked, and prepare your outreach list for Monday. You have ${leads.length} leads and ${clients.length} clients. Take time to think — but don't waste it.`;
+  } else if(h < 12){
+    msg = `Morning. You have ${leads.length} leads — ${leads.filter(l=>l.status==='new').length} untouched. Today's goal: contact at least 10, get 2 interested, close 1. Start with businesses that have no website — easiest pitch. Open WhatsApp, go to Leads, and start sending.`;
+  } else if(h < 17){
+    msg = `Afternoon. Morning outreach should have responses by now. Check your WhatsApp, follow up on anyone who opened but didn't reply. If you got interested leads — move to Proposals and send something professional today.`;
+  } else {
+    msg = `Evening. Time to review. How many leads did you contact? Any interested? Update statuses in the Leads section. Tomorrow's success depends on what you log today. Brief your father and brother on the pipeline if they're helping.`;
+  }
+  document.getElementById('yuvi-briefing').textContent = msg;
+}
+
+// ── VIEWS ──
+function switchView(viewId, navEl, mobileEl){
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.remove('active');
+    v.style.display = 'none';
+  });
+  const target = document.getElementById('v-' + viewId);
+  if(target){
+    target.style.display = viewId === 'chat' ? 'flex' : 'block';
+    target.classList.add('active');
+  }
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(navEl) navEl.classList.add('active');
+  else {
+    const matching = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+    if(matching) matching.classList.add('active');
+  }
+  document.querySelectorAll('.mn-item').forEach(m => m.classList.remove('active'));
+  if(mobileEl) mobileEl.classList.add('active');
+}
+
+// ── MOBILE SIDEBAR ──
+function toggleMobileSidebar(){
+  const overlay = document.getElementById('mob-sidebar-overlay');
+  overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+}
+function closeMobileSidebar(){
+  document.getElementById('mob-sidebar-overlay').style.display = 'none';
+}
+
+// ── TASK TOGGLE ──
+function toggleTask(el){
+  el.classList.toggle('done');
+  el.textContent = el.classList.contains('done') ? '✓' : '';
+  const text = el.nextElementSibling;
+  if(text) text.classList.toggle('done');
+}
+
+// ── LEADS ──
+function getDefaultLeads(){
+  return [
+    {id:1,name:'Ravi Electronics',phone:'9825001234',category:'website',status:'new',address:'Ahmedabad',rating:4.2,notes:''},
+    {id:2,name:'Mehta Restaurant',phone:'9825002345',category:'smm',status:'new',address:'Ahmedabad',rating:4.5,notes:''},
+    {id:3,name:'Kumar Textiles',phone:'9825003456',category:'digital',status:'new',address:'Ahmedabad',rating:4.0,notes:''},
+    {id:4,name:'Patel Hardware',phone:'9825004567',category:'website',status:'contacted',address:'Ahmedabad',rating:3.8,notes:'Called, will think'},
+    {id:5,name:'Shah Jewellers',phone:'9825005678',category:'seo',status:'interested',address:'Ahmedabad',rating:4.7,notes:'Very interested'},
+    {id:6,name:'Gupta Pharmacy',phone:'9825006789',category:'digital',status:'new',address:'Ahmedabad',rating:4.1,notes:''},
+    {id:7,name:'Joshi Cafe',phone:'9825007890',category:'smm',status:'new',address:'Ahmedabad',rating:4.3,notes:''},
+    {id:8,name:'Desai Motors',phone:'9825008901',category:'website',status:'new',address:'Ahmedabad',rating:4.0,notes:''},
+  ];
+}
+
+function loadSampleLeads(){
+  leads = getDefaultLeads();
+  localStorage.setItem('yuvi_leads', JSON.stringify(leads));
+  renderLeads();
+  showToast('Sample leads loaded!');
+}
+
+function renderLeads(){
+  const tbody = document.getElementById('leads-tbody');
+  const empty = document.getElementById('leads-empty');
+  const search = document.getElementById('lead-search').value.toLowerCase();
+
+  let filtered = leads.filter(l => {
+    const matchSearch = !search || l.name.toLowerCase().includes(search) || (l.phone && l.phone.includes(search));
+    const matchCat = currentFilter === 'all' || l.category === currentFilter;
+    return matchSearch && matchCat;
+  });
+
+  if(leads.length === 0){
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map((l,i) => `
+    <tr onclick="selectLead(${l.id})" ${selectedLead && selectedLead.id === l.id ? 'class="selected"' : ''}>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td>${l.name}</td>
+      <td>${l.phone || '—'}</td>
+      <td><span class="cat-badge cat-${l.category}">${getCatLabel(l.category)}</span></td>
+      <td>
+        <select class="lead-status-sel" onchange="updateLeadStatus(${l.id}, this.value)" onclick="event.stopPropagation()">
+          <option value="new" ${l.status==='new'?'selected':''}>NEW</option>
+          <option value="contacted" ${l.status==='contacted'?'selected':''}>CONTACTED</option>
+          <option value="interested" ${l.status==='interested'?'selected':''}>INTERESTED</option>
+          <option value="not_interested" ${l.status==='not_interested'?'selected':''}>NOT INT.</option>
+          <option value="follow_up" ${l.status==='follow_up'?'selected':''}>FOLLOW UP</option>
+          <option value="closed" ${l.status==='closed'?'selected':''}>CLOSED ✓</option>
+        </select>
+      </td>
+      <td><button class="wa-btn" onclick="event.stopPropagation();sendWA(${l.id})">WA ↗</button></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('leads-badge').textContent = leads.length;
+  document.getElementById('kpi-leads').textContent = leads.length;
+}
+
+function getCatLabel(cat){
+  const labels = {website:'WEBSITE',seo:'SEO',smm:'SMM',digital:'DIGITAL',unknown:'UNKNOWN'};
+  return labels[cat] || 'UNKNOWN';
+}
+
+function filterLeads(){ renderLeads(); }
+
+function filterByCategory(cat, el){
+  currentFilter = cat;
+  document.querySelectorAll('.fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderLeads();
+}
+
+function selectLead(id){
+  selectedLead = leads.find(l => l.id === id);
+  if(!selectedLead) return;
+  const panel = document.getElementById('lead-detail');
+  const msg = getWAMessage(selectedLead);
+  panel.innerHTML = `
+    <div class="ldp-name">${selectedLead.name}</div>
+    <div class="ldp-cat">${getCatLabel(selectedLead.category)} · ${selectedLead.status.toUpperCase()}</div>
+    <div class="ldp-row"><span class="ldp-key">PHONE</span><span class="ldp-val">${selectedLead.phone || 'N/A'}</span></div>
+    <div class="ldp-row"><span class="ldp-key">ADDRESS</span><span class="ldp-val">${selectedLead.address || 'N/A'}</span></div>
+    <div class="ldp-row"><span class="ldp-key">RATING</span><span class="ldp-val">${selectedLead.rating || 'N/A'} ★</span></div>
+    <div class="ldp-row"><span class="ldp-key">STATUS</span><span class="ldp-val">${selectedLead.status.toUpperCase()}</span></div>
+    <div class="blade-line"></div>
+    <div class="ldp-actions">
+      <button class="btn success" onclick="sendWA(${selectedLead.id})">📱 OPEN WHATSAPP</button>
+      <button class="btn primary" onclick="loadLeadToProposal(${selectedLead.id})">📋 BUILD PROPOSAL</button>
+    </div>
+    <div class="ldp-msg-preview">${msg}</div>
+  `;
+  renderLeads();
+}
+
+function updateLeadStatus(id, status){
+  const lead = leads.find(l => l.id === id);
+  if(!lead) return;
+  lead.status = status;
+  if(status === 'contacted'){
+    contactedToday++;
+    localStorage.setItem('yuvi_contacted_today', contactedToday);
+    updateStats();
+  }
+  localStorage.setItem('yuvi_leads', JSON.stringify(leads));
+  showToast(`${lead.name} → ${status.toUpperCase()}`);
+}
+
+function updateStats(){
+  document.getElementById('kpi-contacted').textContent = contactedToday;
+  const pct = Math.min(100, (contactedToday / 10) * 100);
+  document.getElementById('contacted-bar').style.width = pct + '%';
+  const interested = leads.filter(l => l.status === 'interested').length;
+  document.getElementById('out-today').textContent = contactedToday;
+  document.getElementById('out-interested').textContent = interested;
+}
+
+function getWAMessage(lead){
+  const msgs = {
+    website: `Hi! I'm Shlok from Yugantar Growth. We build professional websites for businesses in Ahmedabad starting at ₹7,999. I noticed ${lead.name} could benefit from a strong online presence. Interested in a free consultation? 🙏`,
+    seo: `Hi! I'm Shlok from Yugantar Growth. We help businesses in Ahmedabad rank higher on Google and get more customers through SEO. Would love to show ${lead.name} what's possible. Can we connect for 10 minutes?`,
+    smm: `Hi! I'm Shlok from Yugantar Growth. We manage social media for businesses in Ahmedabad — Instagram, Facebook, and more. I think ${lead.name} has great potential online. Interested to know more?`,
+    digital: `Hi! I'm Shlok from Yugantar Growth — a digital agency in Ahmedabad. We help businesses build a complete online presence: website, SEO, social media, and more. Can I show you what we've done for similar businesses?`,
+    unknown: `Hi! I'm Shlok from Yugantar Growth — a digital agency in Ahmedabad. We help local businesses grow online. Would love to connect with ${lead.name} for a quick 10-minute chat. 🙏`
+  };
+  return msgs[lead.category] || msgs.unknown;
+}
+
+function sendWA(id){
+  const lead = leads.find(l => l.id === id);
+  if(!lead || !lead.phone) { showToast('No phone number for this lead'); return; }
+  const msg = encodeURIComponent(getWAMessage(lead));
+  const phone = lead.phone.replace(/\D/g,'');
+  const fullPhone = phone.startsWith('91') ? phone : '91' + phone;
+  window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
+  updateLeadStatus(id, 'contacted');
+}
+
+function importCSV(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const text = e.target.result;
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g,''));
+      const titleIdx = headers.findIndex(h => h.includes('title') || h.includes('name'));
+      const phoneIdx = headers.findIndex(h => h.includes('phone'));
+      const addrIdx = headers.findIndex(h => h.includes('address'));
+      const ratingIdx = headers.findIndex(h => h.includes('rating'));
+      const catIdx = headers.findIndex(h => h.includes('category') || h.includes('type'));
+
+      const newLeads = [];
+      for(let i = 1; i < lines.length; i++){
+        if(!lines[i].trim()) continue;
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g,''));
+        const name = titleIdx >= 0 ? cols[titleIdx] : 'Unknown Business';
+        if(!name || name === 'Unknown Business') continue;
+        newLeads.push({
+          id: Date.now() + i,
+          name: name,
+          phone: phoneIdx >= 0 ? cols[phoneIdx] : '',
+          address: addrIdx >= 0 ? cols[addrIdx] : 'Ahmedabad',
+          rating: ratingIdx >= 0 ? parseFloat(cols[ratingIdx]) || 0 : 0,
+          category: guessCategory(name, catIdx >= 0 ? cols[catIdx] : ''),
+          status: 'new',
+          notes: ''
+        });
+      }
+      leads = [...leads, ...newLeads];
+      localStorage.setItem('yuvi_leads', JSON.stringify(leads));
+      renderLeads();
+      showToast(`Imported ${newLeads.length} leads!`);
+    } catch(err) {
+      showToast('Error reading file. Try CSV format.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function guessCategory(name, catStr){
+  const n = (name + ' ' + catStr).toLowerCase();
+  if(n.includes('restaurant') || n.includes('cafe') || n.includes('hotel') || n.includes('food')) return 'smm';
+  if(n.includes('furniture') || n.includes('hardware') || n.includes('retail') || n.includes('shop')) return 'website';
+  if(n.includes('clinic') || n.includes('doctor') || n.includes('hospital') || n.includes('pharma')) return 'digital';
+  if(n.includes('school') || n.includes('college') || n.includes('institute') || n.includes('academy')) return 'seo';
+  return 'unknown';
+}
+
+function loadLeadToProposal(id){
+  const lead = leads.find(l => l.id === id);
+  if(!lead) return;
+  document.getElementById('prop-client').value = lead.name;
+  document.getElementById('prop-biz').value = `Business in Ahmedabad`;
+  document.getElementById('prop-problem').value = `Low online visibility, no ${getCatLabel(lead.category).toLowerCase()} presence`;
+  switchView('proposals');
+  showToast('Lead loaded to proposal builder!');
+}
+
+// ── CHAT ──
+function setMode(mode, el){
+  currentMode = mode;
+  document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function handleChatKey(e){
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
+}
+
+function autoResize(el){
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function sendChat(){
+  const inp = document.getElementById('chat-inp');
+  const msg = inp.value.trim();
+  if(!msg) return;
+  const key = getGroqKey();
+  if(!key){ showToast('Add your Groq API key in the sidebar'); return; }
+
+  inp.value = '';
+  inp.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+
+  appendMsg('user', msg, 'SHLOK');
+  const typing = appendTyping();
+
+  // Check for remember command
+  if(msg.toLowerCase().startsWith('remember ') || msg.toLowerCase().startsWith('save ')){
+    const thingToRemember = msg.replace(/^(remember|save)\s+/i,'');
+    if(memory){
+      if(!memory.logs) memory.logs = [];
+      memory.logs.push({date:new Date().toISOString(),note:thingToRemember});
+      saveMemory({logs:memory.logs});
+      appendMsg('ai','Saved to memory: '+thingToRemember,'YUVI · MEMORY');
+      document.getElementById('send-btn').disabled = false;
+      return;
+    }
+  }
+  chatHistory.push({role:'user', content:msg});
+
+  const systemPrompt = currentMode === 'weekend'
+    ? `You are YUVI, the AI business companion for Yugantar Growth, a digital agency run by Shlok Pandya (16 years old) in Ahmedabad, India. Weekend mode — be friendly, help Shlok plan and reflect. Digital Foundation ₹7,999, Growth ₹14,999/mo, Scale ₹29,999/mo. Be warm but sharp.`+memCtx
+    : `You are YUVI, sharp business AI for Yugantar Growth. Shlok is 16, Ahmedabad. Services: Digital Foundation ₹7,999, Growth ₹14,999/mo, Scale ₹29,999/mo. Always give specific actions — who to call, what to say, how to close. Be direct. Revenue and growth first.`+memCtx;
+
+  try{
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{role:'system',content:systemPrompt}, ...chatHistory.slice(-10)],
+        max_tokens: 800,
+        temperature: currentMode === 'weekend' ? 0.8 : 0.5
+      })
+    });
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content || 'Signal lost. Try again.';
+    chatHistory.push({role:'assistant', content:reply});
+    typing.remove();
+    appendMsg('ai', reply, 'YUVI · YUGANTAR');
+  } catch(err){
+    typing.remove();
+    appendMsg('ai', 'Connection error: ' + err.message, 'YUVI · ERROR');
+  }
+
+  document.getElementById('send-btn').disabled = false;
+  inp.focus();
+}
+
+function appendMsg(type, text, label){
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + type;
+  const time = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  div.innerHTML = `<div class="msg-label">${label}</div><div class="msg-text">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${time}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function appendTyping(){
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = '<div class="msg-label">YUVI · THINKING</div><div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+// ── CLIENTS ──
+function getDefaultClients(){
+  return [
+    {id:1,name:'Jangid Furniture',type:'FURNITURE RETAILER',service:'Digital Foundation',amount:'₹7,999',status:'active',tasks:['Website delivered ✓','Instagram page created ✓','Visiting cards designed ✓','Follow up for referral →']},
+    {id:2,name:'Black Compass',type:'COMMUNITY BUSINESS',service:'Branding + Strategy',amount:'In Progress',status:'setup',tasks:['Branding discussion done','Website pending','Social setup pending']},
+    {id:3,name:'Agnivra',type:'BUSINESS',service:'Growth Package',amount:'₹14,999/mo',status:'active',tasks:['Campaign running','Lead magnet review pending','Monthly report due Friday']},
+    {id:4,name:'Yaantra Mobility',type:'MOBILITY STARTUP',service:'Digital Foundation',amount:'₹7,999',status:'new',tasks:['Onboarding in progress','Docs pending signature']},
+  ];
+}
+
+function renderClients(){
+  const grid = document.getElementById('clients-grid');
+  const colors = {active:'var(--green)',setup:'var(--gold)',new:'var(--blade)'};
+  grid.innerHTML = clients.map(c => `
+    <div class="client-card panel">
+      <div class="cc-name">${c.name}</div>
+      <div class="cc-type">${c.type}</div>
+      <div class="cc-metrics">
+        <div class="ccm"><div class="ccm-v" style="font-size:14px;">${c.service}</div><div class="ccm-k">SERVICE</div></div>
+        <div class="ccm"><div class="ccm-v" style="font-size:16px;">${c.amount}</div><div class="ccm-k">VALUE</div></div>
+        <div class="ccm"><div class="ccm-v" style="font-size:14px;color:${colors[c.status]||'var(--blade)'};">${c.status.toUpperCase()}</div><div class="ccm-k">STATUS</div></div>
+      </div>
+      <div class="blade-line"></div>
+      <div class="cc-tasks-list">
+        ${c.tasks.map(t => `<div class="cct"><div class="cct-dot" style="background:${t.includes('✓')?'var(--green)':t.includes('→')?'var(--blade)':'var(--gold)'}"></div>${t}</div>`).join('')}
+      </div>
+    </div>
+  `).join('') + `
+    <div class="cc-add panel" onclick="addNewClient()">
+      <div class="cc-add-icon">+</div>
+      <div class="cc-add-text">ADD NEW CLIENT</div>
+    </div>
+  `;
+}
+
+function addNewClient(){
+  const name = prompt('Client name:');
+  if(!name) return;
+  const type = prompt('Business type:') || 'BUSINESS';
+  const service = prompt('Service provided:') || 'Digital Foundation';
+  const amount = prompt('Amount (e.g. ₹7,999):') || '₹7,999';
+  clients.push({id:Date.now(),name,type:type.toUpperCase(),service,amount,status:'new',tasks:['Onboarding in progress']});
+  localStorage.setItem('yuvi_clients', JSON.stringify(clients));
+  renderClients();
+  showToast('Client added!');
+}
+
+// ── OUTREACH TEMPLATES ──
+function renderTemplates(){
+  const templates = [
+    {title:'NO WEBSITE', cat:'website', msg:`Hi! I'm Shlok from Yugantar Growth. We build professional websites for businesses in Ahmedabad starting at ₹7,999. Would love to help your business get online. Free consultation available! 🙏`},
+    {title:'SEO / GOOGLE RANKING', cat:'seo', msg:`Hi! I'm Shlok from Yugantar Growth. We help businesses rank higher on Google and get more customers through SEO. Can I show you what we've done for similar businesses in Ahmedabad?`},
+    {title:'SOCIAL MEDIA GROWTH', cat:'smm', msg:`Hi! I'm Shlok from Yugantar Growth. We manage Instagram and Facebook for businesses in Ahmedabad. I think your business has great potential online. Interested to explore?`},
+    {title:'FULL DIGITAL PRESENCE', cat:'digital', msg:`Hi! I'm Shlok from Yugantar Growth — a digital agency in Ahmedabad. We help businesses get a complete online presence: website, SEO, social media, ads. Can we connect for 10 minutes?`},
+    {title:'COLD OUTREACH', cat:'unknown', msg:`Hi! I'm Shlok from Yugantar Growth, a digital agency in Ahmedabad. We help local businesses grow online and get more customers. Would love to show you what's possible for your business. 🙏`},
+  ];
+  document.getElementById('template-list').innerHTML = templates.map(t => `
+    <div class="tmpl-card panel">
+      <div class="tmpl-title">${t.title}</div>
+      <div class="tmpl-msg">${t.msg}</div>
+      <button class="btn primary tmpl-use-btn" onclick="openWAWithTemplate('${encodeURIComponent(t.msg)}')">OPEN IN WHATSAPP ↗</button>
+    </div>
+  `).join('');
+}
+
+function openWAWithTemplate(encodedMsg){
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodedMsg}`, '_blank');
+}
+
+// ── PROPOSALS ──
+async function generateProposal(){
+  const client = document.getElementById('prop-client').value.trim();
+  const biz = document.getElementById('prop-biz').value.trim();
+  const problem = document.getElementById('prop-problem').value.trim();
+  const service = document.getElementById('prop-service').value;
+  const notes = document.getElementById('prop-notes').value.trim();
+
+  if(!client || !problem){ showToast('Fill client name and problem'); return; }
+  const key = getGroqKey();
+  if(!key){ showToast('Add Groq API key in sidebar'); return; }
+
+  const serviceDetails = {
+    digital: 'Digital Foundation — ₹7,999 one-time (5-page website, mobile responsive, basic SEO, contact form + WhatsApp CTA, Google Analytics, 1 month free support, hosting guidance)',
+    growth: 'Growth/Lead Machine — ₹14,999/month (everything in Digital Foundation + Google/Meta ads management, monthly SEO, WhatsApp automation, monthly performance reports, 2x landing page updates/month, dedicated support)',
+    scale: 'Full System/Scale — ₹29,999/month (everything in Growth + full AI automation system, multi-channel ads, advanced SEO + content writing, CRM setup + lead pipeline, weekly strategy calls, unlimited landing pages)',
+    custom: 'Custom Package — to be discussed based on requirements'
+  };
+
+  const btn = document.getElementById('prop-btn');
+  btn.disabled = true;
+  btn.textContent = 'GENERATING...';
+  document.getElementById('prop-preview').innerHTML = '<span class="prop-placeholder">YUVI is writing your proposal...</span>';
+
+  try{
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          {role:'system', content:'You are YUVI, business AI for Yugantar Growth. Write professional business proposals. Agency: Yugantar Growth, Ahmedabad. Owner: Shlok Pandya. Contact: WhatsApp +91 8460045968. Always include specific pricing, timeline, and clear next steps. Write in a professional but approachable tone.'},
+          {role:'user', content:`Write a complete business proposal for:
+Client: ${client}
+Business: ${biz}
+Problem: ${problem}
+Proposed Service: ${serviceDetails[service]}
+Additional Notes: ${notes || 'None'}
+
+Format the proposal with these sections:
+1. Subject line
+2. Greeting
+3. Understanding Your Challenge
+4. Our Proposed Solution
+5. What's Included (detailed breakdown)
+6. Investment & Pricing
+7. Timeline
+8. Why Yugantar Growth
+9. Next Steps
+10. Sign-off
+
+Make it professional, specific to their business, and compelling.`}
+        ],
+        max_tokens: 1500,
+        temperature: 0.4
+      })
+    });
+    const data = await response.json();
+    proposalOutput = data.choices?.[0]?.message?.content || 'Error generating proposal';
+    document.getElementById('prop-preview').textContent = proposalOutput;
+  } catch(err){
+    document.getElementById('prop-preview').innerHTML = `<span class="prop-placeholder">Error: ${err.message}</span>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ GENERATE PROPOSAL';
+}
+
+function copyProposal(){
+  if(!proposalOutput){ showToast('Generate a proposal first'); return; }
+  navigator.clipboard.writeText(proposalOutput).then(() => showToast('Proposal copied!'));
+}
+
+function sendProposalWA(){
+  if(!proposalOutput){ showToast('Generate a proposal first'); return; }
+  const msg = encodeURIComponent(proposalOutput.substring(0, 1000) + '\n\n— Shlok | Yugantar Growth | +91 8460045968');
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
