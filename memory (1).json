@@ -1,0 +1,39 @@
+{
+  "version": "3.0",
+  "identity": {
+    "owner": "Shlok Pandya",
+    "agency": "Yugantar Growth",
+    "city": "Ahmedabad",
+    "age": 21,
+    "role": "Digital Agency Owner"
+  },
+  "business": {
+    "services": {
+      "digital_foundation": { "name": "Digital Foundation", "price": 7999, "type": "one-time", "includes": ["5-page website", "SEO setup", "analytics", "WhatsApp CTA"] },
+      "growth": { "name": "Growth", "price": 14999, "type": "monthly", "includes": ["social media management", "content", "ads"] },
+      "scale": { "name": "Scale", "price": 29999, "type": "monthly", "includes": ["full digital stack"] }
+    },
+    "active_clients": [
+      { "id": 1, "name": "JFS", "full": "Jangid Furniture Studio", "tier": "Digital Foundation", "value": 7999, "status": "active", "payment": "paid" },
+      { "id": 2, "name": "FinEdge Advisory", "full": "FinEdge Advisory", "tier": "Growth", "value": 14999, "status": "active", "payment": "pending" }
+    ],
+    "monthly_revenue": 22998
+  },
+  "context": {
+    "about_shlok": "Shlok Pandya is 21 years old, runs Yugantar Growth digital agency in Ahmedabad. He is also the founder of TRIKAAL (faceless Indian D2C streetwear brand). He is building AA-OS (Abyssborned Architect Operating System) — a multi-layer personal and business operating system. YUVI is Layer 2 of AA-OS.",
+    "aa_os_layers": ["NEX (Velmora Agent Factory)", "YUVI (Yugantar Growth AI)", "AGNI (Trikaal POD AI)", "BHUMI (Black Compass AI)", "VAYU (Yaantra Mobility AI)", "VIC (Velmora Intelligence Commander)"],
+    "personality_note": "Shlok prefers sharp, direct, practical communication. No fluff. Real advice. Ahmedabad business culture aware. When he is stressed — be steady. When winning — push harder.",
+    "first_memory": "Shlok started using YUVI to manage Yugantar Growth leads, pipeline, clients and AI-powered proposals. He wants YUVI to feel like Jarvis — not a chatbot but an actual business operator."
+  },
+  "leads": { "total": 0, "contacted": 0, "interested": 0, "closed": 0 },
+  "logs": [
+    {
+      "date": "2026-01-01",
+      "type": "system_init",
+      "note": "YUVI v3 initialized. Owner: Shlok Pandya. Agency: Yugantar Growth, Ahmedabad. Memory system active. GitHub persistence enabled."
+    }
+  ],
+  "plans": [],
+  "reminders": [],
+  "lastUpdated": "2026-01-01T00:00:00.000Z"
+}
