@@ -1,39 +1,112 @@
 {
-  "version": "3.0",
-  "identity": {
-    "owner": "Shlok Pandya",
-    "agency": "Yugantar Growth",
-    "city": "Ahmedabad",
+  "version": "4.0",
+  "last_updated": "2026-06-21",
+  "founder": {
+    "name": "Shlok Pandya",
     "age": 21,
-    "role": "Digital Agency Owner"
+    "location": "Khoraj, Gandhinagar, Ahmedabad, Gujarat, India",
+    "role": "Solo Founder — Yugantar Growth | CMO — Black Compass",
+    "father": "Amit Pandya (Brand & Design Partner)",
+    "working_style": "Fast, casual, vibe coder. Tends to build before securing payment — flag this always.",
+    "communication": "Hinglish. Gujarati for some client comms."
   },
-  "business": {
-    "services": {
-      "digital_foundation": { "name": "Digital Foundation", "price": 7999, "type": "one-time", "includes": ["5-page website", "SEO setup", "analytics", "WhatsApp CTA"] },
-      "growth": { "name": "Growth", "price": 14999, "type": "monthly", "includes": ["social media management", "content", "ads"] },
-      "scale": { "name": "Scale", "price": 29999, "type": "monthly", "includes": ["full digital stack"] }
+  "agency": {
+    "name": "Yugantar Growth",
+    "type": "MSME Sole Proprietorship",
+    "registered": "April 2026",
+    "website": "yugantar-growth-drab.vercel.app",
+    "instagram": "@yugantargrowth",
+    "github": "github.com/whitewolf251501-dot/aa-os-yuvi",
+    "services": ["Website Design & Development", "SEO", "Performance Marketing", "AI Automation", "Brand Identity & SMM"],
+    "packages": {
+      "Digital Foundation": "₹7,999 one-time",
+      "Lead Machine": "₹12,999/month",
+      "Full System": "₹24,999/month"
     },
-    "active_clients": [
-      { "id": 1, "name": "JFS", "full": "Jangid Furniture Studio", "tier": "Digital Foundation", "value": 7999, "status": "active", "payment": "paid" },
-      { "id": 2, "name": "FinEdge Advisory", "full": "FinEdge Advisory", "tier": "Growth", "value": 14999, "status": "active", "payment": "pending" }
-    ],
-    "monthly_revenue": 22998
+    "brand": {
+      "colors": {"black": "#080808", "orange": "#e8520a", "cream": "#f0ede8"},
+      "fonts": "Syne (display) + DM Sans (body)",
+      "logo": "YG triangle mark",
+      "rule": "3S — Simple, Short, Smooth",
+      "aesthetic": "Linear / Vercel / Stripe — dark, premium, minimal"
+    },
+    "golden_rule": "Proposal → Agreement → Advance → Work. NEVER work before advance.",
+    "revenue_collected": "₹25,000 across 4 invoices (all reinvested)"
   },
-  "context": {
-    "about_shlok": "Shlok Pandya is 21 years old, runs Yugantar Growth digital agency in Ahmedabad. He is also the founder of TRIKAAL (faceless Indian D2C streetwear brand). He is building AA-OS (Abyssborned Architect Operating System) — a multi-layer personal and business operating system. YUVI is Layer 2 of AA-OS.",
-    "aa_os_layers": ["NEX (Velmora Agent Factory)", "YUVI (Yugantar Growth AI)", "AGNI (Trikaal POD AI)", "BHUMI (Black Compass AI)", "VAYU (Yaantra Mobility AI)", "VIC (Velmora Intelligence Commander)"],
-    "personality_note": "Shlok prefers sharp, direct, practical communication. No fluff. Real advice. Ahmedabad business culture aware. When he is stressed — be steady. When winning — push harder.",
-    "first_memory": "Shlok started using YUVI to manage Yugantar Growth leads, pipeline, clients and AI-powered proposals. He wants YUVI to feel like Jarvis — not a chatbot but an actual business operator."
-  },
-  "leads": { "total": 0, "contacted": 0, "interested": 0, "closed": 0 },
-  "logs": [
-    {
-      "date": "2026-01-01",
-      "type": "system_init",
-      "note": "YUVI v3 initialized. Owner: Shlok Pandya. Agency: Yugantar Growth, Ahmedabad. Memory system active. GitHub persistence enabled."
+  "clients": {
+    "JFS": {
+      "full_name": "Jangid Furniture Studio",
+      "website": "jangidfurniturestudio.co.in",
+      "package": "Digital Foundation + commission per lead",
+      "status": "Website delivered. 5-10 starter social posts pending — then COMPLETE.",
+      "situation": "Client is a job-holder starting a business. Wants leads. Lead gen slow currently.",
+      "lesson": "Don't over-promise lead timelines to new business owners."
+    },
+    "Tradosphere": {
+      "product": "Angel One style trading dashboard — NIFTY/BANKNIFTY",
+      "live_url": "tradosphere-v1.vercel.app",
+      "features": ["Live NIFTY/BANKNIFTY data", "Options chain", "Technical indicators", "Signals", "Paper trading", "Backtesting"],
+      "status": "UI complete. Backend connecting today (June 21). Going live Monday for real Angel One signal testing.",
+      "deal_value": "UNKNOWN — ask Shlok"
+    },
+    "FinEdge": {
+      "contact": "Ansh Dodia",
+      "deal_value": "₹30,000 total",
+      "advance_status": "Partial advance received",
+      "deliverable": "Angel One Smart API algo bot — live NIFTY/BANKNIFTY trade calls",
+      "status": "Bot built. Paper trading demos successful. Signal-to-dashboard = final pending piece.",
+      "payment_strategy": "DO NOT hand over final integration until full remaining balance is paid.",
+      "warning": "Same Ansh from M Square Finserve. Watch payment discipline."
     }
+  },
+  "ventures": {
+    "Black_Compass": "Adventure travel community. Shlok = Co-founder (CMO).",
+    "Agni": "Print-on-demand clothing brand. Revenue status unknown — ask Shlok.",
+    "Australia_Solar": "3-partner model. SAA installer (Victoria) + wholesale contacts + Shlok (backend ops, salaried). Rule: jobs before resignation."
+  },
+  "leads": {
+    "total_scraped": "676+ (500+ YG agency leads, 176 JFS furniture leads)",
+    "scraper": "Docker + gosom, BAT at D:\\Lead-gen",
+    "outreach_strategy": "WhatsApp 50-70 msgs/day. Warm leads first. Niche angle per message.",
+    "best_offer": "Website in 48 Hours — urgency + specificity = best conversion hook"
+  },
+  "closing_patterns": {
+    "JFS": "Job-holder starting business. Cold WA outreach. Pitched Digital Foundation as low-risk entry. Got advance. Built fast.",
+    "FinEdge": "Technical need (algo bot). Showed capability via demo. Got advance. Now balance-collection phase.",
+    "what_works": "Specific niche angle, 48hr offer, showing real client work (JFS site, Tradosphere UI)",
+    "what_doesnt": "Generic cold outreach without niche. Work before advance.",
+    "objections": {
+      "price_high": "Kitna budget hai? Main usi mein adjust karta hoon starting mein.",
+      "no_time": "Main sab karta hoon, tumhe sirf approve karna hai."
+    },
+    "target_profile": "Job-holders starting a business, small shop owners, trading/finance professionals needing tech tools"
+  },
+  "yuvi_system": {
+    "version": "v4",
+    "previous": "aa-os-yuvi.vercel.app (v3)",
+    "ai_stack": {
+      "primary": "Gemini 2.5 Flash — Google AI Studio (1M context, free)",
+      "speed": "Groq Llama 3.3 70B",
+      "fallback": "OpenRouter free models"
+    },
+    "memory_repo": "github.com/whitewolf251501-dot/aa-os-yuvi",
+    "memory_file": "memory.json"
+  },
+  "current_priorities": [
+    "Connect Tradosphere backend TODAY — live Monday",
+    "Complete JFS 5-10 starter posts — close engagement",
+    "Collect FinEdge remaining balance — withhold final integration until paid",
+    "WhatsApp outreach 50-70/day from lead DB",
+    "Post first Instagram Reel",
+    "Ask JFS + Tradosphere for referrals"
   ],
-  "plans": [],
-  "reminders": [],
-  "lastUpdated": "2026-01-01T00:00:00.000Z"
+  "data_gaps_ask_shlok": [
+    "FinEdge exact remaining balance amount",
+    "Tradosphere total deal value",
+    "Current warm leads in pipeline (names + last contacted)",
+    "JFS lead gen results so far",
+    "Agni revenue status",
+    "Black Compass current revenue status"
+  ],
+  "session_log": []
 }
