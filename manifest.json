@@ -1,0 +1,19 @@
+{
+  "name": "YUVI — Yugantar Growth",
+  "short_name": "YUVI",
+  "description": "AI Business Dashboard for Yugantar Growth by Shlok Pandya",
+  "start_url": "/yuvi-dashboard-v4.5.html",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#050a0f",
+  "theme_color": "#0ef6ff",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%23050a0f'/><text x='96' y='140' font-size='120' text-anchor='middle' fill='%230ef6ff' font-family='sans-serif' font-weight='bold'>Y</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en-IN"
+}
