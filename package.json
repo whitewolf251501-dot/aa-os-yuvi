@@ -1,0 +1,9 @@
+{
+  "name": "aa-os-yuvi",
+  "version": "5.0.0",
+  "private": true,
+  "description": "YUVI — Yugantar Growth AI Business Operating System",
+  "scripts": {
+    "dev": "npx serve ."
+  }
+}

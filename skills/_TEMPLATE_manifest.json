@@ -1,0 +1,27 @@
+{
+  "id": "your-skill-id",
+  "name": "Your Skill Name",
+  "version": "1.0.0",
+  "description": "One-line description of what this skill does.",
+  "category": "business",
+  "icon": "🔧",
+  "dependencies": [],
+  "capabilities": [
+    "your-skill.action-one",
+    "your-skill.action-two"
+  ],
+  "config_schema": {
+    "example_setting": {
+      "type": "string",
+      "label": "Example Setting",
+      "default": "default_value"
+    }
+  },
+  "schedule_supported": true,
+  "_install_instructions": {
+    "step_1": "Create skills/<your-skill-id>/manifest.json (this file)",
+    "step_2": "Create skills/<your-skill-id>/skill.js (see _TEMPLATE_skill.js)",
+    "step_3": "Add { \"skill_id\": \"<your-skill-id>\", \"enabled\": true } to skills/installed.json",
+    "thats_it": "YuviSkillLoader handles the rest. No index.html changes. Ever."
+  }
+}

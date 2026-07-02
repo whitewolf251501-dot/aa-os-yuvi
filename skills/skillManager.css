@@ -1,0 +1,123 @@
+/**
+ * skills/skillManager.css
+ * Styles for the Skills Manager, Knowledge Manager, and Settings panels.
+ * Uses the existing YUVI CSS variable palette — no new colors introduced.
+ */
+
+/* ===== Base card ===== */
+.ym-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(14, 246, 255, 0.03);
+  border: 1px solid rgba(14, 246, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.ym-card:hover { border-color: rgba(14, 246, 255, 0.18); }
+
+/* ===== Card header ===== */
+.ym-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ym-icon { font-size: 18px; flex-shrink: 0; }
+.ym-card-title { flex: 1; min-width: 0; }
+.ym-name { font-size: 12px; font-weight: 600; color: #eaf6f8; }
+.ym-desc { font-size: 10px; opacity: 0.55; margin-top: 2px; line-height: 1.4; }
+.ym-card-badges { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; align-items: flex-end; }
+
+/* ===== Card body rows ===== */
+.ym-card-body { display: flex; flex-direction: column; gap: 6px; }
+.ym-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ym-lbl {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  opacity: 0.45;
+  width: 52px;
+  flex-shrink: 0;
+}
+
+/* ===== Inputs ===== */
+.ym-sel, .ym-inp {
+  font-size: 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(14,246,255,0.12);
+  border-radius: 4px;
+  color: #eaf6f8;
+  padding: 3px 6px;
+  outline: none;
+}
+.ym-sel:focus, .ym-inp:focus { border-color: rgba(14,246,255,0.4); }
+
+/* ===== Capability tags ===== */
+.ym-cap {
+  font-size: 9px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: rgba(14,246,255,0.06);
+  border: 1px solid rgba(14,246,255,0.1);
+  color: rgba(14,246,255,0.7);
+  font-family: monospace;
+}
+
+/* ===== Empty state ===== */
+.ym-empty {
+  font-size: 11px;
+  opacity: 0.4;
+  padding: 16px 0;
+  line-height: 1.6;
+}
+
+/* ===== Button overrides for sm size ===== */
+.btn.sm { font-size: 9px; padding: 3px 8px; border-radius: 3px; }
+.btn.primary { background: rgba(14,246,255,0.15); color: #0ef6ff; border: 1px solid rgba(14,246,255,0.3); }
+.btn.danger  { background: rgba(255,60,95,0.12);  color: #ff3c5f; border: 1px solid rgba(255,60,95,0.25); }
+.btn.primary:hover { background: rgba(14,246,255,0.25); }
+.btn.danger:hover  { background: rgba(255,60,95,0.22); }
+
+/* ===== Section header ===== */
+.ym-section {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  opacity: 0.45;
+  padding: 14px 0 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 10px;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 600px) {
+  .ym-card-header { flex-wrap: wrap; }
+  .ym-card-badges { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* ===== Skill Upload Box ===== */
+.ym-upload-box {
+  border: 1.5px dashed rgba(14,246,255,0.25);
+  border-radius: 10px;
+  padding: 20px 16px;
+  text-align: center;
+  margin-bottom: 14px;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: default;
+}
+.ym-upload-box.drag-over {
+  border-color: rgba(14,246,255,0.7);
+  background: rgba(14,246,255,0.05);
+}
+.ym-upload-icon { font-size: 22px; opacity: 0.5; }
+.ym-upload-label { font-size: 11px; opacity: 0.6; margin-top: 4px; }
+.ym-upload-hint {
+  font-size: 9px;
+  opacity: 0.4;
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+}
