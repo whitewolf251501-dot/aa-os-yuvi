@@ -1,0 +1,13 @@
+{
+  "name": "aa-os-yuvi",
+  "version": "6.0.0",
+  "private": true,
+  "description": "YUVI \u2014 Yugantar Growth AI Business Operating System (v6: encrypted vault, biometric unlock, JARVIS-HUD theme, blank-canvas Chat widgets, Client scorecards, Library, proactive behaviors)",
+  "scripts": {
+    "dev": "npx serve .",
+    "test": "node test/vault.test.js && node test/widgetEngine.test.js && node test/libraryEngine.test.js && node test/proactiveEngine.test.js && node test/dom.test.js && node test/canvas.test.js && node test/clientsLibrary.test.js && node test/proactive.dom.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3"
+  }
+}
