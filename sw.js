@@ -1,9 +1,9 @@
 /**
- * sw.js — YUVI v5 Service Worker
+ * sw.js — YUVI v6 Service Worker
  * Caches the complete app shell for offline use.
  * AI features require connectivity (Groq API).
  */
-const CACHE = 'yuvi-v5-shell-v3';
+const CACHE = 'yuvi-v6-shell-v1';
 
 const SHELL = [
   '/',
@@ -11,11 +11,18 @@ const SHELL = [
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
+  '/core/security.js',
+  '/core/logger.js',
+  '/core/vault.js',
+  '/core/webauthn.js',
   '/brain/eventBus.js',
   '/brain/intentDetector.js',
   '/brain/promptComposer.js',
   '/brain/skillOrchestrator.js',
   '/brain/brain.js',
+  '/brain/widgetEngine.js',
+  '/brain/libraryEngine.js',
+  '/brain/proactiveEngine.js',
   '/integrations/groq.js',
   '/integrations/github.js',
   '/integrations/canva.js',

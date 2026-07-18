@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>YUVI v5 · YUGANTAR GROWTH · AA-OS</title>
+<title>YUVI v6.1 · YUGANTAR GROWTH · AA-OS</title>
 <link rel="manifest" href="manifest.json"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -18,391 +18,19 @@
 <link rel="shortcut icon" href="icons/favicon.ico"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-:root{
-  --ink:#050a0f;--deep:#080f17;--panel:#0a1520;
-  --blade:#0ef6ff;--blade2:#00bfdc;--blade3:#007a9a;
-  --edge:rgba(14,246,255,0.25);--edge2:rgba(14,246,255,0.12);
-  --water:rgba(14,246,255,0.07);--flash:#ff3c5f;--gold:#f0b429;--green:#22d68e;
-  --text:#c8e8f0;--muted:#4a7a8a;--dim:#2a4a5a;
-  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;--disp:'Bebas Neue',sans-serif;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--text);font-family:var(--sans);}
-.bg-a{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 15% 80%,rgba(6,60,90,.55),transparent 70%),radial-gradient(ellipse 60% 50% at 85% 20%,rgba(0,100,140,.3),transparent 65%),var(--ink);}
-.bg-g{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(14,246,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(14,246,255,.03) 1px,transparent 1px);background-size:50px 50px;}
-.bg-s{position:fixed;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);}
-#shell{position:relative;z-index:1;display:grid;grid-template-rows:52px 1fr;grid-template-columns:200px 1fr;grid-template-areas:"hd hd" "nav main";width:100vw;height:100vh;overflow:hidden;}
-/* TOPBAR */
-#topbar{grid-area:hd;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--edge);background:rgba(5,10,15,.92);backdrop-filter:blur(12px);position:relative;z-index:20;flex-shrink:0;}
-#topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blade),transparent);opacity:.5;}
-.tb-left{display:flex;align-items:center;gap:10px;}
-.logo{font-family:var(--disp);font-size:22px;letter-spacing:.1em;color:var(--blade);text-shadow:0 0 20px rgba(14,246,255,.6);}
-.logo-sub{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;border-left:1px solid var(--edge);padding-left:10px;display:none;}
-@media(min-width:900px){.logo-sub{display:block;}}
-.tb-center{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.2em;display:flex;align-items:center;gap:8px;white-space:nowrap;}
-.sdot{width:5px;height:5px;border-radius:50%;background:var(--blade);box-shadow:0 0 6px var(--blade);animation:pd 2s ease-in-out infinite;}
-@keyframes pd{0%,100%{opacity:1}50%{opacity:.2}}
-.tb-right{display:flex;align-items:center;gap:8px;}
-#livetime{font-family:var(--mono);font-size:9px;color:var(--blade2);white-space:nowrap;}
-.gear-btn{background:transparent;border:1px solid var(--edge2);color:var(--muted);padding:5px 8px;cursor:pointer;font-size:14px;transition:.2s;min-width:32px;min-height:32px;}
-.gear-btn:hover{border-color:var(--blade);color:var(--blade);}
-.hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:6px;min-width:32px;min-height:32px;justify-content:center;}
-.hamburger span{display:block;width:18px;height:1.5px;background:var(--text);transition:.3s;}
-/* SIDEBAR */
-#sidenav{grid-area:nav;display:flex;flex-direction:column;border-right:1px solid var(--edge);background:rgba(5,10,15,.75);backdrop-filter:blur(8px);overflow-y:auto;scrollbar-width:none;padding:8px 0;}
-#sidenav::-webkit-scrollbar{display:none;}
-.nav-sec{padding:12px 14px 3px;font-family:var(--mono);font-size:7px;color:var(--blade3);letter-spacing:.3em;}
-.nav-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-family:var(--mono);font-size:9px;color:var(--muted);cursor:pointer;transition:.2s;border-left:2px solid transparent;min-height:36px;}
-.nav-item:hover{color:var(--text);background:var(--water);border-left-color:var(--blade3);}
-.nav-item.active{color:var(--blade);background:rgba(14,246,255,.08);border-left-color:var(--blade);}
-.ni-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0;}
-.ni-badge{margin-left:auto;font-size:7px;padding:1px 5px;background:rgba(14,246,255,.12);border:1px solid var(--edge);color:var(--blade2);}
-.ni-badge.hot{background:rgba(255,60,95,.12);border-color:rgba(255,60,95,.3);color:var(--flash);}
-.nav-div{height:1px;background:var(--edge2);margin:6px 14px;}
-/* MAIN */
-#main{grid-area:main;overflow:hidden;position:relative;}
-.view{display:none;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--blade3) transparent;padding:14px;}
-.view.active{display:block;}
-.view::-webkit-scrollbar{width:3px;}
-.view::-webkit-scrollbar-thumb{background:var(--blade3);}
-/* PANELS */
-.panel{background:rgba(8,15,23,.78);border:1px solid var(--edge2);backdrop-filter:blur(6px);position:relative;overflow:hidden;}
-.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blade),transparent);opacity:.3;}
-.ptitle{font-family:var(--disp);font-size:15px;letter-spacing:.12em;color:var(--blade);}
-.psub{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.2em;}
-.blade-line{height:1px;background:linear-gradient(90deg,var(--blade),transparent);margin:10px 0;opacity:.4;}
-.btn{font-family:var(--mono);font-size:8px;letter-spacing:.1em;padding:6px 12px;border:1px solid var(--edge);background:transparent;color:var(--muted);cursor:pointer;transition:.2s;text-transform:uppercase;min-height:30px;}
-.btn:hover{border-color:var(--blade);color:var(--blade);}
-.btn.primary{border-color:var(--blade);color:var(--blade);background:rgba(14,246,255,.07);}
-.btn.primary:hover{background:rgba(14,246,255,.15);}
-.btn.success{border-color:rgba(34,214,142,.3);color:var(--green);background:rgba(34,214,142,.05);}
-.btn.gold{border-color:rgba(240,180,41,.3);color:var(--gold);background:rgba(240,180,41,.05);}
-.btn.danger{border-color:rgba(255,60,95,.3);color:var(--flash);}
-.btn.flash{border-color:var(--flash);color:var(--flash);background:rgba(255,60,95,.08);animation:flashpulse 1.5s ease-in-out infinite;}
-@keyframes flashpulse{0%,100%{box-shadow:0 0 6px rgba(255,60,95,.3)}50%{box-shadow:0 0 14px rgba(255,60,95,.6)}}
-.btn:disabled{opacity:.4;cursor:not-allowed;}
-.form-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;}
-.form-inp,.form-sel,.form-ta{width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--sans);font-size:13px;padding:8px 10px;outline:none;transition:.2s;}
-.form-inp:focus,.form-sel:focus,.form-ta:focus{border-color:var(--edge);}
-.form-inp::placeholder,.form-ta::placeholder{color:var(--muted);}
-.form-sel{cursor:pointer;appearance:none;}
-.form-sel option{background:var(--panel);}
-.form-ta{min-height:70px;resize:vertical;font-size:12px;line-height:1.5;}
-/* REMINDER BAR */
-#reminder-bar{display:none;position:relative;z-index:15;background:rgba(255,60,95,.08);border-bottom:1px solid rgba(255,60,95,.3);padding:6px 16px;font-family:var(--mono);font-size:8px;color:var(--flash);letter-spacing:.1em;}
-#reminder-bar.show{display:flex;align-items:center;gap:10px;}
-/* HOME */
-#v-home{padding:14px 14px 20px;}
-.home-greet h1{font-family:var(--disp);font-size:clamp(24px,4vw,50px);letter-spacing:.08em;color:#fff;line-height:1;}
-.home-greet h1 span{color:var(--blade);}
-.home-greet p{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.18em;margin-top:4px;}
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
-.kpi{padding:12px;cursor:pointer;transition:.2s;}
-.kpi-val{font-family:var(--disp);font-size:30px;color:#fff;}
-.kpi-lbl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.18em;margin-top:2px;}
-.kpi-bar{height:2px;background:rgba(255,255,255,.05);margin-top:6px;}
-.kpi-fill{height:100%;background:var(--blade);box-shadow:0 0 6px var(--blade);}
-.home-grid{display:grid;grid-template-columns:1fr 260px;gap:10px;}
-.briefing-panel{padding:14px;}
-.briefing-yuvi{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.yuvi-av{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,var(--blade),var(--blade3));display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:12px;color:var(--ink);box-shadow:0 0 14px rgba(14,246,255,.4);flex-shrink:0;}
-.yuvi-av-sm{width:26px;height:26px;font-size:10px;}
-.yuvi-name-big{font-family:var(--disp);font-size:17px;letter-spacing:.1em;color:var(--blade);}
-.yuvi-role-sm{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;}
-.briefing-msg{font-family:var(--mono);font-size:9px;color:var(--text);line-height:1.8;padding:9px;background:rgba(14,246,255,.04);border-left:2px solid var(--blade);margin-bottom:10px;min-height:40px;}
-.home-right{display:flex;flex-direction:column;gap:8px;}
-.rev-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--edge2);gap:4px;}
-.rev-name{font-family:var(--mono);font-size:8px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;}
-.rev-amt{font-family:var(--mono);font-size:8px;color:var(--gold);flex-shrink:0;}
-.rev-status{font-size:7px;padding:1px 5px;font-family:var(--mono);flex-shrink:0;}
-.rs-paid{background:rgba(34,214,142,.1);color:var(--green);border:1px solid rgba(34,214,142,.2);}
-.rs-pending{background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.2);}
-.rs-overdue{background:rgba(255,60,95,.1);color:var(--flash);border:1px solid rgba(255,60,95,.2);}
-.pri-item{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--edge2);}
-.pri-check{width:13px;height:13px;border:1px solid var(--edge);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:7px;transition:.2s;}
-.pri-check.done-chk{background:rgba(34,214,142,.2);border-color:var(--green);color:var(--green);}
-.pri-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:9px;outline:none;min-width:0;}
-.pri-inp.done-txt{color:var(--muted);text-decoration:line-through;}
-/* LEAD SCORE */
-.lead-score{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-family:var(--mono);font-size:8px;font-weight:700;flex-shrink:0;}
-.ls-hot{background:rgba(255,60,95,.2);color:var(--flash);border:1px solid rgba(255,60,95,.4);box-shadow:0 0 6px rgba(255,60,95,.3);}
-.ls-warm{background:rgba(240,180,41,.2);color:var(--gold);border:1px solid rgba(240,180,41,.4);}
-.ls-cold{background:rgba(74,122,138,.15);color:var(--muted);border:1px solid var(--edge2);}
-/* COMMAND */
-#v-command{padding:0;display:none;flex-direction:column;height:100%;}
-#v-command.active{display:flex;}
-.cmd-topbar{padding:8px 14px;border-bottom:1px solid var(--edge2);display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;background:rgba(5,10,15,.5);}
-.cmd-yuvi-name{font-family:var(--disp);font-size:18px;letter-spacing:.1em;color:var(--blade);}
-.cmd-yuvi-sub{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.1em;}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;}
-.status-dot.thinking{background:var(--gold);box-shadow:0 0 6px var(--gold);animation:pd .8s ease-in-out infinite;}
-.mode-pills{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto;}
-.mode-pill{font-family:var(--mono);font-size:7px;padding:3px 8px;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;transition:.15s;letter-spacing:.08em;min-height:26px;}
-.mode-pill:hover{border-color:var(--blade2);color:var(--text);}
-.mode-pill.active{border-color:var(--blade);color:var(--blade);background:rgba(14,246,255,.07);}
-.chat-messages{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin;scrollbar-color:var(--blade3) transparent;min-height:0;}
-.chat-messages::-webkit-scrollbar{width:3px;}
-.chat-messages::-webkit-scrollbar-thumb{background:var(--blade3);}
-.msg{max-width:82%;padding:9px 12px;position:relative;}
-.msg.user{align-self:flex-end;background:rgba(14,246,255,.08);border:1px solid var(--edge);}
-.msg.ai{align-self:flex-start;background:rgba(8,15,23,.85);border:1px solid var(--edge2);}
-.msg-label{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.08em;margin-bottom:4px;}
-.msg.ai .msg-label{color:var(--blade2);}
-.msg-text{font-family:var(--sans);font-size:12px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word;}
-.msg-time{font-family:var(--mono);font-size:6px;color:var(--dim);margin-top:3px;text-align:right;}
-.msg-actions{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
-.typing{display:flex;gap:4px;padding:6px;}
-.typing span{width:5px;height:5px;border-radius:50%;background:var(--blade3);animation:ty 1.2s ease-in-out infinite;}
-.typing span:nth-child(2){animation-delay:.2s;}
-.typing span:nth-child(3){animation-delay:.4s;}
-@keyframes ty{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
-.chat-input-area{flex-shrink:0;border-top:1px solid var(--edge2);padding:10px 14px;display:flex;gap:6px;align-items:flex-end;background:rgba(5,10,15,.6);}
-.chat-inp{flex:1;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;outline:none;resize:none;min-height:40px;max-height:120px;transition:.2s;line-height:1.5;}
-.chat-inp:focus{border-color:var(--edge);}
-.chat-inp::placeholder{color:var(--muted);}
-.chat-send{font-family:var(--mono);font-size:8px;letter-spacing:.1em;padding:9px 13px;background:rgba(14,246,255,.1);border:1px solid var(--blade);color:var(--blade);cursor:pointer;transition:.2s;white-space:nowrap;min-height:40px;}
-.chat-send:hover{background:rgba(14,246,255,.2);}
-.chat-send:disabled{opacity:.4;cursor:not-allowed;}
-.attach-btn{background:transparent;border:1px solid var(--edge2);color:var(--muted);width:40px;height:40px;cursor:pointer;transition:.2s;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.attach-btn:hover{border-color:var(--blade);color:var(--blade);}
-.attach-btn.has-file{border-color:var(--green);color:var(--green);}
-.voice-btn{background:transparent;border:1px solid var(--edge2);color:var(--muted);width:40px;height:40px;cursor:pointer;transition:.2s;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.voice-btn:hover{border-color:var(--blade);color:var(--blade);}
-.voice-btn.recording{border-color:var(--flash);color:var(--flash);animation:flashpulse 0.8s ease-in-out infinite;}
-.file-preview{font-family:var(--mono);font-size:8px;color:var(--green);padding:4px 8px;background:rgba(34,214,142,.08);border:1px solid rgba(34,214,142,.2);display:flex;align-items:center;gap:6px;}
-/* LEADS */
-#v-leads{padding:14px;}
-.leads-controls{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
-.search-inp{font-family:var(--mono);font-size:9px;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);padding:6px 10px;outline:none;flex:1;min-width:120px;}
-.search-inp:focus{border-color:var(--edge);}
-.search-inp::placeholder{color:var(--muted);}
-.fpill{font-family:var(--mono);font-size:7px;letter-spacing:.08em;padding:4px 8px;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;transition:.15s;text-transform:uppercase;}
-.fpill:hover{border-color:var(--blade2);color:var(--text);}
-.fpill.active{border-color:var(--blade);color:var(--blade);background:rgba(14,246,255,.06);}
-.leads-layout{display:grid;grid-template-columns:1fr 290px;gap:10px;}
-.leads-table-wrap{overflow:auto;max-height:calc(100vh - 175px);}
-.leads-table{width:100%;border-collapse:collapse;}
-.leads-table th{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.18em;padding:6px 8px;text-align:left;border-bottom:1px solid var(--edge);position:sticky;top:0;background:rgba(5,10,15,.96);}
-.leads-table td{font-family:var(--mono);font-size:8px;color:var(--text);padding:6px 8px;border-bottom:1px solid rgba(14,246,255,.04);vertical-align:middle;}
-.leads-table tr:hover td{background:var(--water);}
-.leads-table tr.sel-row td{background:rgba(14,246,255,.08);}
-.lead-status-sel{font-family:var(--mono);font-size:7px;background:rgba(8,15,23,.9);border:1px solid var(--edge2);color:var(--text);padding:2px 4px;outline:none;cursor:pointer;}
-.wa-btn{font-family:var(--mono);font-size:7px;padding:3px 6px;border:1px solid rgba(34,214,142,.3);background:rgba(34,214,142,.06);color:var(--green);cursor:pointer;white-space:nowrap;min-height:24px;}
-.pipe-btn{font-family:var(--mono);font-size:7px;padding:3px 5px;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;white-space:nowrap;min-height:24px;}
-.pipe-btn:hover{border-color:var(--blade);color:var(--blade);}
-.cat-badge{font-size:7px;padding:2px 5px;white-space:nowrap;}
-.cat-website{background:rgba(14,246,255,.08);color:var(--blade);border:1px solid var(--edge2);}
-.cat-seo{background:rgba(240,180,41,.08);color:var(--gold);border:1px solid rgba(240,180,41,.2);}
-.cat-smm{background:rgba(168,85,247,.08);color:#c084fc;border:1px solid rgba(168,85,247,.2);}
-.cat-digital{background:rgba(34,214,142,.08);color:var(--green);border:1px solid rgba(34,214,142,.2);}
-.cat-unknown{background:rgba(74,122,138,.08);color:var(--muted);border:1px solid rgba(74,122,138,.2);}
-.ldp{padding:12px;overflow-y:auto;max-height:calc(100vh - 175px);}
-.ldp-empty{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;padding:30px 10px;line-height:2;}
-.ldp-name{font-family:var(--disp);font-size:20px;letter-spacing:.08em;color:#fff;margin-bottom:2px;}
-.ldp-cat{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--blade2);margin-bottom:8px;}
-.ldp-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;padding:4px 0;border-bottom:1px solid var(--edge2);}
-.ldp-key{color:var(--muted);}
-.ldp-val{color:var(--text);text-align:right;max-width:150px;word-break:break-word;}
-.ldp-notes{width:100%;background:rgba(14,246,255,.03);border:1px solid var(--edge2);color:var(--text);font-family:var(--mono);font-size:8px;padding:6px;outline:none;resize:vertical;min-height:55px;margin-top:6px;}
-/* RESEARCH CARD */
-.research-card{padding:10px;background:rgba(14,246,255,.03);border:1px solid var(--edge);margin-top:8px;}
-.research-card-title{font-family:var(--mono);font-size:7px;color:var(--blade);letter-spacing:.2em;margin-bottom:8px;}
-.research-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;padding:4px 0;border-bottom:1px solid var(--edge2);}
-.research-row-key{color:var(--muted);}
-.research-row-val{color:var(--text);text-align:right;max-width:160px;word-break:break-word;}
-.research-links{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
-.research-link{font-family:var(--mono);font-size:7px;padding:3px 7px;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;text-decoration:none;transition:.15s;}
-.research-link:hover{border-color:var(--blade);color:var(--blade);}
-.research-verdict{font-family:var(--mono);font-size:9px;line-height:1.7;padding:8px;background:rgba(14,246,255,.05);border-left:2px solid var(--blade);margin-top:7px;color:var(--text);}
-.research-score-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-family:var(--disp);font-size:12px;margin-right:6px;}
-.btn.research{border-color:rgba(14,246,255,.4);color:var(--blade);background:rgba(14,246,255,.06);}
-.btn.research:hover{background:rgba(14,246,255,.14);}
-.research-loading{font-family:var(--mono);font-size:8px;color:var(--muted);text-align:center;padding:16px 0;letter-spacing:.15em;}
-/* PLATFORM ROWS */
-.rp-list{display:flex;flex-direction:column;gap:4px;margin-bottom:4px;}
-.rp-row{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--mono);font-size:8px;}
-.rp-found{background:rgba(34,214,142,.05);border:1px solid rgba(34,214,142,.15);}
-.rp-missing{background:rgba(255,60,95,.05);border:1px solid rgba(255,60,95,.12);}
-.rp-none{background:rgba(74,122,138,.04);border:1px solid var(--edge2);opacity:.6;}
-.rp-icon{font-size:11px;flex-shrink:0;}
-.rp-label{color:var(--text);flex-shrink:0;}
-.rp-status{font-size:7px;padding:1px 5px;flex-shrink:0;}
-.rp-status.found{background:rgba(34,214,142,.12);color:var(--green);border:1px solid rgba(34,214,142,.25);}
-.rp-status.missing{background:rgba(255,60,95,.1);color:var(--flash);border:1px solid rgba(255,60,95,.2);}
-.rp-status.none{background:rgba(74,122,138,.1);color:var(--muted);border:1px solid var(--edge2);}
-.rp-opp{font-size:7px;color:var(--gold);margin-left:auto;letter-spacing:.05em;}
-/* PIPELINE */
-#v-pipeline{padding:14px;}
-.pipe-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.kanban{display:grid;grid-template-columns:repeat(6,minmax(170px,1fr));gap:8px;overflow-x:auto;min-height:350px;padding-bottom:8px;}
-.kanban-col{display:flex;flex-direction:column;gap:7px;min-width:170px;}
-.col-title{font-family:var(--mono);font-size:7px;letter-spacing:.18em;padding:5px 8px;border-top:2px solid var(--blade);background:rgba(14,246,255,.04);color:var(--blade);}
-.kanban-card{padding:10px;cursor:pointer;transition:.2s;}
-.kanban-card:hover{border-color:var(--edge);}
-.kc-name{font-family:var(--disp);font-size:13px;letter-spacing:.06em;color:#fff;margin-bottom:2px;}
-.kc-contact{font-family:var(--mono);font-size:7px;color:var(--blade2);margin-bottom:4px;}
-.kc-service{font-family:var(--mono);font-size:7px;color:var(--muted);margin-bottom:4px;}
-.kc-note{font-family:var(--mono);font-size:7px;color:var(--dim);line-height:1.5;margin-bottom:4px;border-left:1px solid var(--edge2);padding-left:5px;}
-.kc-date{font-family:var(--mono);font-size:6px;color:var(--dim);}
-.kc-actions{display:flex;gap:4px;margin-top:5px;align-items:center;}
-.col-add{font-family:var(--mono);font-size:7px;color:var(--dim);border:1px dashed var(--edge2);padding:7px;text-align:center;cursor:pointer;transition:.2s;}
-.col-add:hover{border-color:var(--blade3);color:var(--muted);}
-/* SLIDE PANELS */
-.slide-panel{position:fixed;top:0;right:-420px;width:min(400px,95vw);height:100vh;background:rgba(5,10,15,.99);border-left:1px solid var(--edge);z-index:400;transition:.3s;overflow-y:auto;padding:22px;scrollbar-width:thin;}
-.slide-panel.open{right:0;}
-.sp-title{font-family:var(--disp);font-size:20px;letter-spacing:.1em;color:var(--blade);margin-bottom:14px;padding-right:36px;}
-.sp-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--edge2);color:var(--muted);width:28px;height:28px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
-.sp-close:hover{border-color:var(--blade);color:var(--blade);}
-.sp-field{margin-bottom:10px;}
-.pipe-side-panel{position:fixed;top:0;right:-460px;width:min(440px,95vw);height:100vh;background:rgba(5,10,15,.99);border-left:1px solid var(--edge);z-index:400;transition:.3s;overflow-y:auto;padding:22px;}
-.pipe-side-panel.open{right:0;}
-.psp-stage-btns{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 12px;}
-.psp-stage-btn{font-family:var(--mono);font-size:7px;padding:4px 7px;border:1px solid var(--edge2);color:var(--muted);cursor:pointer;transition:.15s;min-height:28px;}
-.psp-stage-btn:hover{border-color:var(--blade);color:var(--blade);}
-.psp-stage-btn.current{border-color:var(--green);color:var(--green);}
-.note-entry{padding:7px;background:rgba(14,246,255,.03);border:1px solid var(--edge2);margin-bottom:4px;}
-.ne-date{font-family:var(--mono);font-size:6px;color:var(--dim);}
-.ne-text{font-family:var(--mono);font-size:8px;color:var(--text);margin-top:2px;line-height:1.5;}
-/* CLIENTS */
-#v-clients{padding:14px;}
-.clients-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.client-card{padding:16px;}
-.cc-name{font-family:var(--disp);font-size:22px;letter-spacing:.08em;color:#fff;margin-bottom:2px;}
-.cc-type{font-family:var(--mono);font-size:7px;color:var(--blade2);letter-spacing:.18em;margin-bottom:3px;}
-.cc-meta{display:flex;gap:7px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
-.cc-tasks-list{display:flex;flex-direction:column;gap:3px;margin-bottom:10px;}
-.cct{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:8px;padding:2px 0;}
-.cct-check{width:11px;height:11px;border:1px solid var(--edge2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:6px;transition:.15s;}
-.cct-check.cct-done{background:rgba(34,214,142,.15);border-color:var(--green);color:var(--green);}
-.cct-text{color:var(--muted);flex:1;}
-.cct-text.cct-done{text-decoration:line-through;}
-.cc-note{width:100%;background:rgba(14,246,255,.03);border:1px solid var(--edge2);color:var(--text);font-family:var(--mono);font-size:8px;padding:6px;outline:none;resize:vertical;min-height:45px;}
-/* SETTINGS */
-#settings-panel{position:fixed;top:0;right:-460px;width:min(440px,95vw);height:100vh;background:rgba(5,10,15,.99);border-left:1px solid var(--edge);z-index:500;transition:.3s;overflow-y:auto;padding:22px;scrollbar-width:thin;}
-#settings-panel.open{right:0;}
-#settings-overlay{position:fixed;inset:0;z-index:499;background:rgba(5,10,15,.6);display:none;}
-#settings-overlay.show{display:block;}
-.sett-title{font-family:var(--disp);font-size:24px;letter-spacing:.1em;color:var(--blade);margin-bottom:4px;}
-.sett-sub{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.3em;margin-bottom:18px;}
-.sett-sec{font-family:var(--mono);font-size:7px;color:var(--blade3);letter-spacing:.28em;margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--edge2);}
-.sett-field{margin-bottom:9px;}
-.sett-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:3px;}
-.sett-inp{width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--mono);font-size:9px;padding:7px 9px;outline:none;}
-.sett-inp:focus{border-color:var(--edge);}
-.sett-ta{width:100%;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--mono);font-size:8px;padding:7px;outline:none;resize:vertical;min-height:75px;line-height:1.6;}
-.sett-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
-.mem-status{font-family:var(--mono);font-size:8px;padding:5px 10px;margin-top:5px;}
-.mem-ok{background:rgba(34,214,142,.1);color:var(--green);border:1px solid rgba(34,214,142,.2);}
-.mem-no{background:rgba(255,60,95,.08);color:var(--flash);border:1px solid rgba(255,60,95,.2);}
-/* MOBILE NAV */
-#mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(5,10,15,.97);border-top:1px solid var(--edge);backdrop-filter:blur(10px);}
-.mn-wrap{display:flex;}
-.mn-item{flex:1;min-width:48px;padding:7px 3px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--mono);font-size:6px;color:var(--muted);cursor:pointer;border-top:2px solid transparent;transition:.2s;min-height:48px;justify-content:center;}
-.mn-item.active{color:var(--blade);border-top-color:var(--blade);}
-.mn-icon{font-size:14px;}
-#mob-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,10,15,.97);padding:56px 0 0;overflow-y:auto;}
-/* BOOT */
-#boot{position:fixed;inset:0;z-index:999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
-.boot-logo{font-family:var(--disp);font-size:clamp(52px,10vw,100px);letter-spacing:.15em;color:var(--blade);text-shadow:0 0 40px rgba(14,246,255,.5);animation:bpulse 1.8s ease-in-out;}
-@keyframes bpulse{0%{opacity:0;transform:scale(.95)}50%{opacity:1;text-shadow:0 0 60px rgba(14,246,255,.9)}100%{opacity:1}}
-.boot-sub{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.4em;text-align:center;}
-.boot-bar{width:220px;height:1px;background:rgba(255,255,255,.05);}
-.boot-fill{height:100%;background:var(--blade);box-shadow:0 0 8px var(--blade);width:0;transition:width 1.8s cubic-bezier(.16,1,.3,1);}
-.boot-status{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;min-height:14px;}
-/* TOAST */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(8,15,23,.97);border:1px solid var(--blade);color:var(--blade);font-family:var(--mono);font-size:9px;padding:8px 18px;z-index:9000;opacity:0;transition:.3s;pointer-events:none;letter-spacing:.1em;white-space:nowrap;max-width:90vw;text-overflow:ellipsis;overflow:hidden;}
-#toast.show{opacity:1;}
-/* MODALS */
-#mem-view-modal,#generic-modal{position:fixed;inset:0;z-index:600;background:rgba(5,10,15,.97);display:none;align-items:center;justify-content:center;padding:16px;}
-#mem-view-modal.show,#generic-modal.show{display:flex;}
-.mv-box{max-width:560px;width:100%;background:rgba(8,15,23,.9);border:1px solid var(--edge);padding:20px;max-height:85vh;overflow-y:auto;}
-.mv-pre{font-family:var(--mono);font-size:8px;color:var(--text);line-height:1.8;white-space:pre-wrap;word-break:break-word;}
-.gm-box{max-width:380px;width:100%;background:rgba(8,15,23,.9);border:1px solid var(--edge);padding:20px;}
-/* DIGEST PANEL */
-#digest-panel{position:fixed;top:52px;right:-460px;width:min(440px,95vw);height:calc(100vh - 52px);background:rgba(5,10,15,.99);border-left:1px solid var(--edge);z-index:300;transition:.3s;overflow-y:auto;padding:20px;}
-#digest-panel.open{right:0;}
-.digest-item{padding:10px;border:1px solid var(--edge2);margin-bottom:7px;background:rgba(14,246,255,.03);}
-.digest-priority{font-family:var(--mono);font-size:7px;color:var(--blade2);letter-spacing:.15em;margin-bottom:4px;}
-.digest-text{font-family:var(--mono);font-size:9px;color:var(--text);line-height:1.6;}
-.digest-action{font-family:var(--mono);font-size:8px;color:var(--green);margin-top:4px;}
+<link rel="stylesheet" href="style.css">
 
-/* ===== LANDSCAPE HUD MODE ===== */
-/* PIN KEY STYLE */
-.pin-dot{width:12px;height:12px;border-radius:50%;background:transparent;border:1px solid var(--edge);transition:.15s;}
-.pin-dot.filled{background:var(--blade);border-color:var(--blade);box-shadow:0 0 8px var(--blade);}
-.pin-key{font-family:var(--disp);font-size:22px;letter-spacing:.05em;width:64px;height:56px;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);cursor:pointer;transition:.2s;}
-.pin-key:hover{background:rgba(14,246,255,.12);border-color:var(--blade);}
-.pin-key:active{transform:scale(.94);}
-/* LANDSCAPE HUD MODE */
-@media(orientation:landscape) and (max-height:500px){
-  #shell{grid-template-rows:100vh;grid-template-columns:44px 1fr;grid-template-areas:"nav main";}
-  #topbar{display:none;}
-  #sidenav{display:flex!important;width:44px;padding:4px 0;overflow:hidden;}
-  .nav-sec,.ni-badge,.nav-label,.logo-sub{display:none;}
-  .nav-item{padding:10px 0;justify-content:center;border-left:none;border-right:2px solid transparent;min-height:36px;}
-  .nav-item.active{border-right-color:var(--blade);border-left:none;background:rgba(14,246,255,.08);}
-  .ni-icon{font-size:16px;width:auto;}
-  #mobile-nav{display:none!important;}
-  #reminder-bar{position:sticky;top:0;z-index:20;}
-  .view{padding:6px 8px;height:100vh;overflow-y:auto;}
-  #v-command{height:100vh;max-height:100vh;display:none;flex-direction:column;overflow:hidden;}
-  #v-command.active{display:flex;}
-  .cmd-topbar{padding:4px 8px;flex-shrink:0;}
-  .chat-messages{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 8px;}
-  .chat-input-area{flex-shrink:0;padding:5px 8px;background:rgba(5,10,15,.99);border-top:1px solid var(--edge2);}
-  .chat-inp{font-size:13px;max-height:60px;min-height:32px;padding:6px 10px;}
-  .attach-btn,.voice-btn{width:32px;height:32px;font-size:12px;}
-  .chat-send{padding:5px 10px;font-size:7px;height:32px;}
-  .kpi-row{grid-template-columns:repeat(4,1fr);gap:4px;margin:5px 0;}
-  .kpi{padding:6px 8px;}
-  .kpi-val{font-size:20px;}
-  .kpi-lbl{font-size:6px;}
-  .home-grid{grid-template-columns:1fr 200px;gap:6px;}
-  .home-greet h1{font-size:clamp(18px,4vh,28px);}
-  .briefing-panel{padding:8px;}
-  .briefing-msg{font-size:8px;padding:6px;min-height:28px;}
-  .leads-layout{grid-template-columns:1fr 200px;}
-  .ldp{display:block;padding:8px;}
-  .kanban{min-height:150px;}
-  .clients-grid{grid-template-columns:repeat(2,1fr);}
-  body{font-size:11px;}
-  .msg{max-width:92%;}
-  .msg-text{font-size:11px;}
-}
-/* PORTRAIT MOBILE */
-@media(max-width:768px) and (orientation:portrait){
-  #shell{grid-template-rows:52px 1fr;grid-template-columns:0 1fr;}
-  #sidenav{display:none;}
-  .hamburger{display:flex;}
-  .kpi-row{grid-template-columns:repeat(2,1fr);gap:7px;}
-  .home-grid{grid-template-columns:1fr;}
-  .leads-layout{grid-template-columns:1fr;}
-  .ldp{display:none;}
-  .clients-grid{grid-template-columns:1fr;}
-  #mobile-nav{display:block;}
-  .view{padding:10px 10px 68px;}
-  #v-command{height:calc(100dvh - 52px - 52px);max-height:calc(100dvh - 52px - 52px);display:none;flex-direction:column;overflow:hidden;}
-  #v-command.active{display:flex;}
-  #v-command .chat-messages{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px;}
-  #v-command .chat-input-area{flex-shrink:0;padding:8px 10px;background:rgba(5,10,15,.99);border-top:1px solid var(--edge);}
-  #v-command .chat-inp{font-size:16px;max-height:80px;min-height:40px;}
-  .attach-btn,.voice-btn{width:36px;height:40px;}
-  .chat-send{height:40px;padding:8px 10px;}
-  .mode-pills{display:none;}
-  .cmd-topbar{padding:6px 10px;gap:6px;}
-  .tb-center{display:none;}
-  .kanban{grid-template-columns:repeat(6,165px);}
-  .logo-sub{display:none;}
-  .msg{max-width:92%;}
-}
-@media(max-width:768px){.hamburger{display:flex;}}
-@media(min-width:769px){.hamburger{display:none;}}
-</style>
+<!-- ===== YUVI v5.1 — Core Security & Logger (load before everything) ===== -->
+<script src="core/security.js"></script>
+<script src="core/logger.js"></script>
+
+<!-- ===== YUVI v6 — Secret Vault + Biometric (load before PIN lock runs) ===== -->
+<script src="core/webauthn.js"></script>
+<script src="core/vault.js"></script>
 
 <!-- ===== YUVI v5 — CDN libraries (no build step) ===== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script>if(typeof pdfjsLib!=='undefined')pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+<script src="pdf-worker-init.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -436,6 +64,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 <script src="brain/promptComposer.js"></script>
 <script src="brain/skillOrchestrator.js"></script>
 <script src="brain/brain.js"></script>
+<script src="brain/widgetEngine.js"></script>
+<script src="brain/libraryEngine.js"></script>
+<script src="brain/proactiveEngine.js"></script>
 
 <!-- ===== YUVI v5 — Layer 7: UI (Settings Manager) ===== -->
 <link rel="stylesheet" href="skills/skillManager.css">
@@ -456,6 +87,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 <body>
 <div class="bg-a"></div><div class="bg-g"></div><div class="bg-s"></div>
 <div id="toast"></div>
+<!-- ROTATE-DEVICE OVERLAY (landscape-only lock, item 11) -->
+<div id="rotate-overlay">
+  <div class="ro-icon">&#8635;</div>
+  <div class="ro-title">ROTATE YOUR DEVICE</div>
+  <div class="ro-sub">YUVI runs landscape-only. Turn your phone sideways to continue.</div>
+</div>
+<div id="yuvi-suggestion-toast"></div>
 <!-- PIN LOCK -->
 <div id="pin-lock" style="position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
   <div style="font-family:var(--disp);font-size:clamp(40px,10vw,80px);letter-spacing:.15em;color:var(--blade);text-shadow:0 0 30px rgba(14,246,255,.5);">YUVI</div>
@@ -473,11 +111,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
     <button class="pin-key" onclick="pinPress('0')">0</button>
     <button class="pin-key" onclick="pinPress('ok')" style="background:rgba(14,246,255,.12);border-color:var(--blade);color:var(--blade);">OK</button>
   </div>
+  <button id="pin-bio-btn" onclick="tryBiometricUnlock()" style="display:none;margin-top:6px;background:transparent;border:1px solid var(--edge);color:var(--blade2);font-family:var(--mono);font-size:9px;letter-spacing:.15em;padding:8px 16px;cursor:pointer;">&#128272; UNLOCK WITH FINGERPRINT</button>
 </div>
 <!-- BOOT -->
 <div id="boot" style="display:none;">
   <div class="boot-logo">YUVI</div>
-  <div class="boot-sub">YUGANTAR GROWTH &middot; AA-OS &middot; v4.3</div>
+  <div class="boot-sub">YUGANTAR GROWTH &middot; AA-OS &middot; v6.1</div>
   <div class="boot-bar"><div class="boot-fill" id="bfill"></div></div>
   <div class="boot-status" id="bstatus">LOADING YUVI INTELLIGENCE...</div>
 </div>
@@ -491,7 +130,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
     <div class="logo">YUVI</div>
     <div class="logo-sub">YUGANTAR GROWTH &middot; AA-OS</div>
   </div>
-  <div class="tb-center"><div class="sdot"></div><span id="sys-status">YUVI v4.1 ONLINE</span></div>
+  <div class="tb-center"><div class="sdot"></div><span id="sys-status">YUVI v6.1 ONLINE</span></div>
   <div class="tb-right">
     <div id="livetime">--:--:-- IST</div>
     <button class="gear-btn" onclick="toggleDigest()" title="Daily Digest" style="font-size:12px;">&#9881;</button>
@@ -507,6 +146,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
   <div class="nav-item" onclick="nav('leads',this)" data-view="leads"><span class="ni-icon">&#127919;</span><span class="nav-label">Leads</span><span class="ni-badge" id="leads-badge">0</span></div>
   <div class="nav-item" onclick="nav('pipeline',this)" data-view="pipeline"><span class="ni-icon">&#128202;</span><span class="nav-label">Pipeline</span></div>
   <div class="nav-item" onclick="nav('clients',this)" data-view="clients"><span class="ni-icon">&#127962;</span><span class="nav-label">Clients</span></div>
+  <div class="nav-item" onclick="nav('library',this)" data-view="library"><span class="ni-icon">&#128218;</span><span class="nav-label">Library</span></div>
   <div class="nav-div"></div>
   <div class="nav-sec">SYSTEM</div>
   <div class="nav-item" onclick="toggleDigest()"><span class="ni-icon">&#9889;</span><span class="nav-label">Digest</span></div>
@@ -522,6 +162,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
     <div class="nav-item" onclick="nav('leads');closeMobSidebar()"><span class="ni-icon">&#127919;</span> Leads</div>
     <div class="nav-item" onclick="nav('pipeline');closeMobSidebar()"><span class="ni-icon">&#128202;</span> Pipeline</div>
     <div class="nav-item" onclick="nav('clients');closeMobSidebar()"><span class="ni-icon">&#127962;</span> Clients</div>
+    <div class="nav-item" onclick="nav('library');closeMobSidebar()"><span class="ni-icon">&#128218;</span> Library</div>
     <div class="nav-div"></div>
     <div class="nav-item" onclick="toggleDigest();closeMobSidebar()"><span class="ni-icon">&#9889;</span> Daily Digest</div>
     <div class="nav-item" onclick="openSettings();closeMobSidebar()"><span class="ni-icon">&#9881;</span> Settings</div>
@@ -597,13 +238,27 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
       <div class="mode-pill" onclick="setMode('proposal',this)" data-mode="proposal">PROPOSAL</div>
       <div class="mode-pill" onclick="setMode('brief',this)" data-mode="brief">BRIEF</div>
     </div>
+    <button class="btn" style="margin-left:8px;font-size:7px;padding:3px 8px;" onclick="toggleHistoryPanel()" title="Previous conversations">&#9776; HISTORY</button>
   </div>
-  <div class="chat-messages" id="chat-messages">
-    <div class="msg ai">
-      <div class="msg-label">YUVI &middot; YUGANTAR GROWTH v4</div>
-      <div class="msg-text">Booting… pulling memory and live status. Briefing incoming.</div>
-      <div class="msg-time" id="init-msg-time"></div>
+  <!-- v6.1 — TRACK A #3: side panel to browse previous conversations -->
+  <div id="history-panel" class="history-panel">
+    <div class="history-panel-head">
+      <div class="ptitle" style="font-size:11px;">PREVIOUS CONVERSATIONS</div>
+      <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="toggleHistoryPanel()">&#10005;</button>
     </div>
+    <select id="history-select" class="history-select" onchange="loadConversationFromHistory(this.value)">
+      <option value="">Select a past conversation\u2026</option>
+    </select>
+    <div id="history-list" class="history-list"></div>
+  </div>
+  <!-- BLANK-CANVAS WIDGET SURFACE (Phase 3) -->
+  <div id="yuvi-canvas-wrap">
+    <div id="yuvi-canvas-empty">
+      <div class="yuvi-presence-ring"><div class="yuvi-presence-core"></div></div>
+      <div class="yuvi-canvas-greet">What shall we build today?</div>
+    </div>
+    <div id="yuvi-command-chip"></div>
+    <div id="yuvi-canvas"></div>
   </div>
   <div id="file-preview-bar" style="display:none;padding:4px 14px;border-top:1px solid var(--edge2);"></div>
   <div class="chat-input-area">
@@ -715,6 +370,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
   </div>
   <div class="clients-grid" id="clients-grid"></div>
 </div>
+<!-- LIBRARY (Phase 4) -->
+<div class="view" id="v-library">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div><div class="ptitle">LIBRARY</div><div class="psub">ARCHIVE &amp; TEMPLATES</div></div>
+  </div>
+  <div class="lib-tabs">
+    <div class="lib-tab active" id="lib-tab-archive" onclick="setLibraryTab('archive')">ARCHIVE</div>
+    <div class="lib-tab" id="lib-tab-templates" onclick="setLibraryTab('templates')">TEMPLATES</div>
+  </div>
+  <div id="lib-archive-panel">
+    <div id="lib-archive-content"></div>
+  </div>
+  <div id="lib-templates-panel" style="display:none;">
+    <button class="btn primary" style="margin-bottom:10px;" onclick="saveCurrentPromptAsTemplate()">+ SAVE CURRENT CHAT INPUT AS TEMPLATE</button>
+    <div id="lib-templates-content"></div>
+  </div>
+</div>
 </div><!-- #main -->
 </div><!-- #shell -->
 <!-- MOBILE NAV -->
@@ -725,6 +397,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
     <div class="mn-item" onclick="nav('leads',null,this)"><div class="mn-icon">&#127919;</div>LEADS</div>
     <div class="mn-item" onclick="nav('pipeline',null,this)"><div class="mn-icon">&#128202;</div>PIPE</div>
     <div class="mn-item" onclick="nav('clients',null,this)"><div class="mn-icon">&#127962;</div>CLIENTS</div>
+    <div class="mn-item" onclick="nav('library',null,this)"><div class="mn-icon">&#128218;</div>LIB</div>
   </div>
 </div>
 <!-- DIGEST PANEL -->
@@ -773,17 +446,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 <div id="settings-panel">
   <button class="sp-close" onclick="closeSettings()">&#10005;</button>
   <div class="sett-title">SETTINGS</div>
-  <div class="sett-sub">YUVI v4 &middot; AA-OS LAYER 2 &middot; PROACTIVE</div>
-  <div class="sett-sec">AI CONFIGURATION</div>
+  <div class="sett-sub">YUVI v6 &middot; AA-OS LAYER 2 &middot; PROACTIVE</div>
+
+  <!-- 1. API -->
+  <div class="sett-sec">🔑 API</div>
   <div class="sett-field"><div class="sett-lbl">GROQ API KEY</div><input type="password" class="sett-inp" id="s-groq-key" placeholder="gsk_..."/>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;margin-top:4px;">Encrypted at rest in the local vault — never stored as plaintext.</div>
     <div class="sett-btns"><button class="btn primary" onclick="saveSettGroqKey()">SAVE</button><button class="btn" onclick="testGroqKey()">TEST</button></div></div>
   <div class="sett-field"><div class="sett-lbl">DEFAULT MODE</div>
     <select class="sett-inp" id="s-default-mode"><option value="chat">CHAT</option><option value="plan">PLAN</option><option value="outreach">OUTREACH</option><option value="proposal">PROPOSAL</option><option value="brief">BRIEF</option></select>
     <div class="sett-btns"><button class="btn primary" onclick="saveDefaultMode()">SAVE</button></div></div>
-  <div class="sett-sec">MEMORY &mdash; GITHUB</div>
+
+  <!-- 2. GitHub Memory -->
+  <div class="sett-sec">💾 GITHUB MEMORY</div>
   <div class="sett-field"><div class="sett-lbl">GITHUB USERNAME</div><input type="text" class="sett-inp" id="s-gh-user" placeholder="your-username"/></div>
   <div class="sett-field"><div class="sett-lbl">REPO NAME</div><input type="text" class="sett-inp" id="s-gh-repo" placeholder="aa-os-yuvi"/></div>
-  <div class="sett-field"><div class="sett-lbl">PERSONAL ACCESS TOKEN</div><input type="password" class="sett-inp" id="s-gh-token" placeholder="ghp_..."/></div>
+  <div class="sett-field"><div class="sett-lbl">PERSONAL ACCESS TOKEN (legacy, unused)</div><input type="password" class="sett-inp" id="s-gh-token" placeholder="ghp_..."/>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;margin-top:4px;">v6.1: the real token now lives server-side (GITHUB_TOKEN on Vercel). This field is kept only so old saved values aren't lost — it's not sent anywhere anymore.</div></div>
   <div class="sett-btns">
     <button class="btn primary" onclick="saveAndConnectMemory()">CONNECT</button>
     <button class="btn" onclick="viewMemory()">VIEW</button>
@@ -791,24 +470,29 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
     <button class="btn danger" onclick="clearLocalMemory()">CLEAR LOCAL</button>
   </div>
   <div id="mem-status-indicator" class="mem-status mem-no" style="display:none;"></div>
-  <div class="sett-sec">YUVI PERSONALITY</div>
+  <div class="sett-field" style="margin-top:10px;">
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Connected services status.</div>
+    <div class="sett-btns"><button class="btn" onclick="YuviSkillManager.renderIntegrations()">&#8635; REFRESH</button></div>
+    <div id="yuvi-integrations-status"></div>
+  </div>
   <div class="sett-field">
-    <textarea class="sett-ta" id="s-personality" rows="4">You are sharp, direct, practical. You know Ahmedabad business culture. You give real advice, not generic tips. When Shlok is stressed, be steady. When he is winning, push him to win more.</textarea>
-    <div class="sett-btns"><button class="btn primary" onclick="savePersonality()">SAVE</button></div></div>
-  <div class="sett-sec">BUSINESS CONTEXT</div>
-  <div class="sett-field">
-    <textarea class="sett-ta" id="s-biz-ctx" rows="5">Yugantar Growth. Digital agency, Ahmedabad. Owner: Shlok Pandya, 21. Services: Digital Foundation &#8377;7,999 one-time, Growth &#8377;14,999/month, Scale &#8377;29,999/month. Active clients: JFS (Jangid Furniture Studio), FinEdge Advisory.</textarea>
-    <div class="sett-btns"><button class="btn primary" onclick="saveBizCtx()">SAVE</button></div></div>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Live snapshot of everything YUVI knows about your business.</div>
+    <div class="sett-btns">
+      <button class="btn" onclick="YuviSkillManager.renderMemoryStatus()">&#8635; REFRESH</button>
+      <button class="btn danger" onclick="YuviSkillManager.clearEventLog()">CLEAR EVENT LOG</button>
+    </div>
+    <div id="yuvi-memory-status"></div>
+  </div>
 
-  <!-- ===== YUVI v5 EXTENSIONS ===== -->
-
-  <div class="sett-sec">🧩 SKILLS MANAGER</div>
+  <!-- 3. Skills -->
+  <div class="sett-sec">🧩 SKILLS</div>
   <div class="sett-field">
     <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Install, configure, enable/disable, schedule, and remove Skills. Skills are executable capabilities.</div>
     <div class="sett-btns"><button class="btn" onclick="YuviSkillManager.renderSkillsManager()">&#8635; REFRESH</button></div>
   </div>
   <div id="yuvi-skills-manager"></div>
 
+  <!-- 4. Knowledge -->
   <div class="sett-sec">📚 KNOWLEDGE</div>
   <div class="sett-field">
     <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Upload files — YUVI reads and uses them as knowledge automatically. PDF, DOCX, XLSX, CSV, TXT, JSON supported.</div>
@@ -819,40 +503,51 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
   </div>
   <div id="yuvi-knowledge-manager"></div>
 
-  <div class="sett-sec">⚡ AUTOMATION</div>
+  <!-- 5. Password (passcode + biometric — either unlocks, neither required) -->
+  <div class="sett-sec">🔒 PASSWORD</div>
   <div class="sett-field">
-    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Event-driven automation rules. Registered by Skills via YuviAutomation.registerRule().</div>
-    <div class="sett-btns"><button class="btn" onclick="YuviSkillManager.renderAutomationManager()">&#8635; REFRESH</button></div>
+    <div class="sett-lbl">NEW 6-DIGIT PASSCODE</div>
+    <input type="password" inputmode="numeric" maxlength="6" class="sett-inp" id="s-new-pin" placeholder="••••••"/>
+    <div class="sett-lbl" style="margin-top:6px;">CONFIRM PASSCODE</div>
+    <input type="password" inputmode="numeric" maxlength="6" class="sett-inp" id="s-new-pin-confirm" placeholder="••••••"/>
+    <div class="sett-btns"><button class="btn primary" onclick="changePasscode()">CHANGE PASSCODE</button></div>
   </div>
-  <div id="yuvi-automation-manager"></div>
+  <div class="sett-field">
+    <div class="sett-lbl">FINGERPRINT / BIOMETRIC UNLOCK</div>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;" id="s-bio-status">Checking device support...</div>
+    <div class="sett-btns" id="s-bio-btns"></div>
+  </div>
 
-  <div class="sett-sec">🔌 INTEGRATIONS</div>
+  <!-- 6. YUVI (personality + business context, combined identity) -->
+  <div class="sett-sec">🤖 YUVI</div>
   <div class="sett-field">
-    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Status of all connected services.</div>
-    <div class="sett-btns"><button class="btn" onclick="YuviSkillManager.renderIntegrations()">&#8635; REFRESH</button></div>
-  </div>
-  <div id="yuvi-integrations-status"></div>
-
-  <div class="sett-sec">💾 MEMORY</div>
+    <div class="sett-lbl">PERSONALITY</div>
+    <textarea class="sett-ta" id="s-personality" rows="4">You are sharp, direct, practical. You know Ahmedabad business culture. You give real advice, not generic tips. When Shlok is stressed, be steady. When he is winning, push him to win more.</textarea>
+    <div class="sett-btns"><button class="btn primary" onclick="savePersonality()">SAVE</button></div></div>
   <div class="sett-field">
-    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Live snapshot of everything YUVI knows about your business.</div>
-    <div class="sett-btns">
-      <button class="btn" onclick="YuviSkillManager.renderMemoryStatus()">&#8635; REFRESH</button>
-      <button class="btn danger" onclick="YuviSkillManager.clearEventLog()">CLEAR EVENT LOG</button>
-    </div>
-  </div>
-  <div id="yuvi-memory-status"></div>
-
-  <div class="sett-sec">⚙ PREFERENCES</div>
+    <div class="sett-lbl">BUSINESS CONTEXT</div>
+    <textarea class="sett-ta" id="s-biz-ctx" rows="5">Yugantar Growth. Digital agency, Ahmedabad. Owner: Shlok Pandya, 21. Services: Digital Foundation &#8377;7,999 one-time, Growth &#8377;14,999/month, Scale &#8377;29,999/month.</textarea>
+    <div class="sett-btns"><button class="btn primary" onclick="saveBizCtx()">SAVE</button></div></div>
   <div class="sett-field">
-    <div class="sett-lbl">TOAST DURATION (seconds)</div>
-    <input type="number" class="sett-inp" id="pref-toast-duration" min="1" max="10" placeholder="3"/>
-  </div>
-  <div class="sett-field">
-    <div class="sett-lbl">BRIEFING TIME</div>
+    <div class="sett-lbl">DAILY BRIEFING TIME</div>
     <input type="time" class="sett-inp" id="pref-briefing-time" placeholder="08:00"/>
+    <div class="sett-lbl" style="margin-top:6px;">TOAST DURATION (seconds)</div>
+    <input type="number" class="sett-inp" id="pref-toast-duration" min="1" max="10" placeholder="3"/>
+    <div class="sett-lbl" style="margin-top:6px;">PIPELINE STALE-STAGE THRESHOLD (days)</div>
+    <input type="number" class="sett-inp" id="pref-stage-threshold-days" min="1" max="30" placeholder="5"/>
+    <div class="sett-btns"><button class="btn primary" onclick="YuviSkillManager.savePreferences()">SAVE PREFERENCES</button></div>
   </div>
-  <div class="sett-btns"><button class="btn primary" onclick="YuviSkillManager.savePreferences()">SAVE PREFERENCES</button></div>
+
+  <!-- 7. Connection to Workspace (n8n) — placeholder UI only, no logic yet -->
+  <div class="sett-sec">🔗 CONNECTION TO WORKSPACE (N8N)</div>
+  <div class="sett-field">
+    <div class="sett-lbl">WORKSPACE STATUS</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.15em;padding:6px 0;">&#9679; OFFLINE — not yet connected</div>
+    <div class="sett-lbl" style="margin-top:6px;">N8N WEBHOOK URL (coming soon)</div>
+    <input type="text" class="sett-inp" id="s-n8n-url" placeholder="https://your-n8n-instance/webhook/..." disabled/>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;margin-top:4px;">Real n8n execution is a separate future build — this is a placeholder so the slot exists in Settings.</div>
+    <div class="sett-btns"><button class="btn" disabled>SAVE (NOT YET ACTIVE)</button></div>
+  </div>
 </div>
 <!-- MEMORY VIEW MODAL -->
 <div id="mem-view-modal">
@@ -875,1352 +570,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
     </div>
   </div>
 </div>
-<script>
-// ============================================================
-// STATE
-// ============================================================
-// ============================================================
-// PIN LOCK
-// ============================================================
-var PIN_CODE='242501';var pinBuffer='';
-function pinPress(v){
-  var err=document.getElementById('pin-error');err.textContent='';
-  if(v==='del'){pinBuffer=pinBuffer.slice(0,-1);}
-  else if(v==='ok'){checkPin();}
-  else if(pinBuffer.length<6){pinBuffer+=v;}
-  updatePinDots();
-  if(pinBuffer.length===6)setTimeout(checkPin,120);
-}
-function updatePinDots(){
-  for(var i=0;i<6;i++){
-    var d=document.getElementById('pd'+i);
-    if(d)d.className='pin-dot'+(i<pinBuffer.length?' filled':'');
-  }
-}
-function checkPin(){
-  if(pinBuffer===PIN_CODE){
-    var pl=document.getElementById('pin-lock');
-    pl.style.transition='opacity .4s';pl.style.opacity='0';
-    setTimeout(function(){pl.style.display='none';},400);
-    // start boot after unlock
-    startBoot();
-  }else{
-    document.getElementById('pin-error').textContent='WRONG PASSCODE';
-    pinBuffer='';updatePinDots();
-  }
-}
-// keyboard PIN support
-document.addEventListener('keydown',function(e){
-  var pl=document.getElementById('pin-lock');
-  if(!pl||pl.style.display==='none')return;
-  if(e.key>='0'&&e.key<='9')pinPress(e.key);
-  else if(e.key==='Backspace')pinPress('del');
-  else if(e.key==='Enter')pinPress('ok');
-});
-function startBoot(){
-  var boot=document.getElementById('boot');
-  boot.style.display='flex';
-  var bf=document.getElementById('bfill');
-  if(bf)setTimeout(function(){bf.style.width='100%';},50);
-  var msgs=['LOADING YUVI INTELLIGENCE...','SYNCING LEADS...','SCORING LEADS...','CONNECTING AI...','YUVI ONLINE'];
-  var i=0;var iv=setInterval(function(){var el=document.getElementById('bstatus');if(el&&i<msgs.length)el.textContent=msgs[i++];else clearInterval(iv);},380);
-  setTimeout(function(){
-    boot.style.transition='opacity .5s';boot.style.opacity='0';
-    setTimeout(function(){boot.style.display='none';},500);
-    initDashboard();
-  },1950);
-}
-
-var leads=JSON.parse(localStorage.getItem('yuvi_leads')||'[]');
-var pipeline=JSON.parse(localStorage.getItem('yuvi_pipeline')||'[]');
-var clients=JSON.parse(localStorage.getItem('yuvi_clients')||'null')||getDefaultClients();
-var revenueData=JSON.parse(localStorage.getItem('yuvi_revenue')||'null')||getDefaultRevenue();
-var priorities=JSON.parse(localStorage.getItem('yuvi_priorities')||'null')||[{text:'Contact 10 leads from Google Maps list',done:false},{text:'Follow up with JFS — ask for referral',done:false},{text:'Prepare 1 proposal for an interested lead',done:false}];
-var chatHistory=[];
-var currentMode=localStorage.getItem('yuvi_default_mode')||'chat';
-var selectedLead=null;
-var catFilter='all';
-var contactedToday=parseInt(localStorage.getItem('yuvi_contacted_today')||'0');
-var lastContactedDate=localStorage.getItem('yuvi_contacted_date')||'';
-var memory=null;
-var attachedFile=null;
-var attachedFileContent='';
-var isRecording=false;
-var recognition=null;
-var digestOpen=false;
-var PIPE_STAGES=['approached','contacted','interested','proposal_sent','advance_pending','closed'];
-var PIPE_LABELS={approached:'APPROACHED',contacted:'CONTACTED',interested:'INTERESTED',proposal_sent:'PROPOSAL SENT',advance_pending:'ADVANCE PENDING',closed:'CLOSED'};
-var autoBriefingDone=false;
-
-// ============================================================
-// YUVI v4 — MASTER SYSTEM PROMPT (baked into every Groq call)
-// ============================================================
-var YUVI_MASTER_PROMPT=`You are YUVI — Yugantar's Unified Virtual Intelligence. You are NOT a chatbot. You are a proactive AI business agent and the operational brain of Yugantar Growth, a digital agency in Ahmedabad, India.
-
-FOUNDER: Shlok Pandya, 21, solo founder. No formal tech background. Vibe coder. Father Amit Pandya = Brand & Design Partner. Works fast, casual, Hinglish. Known weakness: builds before securing payment — always flag this.
-
-AGENCY: Yugantar Growth | MSME registered April 2026 | Website: yugantar-growth-drab.vercel.app | Instagram: @yugantargrowth
-Services: Website Dev, SEO, Performance Marketing, AI Automation, Brand Identity & SMM
-Packages: Digital Foundation \u20B97,999 one-time | Lead Machine \u20B912,999/month | Full System \u20B924,999/month
-Brand: #080808 black, #e8520a orange, #f0ede8 cream | Syne + DM Sans | YG triangle logo | 3S rule: Simple Short Smooth
-
-GOLDEN RULE: Proposal \u2192 Agreement \u2192 Advance \u2192 Work. NEVER work before advance. Flag every violation.
-
-CLIENTS:
-- JFS (Jangid Furniture Studio): Website delivered at jangidfurniturestudio.co.in. 5-10 starter social posts pending then DONE. Commission per lead structure. Client is job-holder starting business, lead gen slow.
-- Tradosphere: Trading dashboard UI complete at tradosphere-v1.vercel.app. Backend connecting today June 21. Going live Monday for real Angel One signal testing. Deal value unknown.
-- FinEdge (Ansh Dodia): \u20B930,000 deal. Advance paid. Angel One Smart API algo bot built for NIFTY/BANKNIFTY. Signal-to-dashboard = final pending piece. DO NOT hand over until full balance received.
-
-REVENUE: \u20B925,000 collected across 4 invoices. All reinvested. \u20B90 saved.
-
-LEADS: 676+ scraped (500+ agency, 176 JFS furniture). Docker + gosom scraper at D:\\Lead-gen. WhatsApp outreach 50-70/day. Best offer: "Website in 48 Hours."
-
-CLOSING PATTERNS:
-- Works: Niche-specific WA message, 48hr offer, showing real client work, getting advance first
-- Doesn't work: Generic outreach, working before payment
-- Objection "too expensive": "Kitna budget hai? Main usi mein adjust karta hoon."
-- Objection "no time": "Main sab karta hoon, tumhe sirf approve karna hai."
-- Target: Job-holders starting business, small shop owners, finance/trading professionals needing tech
-
-OTHER VENTURES: Black Compass (adventure travel, Shlok = CMO) | Agni (print-on-demand clothing) | Australia Solar (3-partner, Shlok = backend ops salaried, rule: jobs before resignation)
-
-CURRENT PRIORITIES:
-1. Tradosphere backend live today
-2. JFS 5-10 posts — close engagement
-3. Collect FinEdge remaining balance — withhold final delivery until paid
-4. WhatsApp outreach 50-70/day
-5. First Instagram Reel
-6. Referral ask from JFS + Tradosphere
-
-YOUR BEHAVIOR:
-- On EVERY session start: auto-generate morning briefing — open deals, follow-ups due, revenue gap, today's top 3 actions. Don't wait to be asked.
-- Always give recommendation + reason in one line. Never "Option A or B" without picking one.
-- Speak like a sharp business partner. Direct, high-energy, no fluff. Hinglish natural. Call Shlok "bhai" casually.
-- Never say "great question." Never pad responses.
-- Flag immediately if Shlok is about to work without advance payment.
-- Load memory from GitHub on startup. Save session summary to GitHub on close.`;
-
-// ============================================================
-// BOOT
-// ============================================================
-window.addEventListener('load',function(){
-  // reset contacted count if new day
-  var today=new Date().toDateString();
-  if(lastContactedDate!==today){contactedToday=0;localStorage.setItem('yuvi_contacted_today','0');localStorage.setItem('yuvi_contacted_date',today);}
-  // restore settings (run immediately so fields are ready)
-  var ghUser=localStorage.getItem('yuvi_gh_user')||'whitewolf251501-dot';
-  var ghRepo=localStorage.getItem('yuvi_gh_repo')||'aa-os-yuvi';
-  document.getElementById('s-gh-user').value=ghUser;
-  document.getElementById('s-gh-repo').value=ghRepo;
-  ['yuvi_groq_key:s-groq-key','yuvi_personality:s-personality','yuvi_biz_ctx:s-biz-ctx'].forEach(function(p){var k=p.split(':');var v=localStorage.getItem(k[0]);if(v){var el=document.getElementById(k[1]);if(el)el.value=v;}});
-  var ghTok=localStorage.getItem('yuvi_gh_token');if(ghTok)document.getElementById('s-gh-token').value=ghTok;
-  var dm=localStorage.getItem('yuvi_default_mode');if(dm){document.getElementById('s-default-mode').value=dm;setModeByName(dm);}
-  document.getElementById('init-msg-time').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'){closeSettings();closeAddLead();closePipeDetail();document.getElementById('add-pipe-panel').classList.remove('open');closeGenericModal();if(digestOpen)toggleDigest();}
-  });
-  // PIN lock shows first — boot runs after correct PIN
-  // (startBoot() called from checkPin())
-});
-
-function initDashboard(){
-  updateClock();setInterval(updateClock,1000);
-  setGreeting();
-  renderRevenue();renderPriorities();
-  scoreAllLeads();
-  renderLeads();renderPipeline();renderClients();renderHomeClientsMini();
-  updateStats();checkReminders();
-  setInterval(checkReminders,60000);
-  runProactiveBriefing();
-  // evening auto-save also on tab hide (mobile-safe), not just unload
-  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&chatHistory.length>=2)autoSaveSession();});
-}
-
-// ============================================================
-// v4 — PROACTIVE STARTUP SEQUENCE
-// auto-fetch memory.json -> auto-generate briefing -> no user input needed
-// ============================================================
-async function runProactiveBriefing(){
-  document.getElementById('yuvi-briefing').textContent='YUVI is reading memory & pulling status\u2026';
-  var cfg=getGHConfig();
-  var mem=null;
-  if(cfg.username&&cfg.repo&&cfg.token){
-    mem=await loadMemory().catch(function(){return null;});
-    if(mem){applyMemoryToUI(mem);showMemStatus(true);}
-  }
-  var key=getGroqKey();
-  if(!key){
-    // no AI key yet — fall back to local rule-based briefing, still proactive
-    document.getElementById('yuvi-briefing').textContent=localFallbackBriefing();
-    return;
-  }
-  await generateProactiveMorningBriefing(mem);
-}
-
-function localFallbackBriefing(){
-  var h=new Date().getHours();var lc=leads.length,ic=leads.filter(function(l){return l.status==='interested';}).length;
-  var overdueCount=revenueData.filter(function(r){return r.status==='overdue';}).length;
-  if(h<12)return'Morning bhai. '+lc+' leads, '+ic+' interested'+(overdueCount?', '+overdueCount+' payment(s) overdue.':'.')+' Add your Groq key in Settings so I can give you the full proactive briefing automatically.';
-  if(h<17)return'Afternoon. '+ic+' interested leads waiting on follow-up. Add Groq key in Settings for full auto-briefing.';
-  return'Evening. Log today\'s contacts and prep tomorrow. Add Groq key in Settings for full auto-briefing.';
-}
-
-// This is the core v4 feature: fires automatically on load, no user message needed.
-async function generateProactiveMorningBriefing(mem){
-  var key=getGroqKey();if(!key)return;
-  setStatusDot(true);
-  try{
-    var lc=leads.length,ic=leads.filter(function(l){return l.status==='interested';}).length,cc=clients.filter(function(c){return c.status==='active';}).length;
-    var fc=leads.filter(function(l){return l.status==='follow_up';}).length;
-    var overdueCount=revenueData.filter(function(r){return r.status==='overdue';}).length;
-    var advPending=pipeline.filter(function(p){return p.stage==='advance_pending';}).length;
-    var openReminders=reminders.filter(function(r){return!r.done;}).length;
-    var memCtx=getMemoryContext();
-    var sys=YUVI_MASTER_PROMPT+'\n\n=== LIVE DASHBOARD STATE ===\nDashboard CRM: '+cc+' active clients tracked, '+lc+' leads ('+ic+' interested, '+fc+' need follow-up), '+advPending+' pipeline deals at advance-pending, '+overdueCount+' overdue payments, '+openReminders+' open reminders. Time now: '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})+', '+new Date().toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long'})+'.'+memCtx;
-    var userMsg='Session just started. Shlok has not typed anything yet. Auto-generate the morning briefing now: open deals (Tradosphere, JFS, FinEdge — exact status), follow-ups due, revenue gap (\u20B925,000 collected, \u20B90 saved), and the top 3 actions for today. 4-6 sentences, sharp, bhai tone, no fluff. End with one direct next move.';
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sys},{role:'user',content:userMsg}],max_tokens:320,temperature:0.5})});
-    var data=await res.json();
-    var reply=data.choices&&data.choices[0]?data.choices[0].message.content:'';
-    if(reply){
-      document.getElementById('yuvi-briefing').textContent=reply;
-      // also drop it into Command chat as the opening message, unprompted
-      postProactiveBriefingToChat(reply);
-      autoBriefingDone=true;
-    }else{
-      document.getElementById('yuvi-briefing').textContent=localFallbackBriefing();
-    }
-  }catch(e){
-    document.getElementById('yuvi-briefing').textContent=localFallbackBriefing();
-  }
-  setStatusDot(false);
-}
-function postProactiveBriefingToChat(text){
-  var msgs=document.getElementById('chat-messages');
-  // remove default static intro if present, replace with live briefing
-  var div=document.createElement('div');div.className='msg ai';
-  var time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-  div.innerHTML='<div class="msg-label">YUVI \u00B7 MORNING BRIEFING (AUTO)</div><div class="msg-text">'+escHtml(text)+'</div><div class="msg-time">'+time+'</div>';
-  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
-  chatHistory.push({role:'assistant',content:text});
-}
-
-// ============================================================
-// CLOCK & GREET
-// ============================================================
-function updateClock(){document.getElementById('livetime').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' IST';}
-function setGreeting(){
-  var h=new Date().getHours();
-  document.getElementById('greet-time').textContent=h<12?'MORNING':h<17?'AFTERNOON':'EVENING';
-  var days=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-  var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  var d=new Date();
-  document.getElementById('greet-date').textContent=days[d.getDay()]+' \u00B7 '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+' \u00B7 YUGANTAR GROWTH';
-}
-// kept for manual re-trigger (e.g. called from settings save) — routes into proactive flow
-function setYuviBriefing(){runProactiveBriefing();}
-function setYuviBriefingFromMemory(mem){generateProactiveMorningBriefing(mem);}
-async function fetchBriefingFromGroq(){
-  var key=getGroqKey();if(!key)return;
-  try{
-    var lc=leads.length,ic=leads.filter(function(l){return l.status==='interested';}).length,cc=clients.filter(function(c){return c.status==='active';}).length;
-    var memCtx=getMemoryContext();
-    var sys=YUVI_MASTER_PROMPT+'\n\n=== LIVE DASHBOARD STATE ===\nDashboard CRM: '+cc+' active clients, '+lc+' leads, '+ic+' interested. Time: '+new Date().toLocaleTimeString('en-IN')+'.'+memCtx;
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sys},{role:'user',content:'Give a 2-3 sentence sharp briefing. No emojis.'}],max_tokens:130,temperature:0.4})});
-    var data=await res.json();var reply=data.choices&&data.choices[0]?data.choices[0].message.content:'';
-    if(reply)document.getElementById('yuvi-briefing').textContent=reply;
-  }catch(e){}
-}
-
-// ============================================================
-// NAV
-// ============================================================
-function nav(viewId,navEl,mobileEl){
-  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');v.style.display='none';});
-  var t=document.getElementById('v-'+viewId);
-  if(t){t.style.display=viewId==='command'?'flex':'block';t.classList.add('active');}
-  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
-  if(navEl)navEl.classList.add('active');
-  else{var m=document.querySelector('.nav-item[data-view="'+viewId+'"]');if(m)m.classList.add('active');}
-  document.querySelectorAll('.mn-item').forEach(function(m){m.classList.remove('active');});
-  if(mobileEl)mobileEl.classList.add('active');
-}
-function navToProposal(){nav('command');setTimeout(function(){setModeByName('proposal');document.getElementById('chat-inp').focus();},200);}
-function toggleMobSidebar(){document.getElementById('mob-overlay').style.display='block';}
-function closeMobSidebar(){document.getElementById('mob-overlay').style.display='none';}
-
-// ============================================================
-// REVENUE & PRIORITIES
-// ============================================================
-function getDefaultRevenue(){return [{id:1,name:'JFS',amount:7999,status:'paid'},{id:2,name:'FinEdge Advisory',amount:14999,status:'pending'}];}
-function renderRevenue(){
-  var c=document.getElementById('revenue-rows');
-  c.innerHTML=revenueData.map(function(r){
-    return '<div class="rev-row"><span class="rev-name">'+r.name+'</span>'
-      +'<span style="display:flex;align-items:center;gap:4px;flex-shrink:0;">'
-      +'<span class="rev-amt">\u20B9'+r.amount.toLocaleString('en-IN')+'</span>'
-      +'<span class="rev-status '+getRevSC(r.status)+'">'+r.status.toUpperCase()+'</span>'
-      +'<button class="btn" style="font-size:6px;padding:2px 4px;" onclick="cycleRevStatus('+r.id+')">&#8635;</button>'
-      +'<button class="btn danger" style="font-size:6px;padding:2px 4px;" onclick="removeRevRow('+r.id+')">&#10005;</button>'
-      +'</span></div>';
-  }).join('');
-  var total=revenueData.reduce(function(s,r){return s+r.amount;},0);
-  document.getElementById('rev-total-val').textContent='\u20B9'+total.toLocaleString('en-IN');
-  document.getElementById('kpi-revenue').textContent='\u20B9'+total.toLocaleString('en-IN');
-  localStorage.setItem('yuvi_revenue',JSON.stringify(revenueData));
-}
-function getRevSC(s){return{paid:'rs-paid',pending:'rs-pending',overdue:'rs-overdue'}[s]||'rs-pending';}
-function cycleRevStatus(id){var r=revenueData.find(function(x){return x.id===id;});if(!r)return;r.status={paid:'pending',pending:'overdue',overdue:'paid'}[r.status]||'paid';renderRevenue();}
-function removeRevRow(id){revenueData=revenueData.filter(function(r){return r.id!==id;});renderRevenue();}
-function addRevenueRow(){var name=prompt('Client name:');if(!name)return;var amt=parseInt(prompt('Amount (\u20B9):')||'0');revenueData.push({id:Date.now(),name:name,amount:amt,status:'pending'});renderRevenue();showToast('Revenue row added!');}
-function renderPriorities(){
-  var list=document.getElementById('priorities-list');
-  list.innerHTML=priorities.map(function(p,i){
-    return '<div class="pri-item"><div class="pri-check'+(p.done?' done-chk':'')+'" onclick="togglePriority('+i+')">'+(p.done?'&#10003;':'')+'</div>'
-      +'<input class="pri-inp'+(p.done?' done-txt':'')+'" value="'+p.text.replace(/"/g,'&quot;')+'" onchange="updatePriorityText('+i+',this.value)"/></div>';
-  }).join('')+'<div style="padding:5px 0;"><button class="btn" style="font-size:7px;padding:3px 7px;width:100%;" onclick="addPriorityRow()">+ TASK</button></div>';
-  localStorage.setItem('yuvi_priorities',JSON.stringify(priorities));
-}
-function togglePriority(i){priorities[i].done=!priorities[i].done;renderPriorities();}
-function updatePriorityText(i,v){priorities[i].text=v;localStorage.setItem('yuvi_priorities',JSON.stringify(priorities));}
-function addPriorityRow(){priorities.push({text:'',done:false});renderPriorities();}
-function resetPriorities(){priorities=priorities.map(function(p){return{text:p.text,done:false};});renderPriorities();showToast('Priorities reset!');}
-
-// ============================================================
-// LEAD SCORING (Feature 5)
-// ============================================================
-function calcLeadScore(lead){
-  var score=5;
-  var statusScores={new:0,approached:1,contacted:2,interested:5,follow_up:3,proposal_sent:4,not_interested:-3,closed:8};
-  score+=(statusScores[lead.status]||0);
-  if(lead.rating>=4.5)score+=2;else if(lead.rating>=4.0)score+=1;
-  if(lead.phone&&lead.phone.length>=10)score+=1;
-  if(lead.notes&&lead.notes.length>10)score+=1;
-  var catBonus={digital:2,smm:1,website:1,seo:1,unknown:0};
-  score+=(catBonus[lead.category]||0);
-  return Math.min(10,Math.max(1,Math.round(score)));
-}
-function getScoreClass(score){return score>=8?'ls-hot':score>=5?'ls-warm':'ls-cold';}
-function getScoreTooltip(score,lead){
-  if(score>=8)return'HOT \u2014 High priority. Contact today.';
-  if(score>=5)return'WARM \u2014 Follow up this week.';
-  return'COLD \u2014 Low priority for now.';
-}
-function scoreAllLeads(){leads.forEach(function(l){l.score=calcLeadScore(l);});localStorage.setItem('yuvi_leads',JSON.stringify(leads));}
-
-// ============================================================
-// FOLLOW-UP REMINDERS (Feature 3)
-// ============================================================
-var reminders=JSON.parse(localStorage.getItem('yuvi_reminders')||'[]');
-function addReminder(name,days,ref){
-  var due=new Date();due.setDate(due.getDate()+parseInt(days));
-  reminders.push({id:Date.now(),name:name,due:due.toISOString(),ref:ref||'',done:false});
-  localStorage.setItem('yuvi_reminders',JSON.stringify(reminders));showToast('Reminder set: '+name+' in '+days+' day(s)');
-}
-function checkReminders(){
-  var now=new Date();var bar=document.getElementById('reminder-bar');
-  var overdue=reminders.filter(function(r){return!r.done&&new Date(r.due)<=now;});
-  if(overdue.length===0){bar.classList.remove('show');return;}
-  bar.classList.add('show');
-  bar.innerHTML='&#9888; '+overdue.length+' FOLLOW-UP'+(overdue.length>1?'S':'')+' DUE: '
-    +overdue.map(function(r){return'<span style="color:var(--text);">'+r.name+'</span>';}).join(', ')
-    +'&nbsp;&nbsp;<button class="btn danger" style="font-size:7px;padding:2px 8px;" onclick="dismissReminders()">DISMISS ALL</button>';
-}
-function dismissReminders(){reminders.forEach(function(r){r.done=true;});localStorage.setItem('yuvi_reminders',JSON.stringify(reminders));checkReminders();}
-
-// ============================================================
-// DAILY DIGEST (Feature 2)
-// ============================================================
-var digestGenerated=false;
-function toggleDigest(){
-  digestOpen=!digestOpen;
-  document.getElementById('digest-panel').classList.toggle('open',digestOpen);
-  document.getElementById('digest-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
-}
-async function generateDailyDigest(){
-  var key=getGroqKey();
-  var digestDiv=document.getElementById('digest-content');
-  if(!digestOpen)toggleDigest();
-  if(!key){
-    digestDiv.innerHTML=renderLocalDigest();return;
-  }
-  digestDiv.innerHTML='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;padding:30px 0;">&#9889; YUVI is analyzing...</div>';
-  try{
-    var lc=leads.length;var ic=leads.filter(function(l){return l.status==='interested';}).length;
-    var fc=leads.filter(function(l){return l.status==='follow_up';}).length;
-    var cc=clients.filter(function(c){return c.status==='active';}).length;
-    var pipe_adv=pipeline.filter(function(p){return p.stage==='advance_pending';}).length;
-    var overdue=revenueData.filter(function(r){return r.status==='overdue';}).length;
-    var hotLeads=leads.filter(function(l){return(l.score||0)>=8;}).slice(0,3).map(function(l){return l.name;}).join(', ');
-    var memCtx=getMemoryContext();
-    var sys=YUVI_MASTER_PROMPT+'\n\n=== LIVE DASHBOARD STATE ===\n'+cc+' active clients (in dashboard CRM), '+lc+' total leads, '+ic+' interested, '+fc+' need follow-up, '+pipe_adv+' deals in advance pending, '+overdue+' overdue payments.\nHot leads (score 8+): '+(hotLeads||'none')+'.'+memCtx;
-    var prompt='Generate today\'s Daily Digest: exactly 5 prioritized action items, pulling from real client/deal status (Tradosphere, JFS, FinEdge) AND dashboard leads/pipeline data above. Format each as:\nPRIORITY [1-5]: [action title]\nWHY: [one line reason]\nACTION: [exact step to take]\n\nBe brutally specific. This is Shlok\'s battle plan for today.';
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sys},{role:'user',content:prompt}],max_tokens:750,temperature:0.6})});
-    var data=await res.json();var reply=data.choices&&data.choices[0]?data.choices[0].message.content:'';
-    if(reply){digestDiv.innerHTML=renderParsedDigest(reply);digestGenerated=true;}
-    else{digestDiv.innerHTML=renderLocalDigest();}
-  }catch(e){digestDiv.innerHTML=renderLocalDigest();}
-}
-function renderParsedDigest(text){
-  var items=text.split(/PRIORITY \d+:/);
-  var html='';
-  items.forEach(function(item){
-    if(!item.trim())return;
-    var lines=item.trim().split('\n').filter(Boolean);
-    var title=lines[0]||'';
-    var why=lines.find(function(l){return l.startsWith('WHY:');});
-    var action=lines.find(function(l){return l.startsWith('ACTION:');});
-    html+='<div class="digest-item">'
-      +'<div class="digest-priority">&#9889; '+title.trim()+'</div>'
-      +(why?'<div class="digest-text">'+escHtml(why.replace('WHY:','').trim())+'</div>':'')
-      +(action?'<div class="digest-action">&#10145; '+escHtml(action.replace('ACTION:','').trim())+'</div>':'')
-      +'</div>';
-  });
-  return html||'<div style="font-family:var(--mono);font-size:9px;color:var(--text);line-height:2;padding:10px;">'+escHtml(text)+'</div>';
-}
-function renderLocalDigest(){
-  var items=[];
-  var interested=leads.filter(function(l){return l.status==='interested';});
-  var hot=leads.filter(function(l){return(l.score||0)>=8;});
-  var overdueRev=revenueData.filter(function(r){return r.status==='overdue';});
-  var advPending=pipeline.filter(function(p){return p.stage==='advance_pending';});
-  if(overdueRev.length>0)items.push({t:'COLLECT OVERDUE PAYMENTS',w:overdueRev.length+' payment(s) overdue',a:'Call '+overdueRev.map(function(r){return r.name;}).join(', ')+' today'});
-  if(advPending.length>0)items.push({t:'CLOSE ADVANCE PENDING DEALS',w:advPending.length+' deal(s) waiting for advance',a:'Follow up with '+advPending.map(function(p){return p.name;}).join(', ')});
-  if(interested.length>0)items.push({t:'SEND PROPOSALS TO INTERESTED LEADS',w:interested.length+' leads showed interest',a:'Build proposal for '+interested.slice(0,2).map(function(l){return l.name;}).join(', ')});
-  if(hot.length>0)items.push({t:'CONTACT HOT LEADS',w:'Score 8+ leads — highest conversion chance',a:'WhatsApp '+hot.slice(0,3).map(function(l){return l.name;}).join(', ')});
-  items.push({t:'ADD 10 NEW LEADS FROM GOOGLE MAPS',w:'Pipeline needs fresh input daily',a:'Search your target category in Ahmedabad, import CSV'});
-  return items.map(function(item,i){
-    return '<div class="digest-item"><div class="digest-priority">&#9889; '+item.t+'</div>'
-      +'<div class="digest-text">'+item.w+'</div>'
-      +'<div class="digest-action">&#10145; '+item.a+'</div></div>';
-  }).join('');
-}
-
-// ============================================================
-// COMMAND — CHAT (Feature 1: Voice, Feature 6: File Attach)
-// ============================================================
-function getGroqKey(){return localStorage.getItem('yuvi_groq_key')||'';}
-var modeTokens={chat:350,plan:900,outreach:500,proposal:1800,brief:120};
-var modeTemps={chat:0.4,plan:0.6,outreach:0.6,proposal:0.7,brief:0.4};
-var modeInstr={
-  chat:'Reply short and sharp. Max 3-4 lines. Only go longer if asked.',
-  plan:'Be structured and thorough. Use numbered steps. Think like a strategist.',
-  outreach:'Generate ready-to-send messages. WhatsApp style, Indian business context, Hinglish ok. Always give 2 variants.',
-  proposal:'Build a full business proposal. Ask clarifying questions one at a time. When ready, output: ===PROPOSAL_READY=== then the full proposal with sections: Executive Summary, Client Challenge, Our Solution, Deliverables, Timeline, Investment, Why Yugantar, Next Steps.',
-  brief:'Two sentences maximum. No exceptions. Be brutally concise.'
-};
-function setMode(mode,el){currentMode=mode;document.querySelectorAll('.mode-pill').forEach(function(p){p.classList.remove('active');});if(el)el.classList.add('active');else{var f=document.querySelector('.mode-pill[data-mode="'+mode+'"]');if(f)f.classList.add('active');}}
-function setModeByName(mode){setMode(mode,null);}
-function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
-function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
-
-// VOICE INPUT (Feature 1)
-function toggleVoice(){
-  var btn=document.getElementById('voice-btn');
-  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){showToast('Voice not supported on this browser');return;}
-  if(isRecording){if(recognition)recognition.stop();return;}
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  recognition=new SR();recognition.lang='en-IN';recognition.continuous=false;recognition.interimResults=true;
-  recognition.onstart=function(){isRecording=true;btn.classList.add('recording');showToast('Listening...');};
-  recognition.onresult=function(e){
-    var transcript='';for(var i=e.resultIndex;i<e.results.length;i++){transcript+=e.results[i][0].transcript;}
-    document.getElementById('chat-inp').value=transcript;autoResize(document.getElementById('chat-inp'));
-  };
-  recognition.onend=function(){isRecording=false;btn.classList.remove('recording');};
-  recognition.onerror=function(e){isRecording=false;btn.classList.remove('recording');showToast('Voice error: '+e.error);};
-  recognition.start();
-}
-
-// FILE ATTACH (Feature 6 — part 1)
-function handleFileAttach(input){
-  var file=input.files[0];if(!file)return;
-  attachedFile=file;
-  var bar=document.getElementById('file-preview-bar');
-  var btn=document.getElementById('attach-btn');
-  btn.classList.add('has-file');
-  if(file.type.startsWith('image/')){
-    var reader=new FileReader();
-    reader.onload=function(e){
-      attachedFileContent='[IMAGE ATTACHED: '+file.name+']';
-      bar.style.display='flex';
-      bar.innerHTML='<div class="file-preview"><span>&#128247; '+file.name+'</span>'
-        +'<img src="'+e.target.result+'" style="height:28px;border:1px solid var(--edge2);" />'
-        +'<button class="btn danger" style="font-size:7px;padding:2px 5px;" onclick="clearAttachment()">&#10005;</button></div>';
-      showToast('Image attached: '+file.name);
-    };
-    reader.readAsDataURL(file);
-  }else{
-    var reader2=new FileReader();
-    reader2.onload=function(e){
-      var content=e.target.result;
-      var maxChars=3000;
-      attachedFileContent='[FILE: '+file.name+']\n'+content.substring(0,maxChars)+(content.length>maxChars?'\n...(truncated)':'');
-      bar.style.display='flex';
-      bar.innerHTML='<div class="file-preview"><span>&#128206; '+file.name+' ('+Math.round(file.size/1024)+'KB)</span>'
-        +'<button class="btn danger" style="font-size:7px;padding:2px 5px;" onclick="clearAttachment()">&#10005;</button></div>';
-      showToast('File attached: '+file.name);
-    };
-    reader2.readAsText(file);
-  }
-  input.value='';
-}
-function clearAttachment(){
-  attachedFile=null;attachedFileContent='';
-  document.getElementById('file-preview-bar').style.display='none';
-  document.getElementById('attach-btn').classList.remove('has-file');
-}
-
-// SEND CHAT
-async function sendChat(){
-  var inp=document.getElementById('chat-inp');
-  var msg=inp.value.trim();
-  if(!msg&&!attachedFileContent)return;
-  var key=getGroqKey();
-  if(!key){showToast('Add Groq API key in Settings \u2699');return;}
-  var fullMsg=msg+(attachedFileContent?'\n\n'+attachedFileContent:'');
-  inp.value='';inp.style.height='auto';
-  clearAttachment();
-  document.getElementById('send-btn').disabled=true;setStatusDot(true);
-  appendMsg('user',msg+(attachedFile?'\n\n[Attached: '+(attachedFile?attachedFile.name:'')+ ']':''),'SHLOK');
-
-  // widget command parser
-  var cmdResult=parseCommand(fullMsg);
-  if(cmdResult){appendMsg('ai',cmdResult,'YUVI \u00B7 ACTION');document.getElementById('send-btn').disabled=false;setStatusDot(false);return;}
-
-  // memory save command
-  if(/^(remember|save)\s+/i.test(msg)){
-    var thing=msg.replace(/^(remember|save)\s+/i,'');
-    if(memory){if(!memory.logs)memory.logs=[];memory.logs.push({date:new Date().toISOString(),type:'manual_save',note:thing});await saveMemory({logs:memory.logs});}
-    appendMsg('ai','Saved to memory: "'+thing+'"','YUVI \u00B7 MEMORY');
-    document.getElementById('send-btn').disabled=false;setStatusDot(false);return;
-  }
-
-  // reminder command
-  var remMatch=msg.match(/remind(?:er)?\s+(?:me\s+)?(?:about\s+)?(.+?)\s+in\s+(\d+)\s+day/i);
-  if(remMatch){addReminder(remMatch[1],remMatch[2]);appendMsg('ai','Reminder set! I\'ll alert you in '+remMatch[2]+' day(s) about: '+remMatch[1],'YUVI \u00B7 REMINDER');document.getElementById('send-btn').disabled=false;setStatusDot(false);return;}
-
-  chatHistory.push({role:'user',content:fullMsg});
-  var typing=appendTyping();
-  var now=new Date();
-  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var bizCtx=localStorage.getItem('yuvi_biz_ctx')||'Yugantar Growth. Digital agency, Ahmedabad. Owner: Shlok Pandya, 21. Services: Digital Foundation \u20B97,999, Growth \u20B914,999/month, Scale \u20B929,999/month. Clients: JFS, FinEdge Advisory.';
-  var personality=localStorage.getItem('yuvi_personality')||'Sharp, direct, practical. Ahmedabad business culture aware.';
-  var memCtx=getMemoryContext();
-  var leadsSummary='Leads: '+leads.length+' total, '+leads.filter(function(l){return l.status==='interested';}).length+' interested, '+leads.filter(function(l){return(l.score||0)>=8;}).length+' hot-scored.';
-  /* YUVI v5 — Brain knowledge injection */
-  var knowledgeCtx=window.YuviBrain?window.YuviBrain.composeSystemPrompt():'';
-  var sysPrompt=YUVI_MASTER_PROMPT+'\n\n=== LIVE DASHBOARD STATE ===\n'+leadsSummary+' Date/time IST: '+days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear()+' at '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})+'.\nCurrent UI mode: '+currentMode.toUpperCase()+'. Mode instruction: '+modeInstr[currentMode]+'\nAdditional personality note: '+personality+memCtx+(knowledgeCtx?'\n\n'+knowledgeCtx:'');
-  try{
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sysPrompt}].concat(chatHistory.slice(-14)),max_tokens:modeTokens[currentMode]||350,temperature:modeTemps[currentMode]||0.5})});
-    var data=await res.json();
-    if(data.error){typing.remove();appendMsg('ai','YUVI offline \u2014 check API key in Settings.','YUVI \u00B7 ERROR');document.getElementById('send-btn').disabled=false;setStatusDot(false);return;}
-    var reply=(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'Signal lost.';
-    chatHistory.push({role:'assistant',content:reply});
-    typing.remove();
-    if(reply.includes('===PROPOSAL_READY===')){
-      var parts=reply.split('===PROPOSAL_READY===');
-      if(parts[0].trim())appendMsg('ai',parts[0].trim(),'YUVI \u00B7 PROPOSAL');
-      var pDiv=appendMsgWithActions('ai',parts[1]?parts[1].trim():'','YUVI \u00B7 PROPOSAL READY');
-      addProposalActions(pDiv,parts[1]?parts[1].trim():'');
-    }else{
-      var lbl={plan:'STRATEGY',outreach:'OUTREACH',brief:'BRIEF',proposal:'PROPOSAL',chat:'YUGANTAR'}[currentMode]||'YUGANTAR';
-      appendMsg('ai',reply,'YUVI \u00B7 '+lbl);
-      // TTS
-      if(currentMode==='brief'||currentMode==='chat')speakReply(reply);
-    }
-  }catch(err){typing.remove();appendMsg('ai','Error: '+err.message,'YUVI \u00B7 ERROR');}
-  document.getElementById('send-btn').disabled=false;setStatusDot(false);inp.focus();
-}
-
-// TTS (Feature 1 — voice output)
-function speakReply(text){
-  if(!('speechSynthesis' in window))return;
-  var utter=new SpeechSynthesisUtterance(text.substring(0,300));
-  utter.lang='en-IN';utter.rate=1.05;utter.pitch=0.85;
-  var voices=window.speechSynthesis.getVoices();
-  var preferred=voices.find(function(v){return v.lang==='en-IN';});
-  if(preferred)utter.voice=preferred;
-  window.speechSynthesis.speak(utter);
-}
-
-// WIDGET COMMAND PARSER (Feature for controlling dashboard via chat)
-function parseCommand(msg){
-  /* YUVI v5 — Brain handles intent first; existing logic is the fallback */
-  if(window.YuviBrain){
-    var brainResult=window.YuviBrain.handle(msg);
-    if(brainResult!==null)return brainResult;
-  }
-  var m=msg.toLowerCase().trim();
-  // add lead
-  var addLead=m.match(/^add lead[:\s]+(.+?)(?:\s+(\d{10,}))?(?:\s+(website|seo|smm|digital))?$/i);
-  if(addLead){var name=addLead[1].trim();var phone=addLead[2]||'';var cat=addLead[3]||'unknown';leads.push({id:Date.now(),name:name,phone:phone,category:cat,address:'Ahmedabad',status:'new',rating:0,notes:'',score:5});localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();scoreAllLeads();return'Done. Lead added: '+name+(phone?' ('+phone+')':'')+'.';}
-  // move pipeline stage
-  var moveStage=m.match(/move (.+?) to (approached|contacted|interested|proposal.sent|advance.pending|closed)/i);
-  if(moveStage){var pname=moveStage[1].trim();var stage=moveStage[2].replace(/\s/g,'_').replace('proposal_sent','proposal_sent');var card=pipeline.find(function(c){return c.name.toLowerCase().includes(pname.toLowerCase());});if(card){card.stage=stage;card.lastTouched=new Date().toISOString();localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));renderPipeline();return card.name+' moved to '+PIPE_LABELS[stage]+'.';}return'Could not find "'+pname+'" in pipeline.';}
-  // mark payment
-  var payMatch=m.match(/mark (.+?) (?:payment\s+)?(?:as\s+)?(paid|pending|overdue)/i);
-  if(payMatch){var cname=payMatch[1].trim();var pstatus=payMatch[2];var client=clients.find(function(c){return c.name.toLowerCase().includes(cname.toLowerCase());});if(client){client.payment=pstatus;localStorage.setItem('yuvi_clients',JSON.stringify(clients));renderClients();return client.name+' payment marked as '+pstatus.toUpperCase()+'.';}var rev=revenueData.find(function(r){return r.name.toLowerCase().includes(cname.toLowerCase());});if(rev){rev.status=pstatus;renderRevenue();return rev.name+' revenue status: '+pstatus.toUpperCase()+'.';}return'Could not find "'+cname+'".';}
-  // show pipeline
-  if(m==='pipeline'||m==='open pipeline'||m==='show pipeline'){nav('pipeline');return'Pipeline opened.';}
-  // show leads
-  if(m==='leads'||m==='show leads'||m==='open leads'){nav('leads');return'Leads opened.';}
-  // score leads
-  if(m==='score leads'||m==='rescore'||m==='score all leads'){scoreAllLeads();renderLeads();return'All leads rescored. Hot leads (8+): '+leads.filter(function(l){return(l.score||0)>=8;}).map(function(l){return l.name;}).join(', ')+'.';}
-  return null;
-}
-
-function setStatusDot(t){var dot=document.getElementById('cmd-status-dot');if(t)dot.classList.add('thinking');else dot.classList.remove('thinking');}
-function appendMsg(type,text,label){var msgs=document.getElementById('chat-messages');var div=document.createElement('div');div.className='msg '+type;var time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});div.innerHTML='<div class="msg-label">'+label+'</div><div class="msg-text">'+escHtml(text)+'</div><div class="msg-time">'+time+'</div>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
-function appendMsgWithActions(type,text,label){var msgs=document.getElementById('chat-messages');var div=document.createElement('div');div.className='msg '+type;var time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});var uid='ma'+Date.now();div.innerHTML='<div class="msg-label">'+label+'</div><div class="msg-text">'+escHtml(text)+'</div><div class="msg-time">'+time+'</div><div class="msg-actions" id="'+uid+'"></div>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
-function appendTyping(){var msgs=document.getElementById('chat-messages');var div=document.createElement('div');div.className='msg ai';div.innerHTML='<div class="msg-label">YUVI \u00B7 THINKING</div><div class="typing"><span></span><span></span><span></span></div>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
-function addProposalActions(div,pText){var a=div.querySelector('.msg-actions');if(!a)return;var pb=document.createElement('button');pb.className='btn gold';pb.innerHTML='&#8595; PDF';pb.onclick=function(){generateProposalPDF(pText);};var cb=document.createElement('button');cb.className='btn';cb.textContent='COPY';cb.onclick=function(){navigator.clipboard.writeText(pText).then(function(){showToast('Copied!');});};var cvb=document.createElement('button');cvb.className='btn primary';cvb.textContent='DESIGN BRIEF';cvb.onclick=function(){openInCanva(pText);};a.appendChild(pb);a.appendChild(cb);a.appendChild(cvb);}
-function escHtml(t){if(!t)return'';return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-// ============================================================
-// PROPOSAL PDF + CANVA
-// ============================================================
-function autoDetectColor(text){var t=(text||'').toLowerCase();if(t.includes('finance')||t.includes('fintech')||t.includes('advisory'))return{primary:'#032B44',accent:'#f0b429'};if(t.includes('food')||t.includes('restaurant')||t.includes('cafe'))return{primary:'#7c2d12',accent:'#FF6B35'};if(t.includes('health')||t.includes('clinic')||t.includes('hospital'))return{primary:'#14532d',accent:'#22d68e'};if(t.includes('retail')||t.includes('furniture')||t.includes('textile'))return{primary:'#0a4a5a',accent:'#0ef6ff'};return{primary:'#032B44',accent:'#0ef6ff'};}
-function hexToRgb(hex){hex=hex.replace('#','');if(hex.length===3)hex=hex.split('').map(function(c){return c+c;}).join('');return[parseInt(hex.substring(0,2),16),parseInt(hex.substring(2,4),16),parseInt(hex.substring(4,6),16)];}
-function generateProposalPDF(proposalText){
-  if(typeof window.jspdf==='undefined'){showToast('PDF library loading');return;}
-  var colors=autoDetectColor(proposalText);var pr=hexToRgb(colors.primary);var ar=hexToRgb(colors.accent);
-  var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  var pw=210,ph=297,mg=18,cw=pw-mg*2;
-  doc.setFillColor(5,10,15);doc.rect(0,0,pw,ph,'F');doc.setFillColor(pr[0],pr[1],pr[2]);doc.rect(0,0,pw,3,'F');doc.setFillColor(8,15,23);doc.rect(0,3,pw,32,'F');
-  doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(pr[0],pr[1],pr[2]);doc.text('YUGANTAR GROWTH',mg,18);
-  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,150,160);doc.text('DIGITAL GROWTH AGENCY \u00B7 AHMEDABAD',mg,25);
-  doc.setFontSize(8);doc.setTextColor(ar[0],ar[1],ar[2]);doc.text('PROPOSAL \u00B7 '+new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}),pw-mg,18,{align:'right'});
-  doc.setDrawColor(pr[0],pr[1],pr[2]);doc.setLineWidth(0.3);doc.line(mg,36,pw-mg,36);
-  var cm=proposalText.match(/(?:for|client|prepared for)[:\s]+([A-Za-z\s]+)/i);var cn=cm?cm[1].trim().split('\n')[0].substring(0,40):'Client';
-  doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(220,230,240);doc.text('PREPARED FOR: '+cn.toUpperCase(),mg,44);
-  var y=54;var lines=proposalText.split('\n');
-  for(var i=0;i<lines.length;i++){
-    var line=lines[i].trim();if(!line){y+=3;continue;}
-    if(y>ph-25){doc.addPage();doc.setFillColor(5,10,15);doc.rect(0,0,pw,ph,'F');doc.setFillColor(pr[0],pr[1],pr[2]);doc.rect(0,0,pw,2,'F');y=16;}
-    if(line===line.toUpperCase()&&line.length>3&&line.length<60&&!line.includes('HTTP')){doc.setFillColor(Math.floor(pr[0]*.15),Math.floor(pr[1]*.15),Math.floor(pr[2]*.15));doc.rect(mg-2,y-4,cw+4,8,'F');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(pr[0],pr[1],pr[2]);doc.text(line,mg,y);y+=8;}
-    else if(/^[-*\u2022]/.test(line)){doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(180,200,210);doc.setFillColor(ar[0],ar[1],ar[2]);doc.circle(mg+1.5,y-1.5,1,'F');var w1=doc.splitTextToSize(line.replace(/^[-*\u2022]\s*/,''),cw-8);doc.text(w1,mg+6,y);y+=w1.length*5+2;}
-    else if(line.includes('\u20B9')){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(ar[0],ar[1],ar[2]);var w2=doc.splitTextToSize(line,cw);doc.text(w2,mg,y);y+=w2.length*5.5+2;}
-    else{doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(160,185,200);var w3=doc.splitTextToSize(line,cw);doc.text(w3,mg,y);y+=w3.length*5+1.5;}
-  }
-  var tp=doc.internal.getNumberOfPages();for(var p=1;p<=tp;p++){doc.setPage(p);doc.setDrawColor(pr[0],pr[1],pr[2]);doc.setLineWidth(0.2);doc.line(mg,ph-14,pw-mg,ph-14);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(60,90,100);doc.text('Yugantar Growth \u00B7 Ahmedabad',mg,ph-8);doc.text('Page '+p+' of '+tp,pw-mg,ph-8,{align:'right'});doc.setFillColor(pr[0],pr[1],pr[2]);doc.rect(0,ph-2,pw,2,'F');}
-  var fname='Yugantar_Proposal_'+cn.replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.pdf';doc.save(fname);showToast('PDF saved!');
-  var lm=leads.find(function(l){return l.name.toLowerCase().includes(cn.toLowerCase().split(' ')[0]);});if(lm){lm.status='proposal_sent';localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();}
-}
-function openInCanva(pText){
-  var colors=autoDetectColor(pText);
-  var cm=pText.match(/(?:for|client|prepared for)[:\s]+([A-Za-z\s]+)/i);
-  var cn=cm?cm[1].trim().split('\n')[0].substring(0,30):'Client';
-  var brief='=== YUVI DESIGN BRIEF ===\nProject: Yugantar Growth Proposal — '+cn+'\nPrimary Color: '+colors.primary+'\nAccent Color: '+colors.accent+'\nFonts: Syne (headings), DM Sans (body)\nStyle: Professional, dark background, minimal, premium\nLogo: YG triangle mark\nBrand Voice: Simple. Short. Smooth.\nInstruction for Canva AI: Create a professional business proposal presentation. Dark background ('+colors.primary+'), accent highlights ('+colors.accent+'). Include cover slide, problem/solution, services, pricing, and next steps slides.';
-  navigator.clipboard.writeText(brief).then(function(){
-    // show brief as a card in chat
-    var msgs=document.getElementById('chat-messages');
-    var div=document.createElement('div');div.className='msg ai';
-    div.innerHTML='<div class="msg-label">YUVI \u00B7 CANVA DESIGN BRIEF</div>'
-      +'<div class="msg-text" style="font-size:11px;line-height:1.8;">'+escHtml(brief)+'</div>'
-      +'<div class="msg-time">Brief copied to clipboard \u2014 paste it in Canva AI \u2713</div>';
-    msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
-    showToast('Brief copied! Opening Canva\u2026');
-    // open Canva presentation creator — most reliable deep link
-    setTimeout(function(){
-      window.open('https://www.canva.com/design/DANew/?s=presentation','_blank');
-    },400);
-  }).catch(function(){
-    // fallback if clipboard blocked
-    showToast('Opening Canva\u2026');
-    window.open('https://www.canva.com/design/DANew/?s=presentation','_blank');
-  });
-}
-
-// ============================================================
-// LEADS
-// ============================================================
-function setCatFilter(cat,el){catFilter=cat;document.querySelectorAll('.fpill').forEach(function(p){p.classList.remove('active');});el.classList.add('active');renderLeads();}
-function renderLeads(){
-  var tbody=document.getElementById('leads-tbody');var empty=document.getElementById('leads-empty');
-  var search=(document.getElementById('lead-search')||{}).value||'';search=search.toLowerCase();
-  var filtered=leads.filter(function(l){return(!search||l.name.toLowerCase().includes(search)||(l.phone&&l.phone.includes(search)))&&(catFilter==='all'||l.category===catFilter);});
-  if(leads.length===0){tbody.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  var statOpts=['new','approached','contacted','interested','follow_up','proposal_sent','not_interested','closed'];
-  var statLbls={new:'NEW',approached:'APPROACHED',contacted:'CONTACTED',interested:'INTERESTED',follow_up:'FOLLOW UP',proposal_sent:'PROPOSAL SENT',not_interested:'NOT INT.',closed:'CLOSED'};
-  tbody.innerHTML=filtered.map(function(l,i){
-    var score=l.score||calcLeadScore(l);var sc=getScoreClass(score);
-    var sel='<select class="lead-status-sel" onchange="updateLeadStatus('+l.id+',this.value)" onclick="event.stopPropagation()">'+statOpts.map(function(s){return'<option value="'+s+'"'+(l.status===s?' selected':'')+'>'+statLbls[s]+'</option>';}).join('')+'</select>';
-    return '<tr onclick="selectLead('+l.id+')" '+(selectedLead&&selectedLead.id===l.id?'class="sel-row"':'')+'>'+
-      '<td style="color:var(--muted);">'+(i+1)+'</td>'+
-      '<td>'+l.name+'</td>'+
-      '<td>'+(l.phone||'-')+'</td>'+
-      '<td><span class="cat-badge cat-'+l.category+'">'+getCatLabel(l.category)+'</span></td>'+
-      '<td><span class="lead-score '+sc+'" title="'+getScoreTooltip(score,l)+'">'+score+'</span></td>'+
-      '<td>'+sel+'</td>'+
-      '<td><button class="wa-btn" onclick="event.stopPropagation();sendWA('+l.id+')">WA</button></td>'+
-      '<td><button class="pipe-btn" onclick="event.stopPropagation();moveToPipeline('+l.id+')">\u2192</button></td>'+
-    '</tr>';
-  }).join('');
-  document.getElementById('leads-badge').textContent=leads.length;
-  document.getElementById('kpi-leads').textContent=leads.length;
-}
-function getCatLabel(cat){return{website:'WEB',seo:'SEO',smm:'SMM',digital:'DIG',unknown:'UNK'}[cat]||'UNK';}
-function selectLead(id){
-  selectedLead=leads.find(function(l){return l.id===id;});if(!selectedLead)return;
-  var score=selectedLead.score||calcLeadScore(selectedLead);var sc=getScoreClass(score);
-  var panel=document.getElementById('lead-detail-panel');
-  panel.innerHTML='<div class="ldp-name">'+selectedLead.name+'</div>'
-    +'<div class="ldp-cat">'+getCatLabel(selectedLead.category)+' \u00B7 '+selectedLead.status.toUpperCase()+'</div>'
-    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
-    +'<span class="lead-score '+sc+'" style="width:30px;height:30px;font-size:11px;">'+score+'</span>'
-    +'<span style="font-family:var(--mono);font-size:8px;color:var(--muted);">'+getScoreTooltip(score,selectedLead)+'</span></div>'
-    +'<div class="ldp-row"><span class="ldp-key">PHONE</span><span class="ldp-val">'+(selectedLead.phone||'N/A')+'</span></div>'
-    +'<div class="ldp-row"><span class="ldp-key">ADDRESS</span><span class="ldp-val">'+(selectedLead.address||'N/A')+'</span></div>'
-    +'<div class="ldp-row"><span class="ldp-key">RATING</span><span class="ldp-val">'+(selectedLead.rating||'N/A')+'</span></div>'
-    +'<div class="blade-line"></div>'
-    +'<div class="form-lbl" style="margin-top:6px;">NOTES</div>'
-    +'<textarea class="ldp-notes" onchange="saveLeadNotes('+selectedLead.id+',this.value)">'+(selectedLead.notes||'')+'</textarea>'
-    +'<div style="font-family:var(--mono);font-size:7px;color:var(--muted);margin:8px 0 4px;">SET REMINDER</div>'
-    +'<div style="display:flex;gap:6px;margin-bottom:8px;">'
-    +'<input type="number" id="rem-days-'+selectedLead.id+'" class="form-inp" placeholder="Days" style="width:70px;"/>'
-    +'<button class="btn" style="flex:1;font-size:7px;" onclick="setLeadReminder('+selectedLead.id+')">SET REMINDER</button></div>'
-    +'<div class="blade-line"></div>'
-    +'<div style="display:flex;flex-direction:column;gap:5px;">'
-    +'<button class="btn research" onclick="researchLead('+selectedLead.id+')">&#128269; AI RESEARCH</button>'
-    +'<button class="btn success" onclick="sendWA('+selectedLead.id+')">OPEN WHATSAPP</button>'
-    +'<button class="btn primary" onclick="moveToPipeline('+selectedLead.id+')">\u2192 PIPELINE</button>'
-    +'<button class="btn" onclick="loadLeadToProposal('+selectedLead.id+')">BUILD PROPOSAL</button>'
-    +'</div>'
-    +'<div id="research-result-'+selectedLead.id+'"></div>';
-  renderLeads();
-}
-function setLeadReminder(id){var l=leads.find(function(x){return x.id===id;});if(!l)return;var inp=document.getElementById('rem-days-'+id);var days=inp?parseInt(inp.value)||1:1;addReminder('Follow up: '+l.name,days,id);}
-function saveLeadNotes(id,val){var l=leads.find(function(x){return x.id===id;});if(!l)return;l.notes=val;localStorage.setItem('yuvi_leads',JSON.stringify(leads));}
-function updateLeadStatus(id,status){
-  var l=leads.find(function(x){return x.id===id;});if(!l)return;
-  l.status=status;
-  if(status==='contacted'){contactedToday++;localStorage.setItem('yuvi_contacted_today',contactedToday);localStorage.setItem('yuvi_contacted_date',new Date().toDateString());updateStats();}
-  l.score=calcLeadScore(l);
-  localStorage.setItem('yuvi_leads',JSON.stringify(leads));showToast(l.name+' \u2192 '+status.toUpperCase());renderLeads();
-}
-function getWAMessage(lead){var msgs={website:'Hi! I am Shlok from Yugantar Growth. We build professional websites in Ahmedabad from \u20B97,999. Would love to help '+lead.name+' get online. Free consultation!',seo:'Hi! I am Shlok from Yugantar Growth. We help businesses rank higher on Google. Can I show you results for similar businesses in Ahmedabad?',smm:'Hi! I am Shlok from Yugantar Growth. We manage Instagram & Facebook for Ahmedabad businesses. '+lead.name+' has great potential online. Interested?',digital:'Hi! I am Shlok from Yugantar Growth, digital agency in Ahmedabad. We help businesses get complete online presence. Can we connect for 10 minutes?',unknown:'Hi! I am Shlok from Yugantar Growth, digital agency in Ahmedabad. We help local businesses grow online. Can I show you what is possible for '+lead.name+'?'};return msgs[lead.category]||msgs.unknown;}
-function sendWA(id){var l=leads.find(function(x){return x.id===id;});if(!l||!l.phone){showToast('No phone number');return;}var phone=l.phone.replace(/\D/g,'');var fp=phone.startsWith('91')?phone:'91'+phone;window.open('https://wa.me/'+fp+'?text='+encodeURIComponent(getWAMessage(l)),'_blank');updateLeadStatus(id,'contacted');}
-function moveToPipeline(id){var l=leads.find(function(x){return x.id===id;});if(!l)return;pipeline.push({id:Date.now(),name:l.name,contact:'',phone:l.phone||'',service:'Digital Foundation \u20B97,999',stage:'approached',notes:[{date:new Date().toISOString(),text:'From leads. Cat: '+getCatLabel(l.category)+'.'}],lastTouched:new Date().toISOString()});localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));renderPipeline();nav('pipeline');showToast(l.name+' \u2192 pipeline!');}
-function loadLeadToProposal(id){var l=leads.find(function(x){return x.id===id;});if(!l)return;nav('command');setModeByName('proposal');setTimeout(function(){document.getElementById('chat-inp').value='Build a proposal for '+l.name+', '+getCatLabel(l.category)+' service, located in '+(l.address||'Ahmedabad')+'.';document.getElementById('chat-inp').focus();},200);showToast('Lead loaded to Command!');}
-
-// ============================================================
-// AI LEAD RESEARCH (Feature 3)
-// ============================================================
-async function researchLead(id){
-  var l=leads.find(function(x){return x.id===id;});if(!l)return;
-  var key=getGroqKey();
-  var resDiv=document.getElementById('research-result-'+id);
-  if(!resDiv)return;
-  var nameEnc=encodeURIComponent(l.name);
-  var cityEnc=encodeURIComponent(l.address||'Ahmedabad');
-  var namePlain=l.name.toLowerCase().replace(/[^a-z0-9]/g,'');
-
-  resDiv.innerHTML='<div class="research-loading">&#128269; Step 1/3 — Checking website...</div>';
-  showToast('Researching '+l.name+'...');
-
-  // STEP 1 — attempt real website check via fetch (CORS-safe via no-cors)
-  var websiteResult={exists:false,broken:false,url:null,tried:false};
-  // try common domain patterns
-  var domainGuesses=[
-    namePlain+'.com',namePlain+'.in',namePlain+'.co.in',
-    namePlain.replace(/studio|enterprises|solutions|services|pvtltd|ltd/g,'')+'.com',
-  ];
-  for(var di=0;di<domainGuesses.length;di++){
-    try{
-      var testUrl='https://'+domainGuesses[di];
-      var r=await Promise.race([
-        fetch(testUrl,{method:'HEAD',mode:'no-cors'}),
-        new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},4000);})
-      ]);
-      // no-cors fetch resolves with opaque response if site exists
-      websiteResult={exists:true,broken:false,url:testUrl,tried:true};
-      break;
-    }catch(e){
-      // timeout or network error = likely doesn't exist on this domain
-    }
-  }
-
-  resDiv.innerHTML='<div class="research-loading">&#128269; Step 2/3 — Checking Google rating & business profile...</div>';
-
-  // STEP 2 — Google Business: if rating exists in our data, they have GBP
-  var hasGBP=l.rating&&l.rating>0;
-
-  // STEP 3 — Fire Groq to analyze everything and return structured JSON
-  resDiv.innerHTML='<div class="research-loading">&#128269; Step 3/3 — YUVI is analyzing presence...</div>';
-
-  if(!key){
-    // no Groq key — show what we found manually
-    renderResearchCard(resDiv,l,id,{
-      website:websiteResult,
-      google_business:{likely:hasGBP,confidence:hasGBP?'HIGH':'LOW'},
-      instagram:{likely:false,confidence:'UNKNOWN',handle:null},
-      facebook:{likely:false,confidence:'UNKNOWN'},
-      justdial:{likely:false,confidence:'UNKNOWN'},
-      pitch_potential:'UNKNOWN',
-      best_service:'Unknown',
-      opening_line:'Add Groq key in Settings for AI-generated opener.',
-      watch_out:'Add Groq key for AI analysis.',
-      verdict:'Add Groq API key in Settings to get full AI research verdict.',
-      online_score:hasGBP?6:3
-    },nameEnc,cityEnc);
-    return;
-  }
-
-  try{
-    var sys=YUVI_MASTER_PROMPT+'\n\nYou are in LEAD RESEARCH MODE. You must respond ONLY with a valid JSON object. No explanation, no markdown, no backticks. Just raw JSON.';
-    var prompt='Analyze this business lead for Yugantar Growth. Return ONLY a JSON object with these exact fields:\n'
-      +'{\n'
-      +'"online_score": <number 1-10, how strong is their online presence>,\n'
-      +'"pitch_potential": <"HIGH" or "MEDIUM" or "LOW">,\n'
-      +'"best_service": <"Digital Foundation ₹7,999" or "Lead Machine ₹12,999/month" or "Full System ₹24,999/month">,\n'
-      +'"instagram": {"likely": <true or false>, "confidence": <"HIGH" or "MEDIUM" or "LOW">, "handle": <guessed handle string or null>},\n'
-      +'"facebook": {"likely": <true or false>, "confidence": <"HIGH" or "MEDIUM" or "LOW">},\n'
-      +'"justdial": {"likely": <true or false>, "confidence": <"HIGH" or "MEDIUM" or "LOW">},\n'
-      +'"opening_line": <one perfect WhatsApp message in Hinglish for this specific business>,\n'
-      +'"watch_out": <one line — main objection or red flag to prepare for>,\n'
-      +'"verdict": <one sentence — should Shlok prioritize this lead, direct opinion>\n'
-      +'}\n\n'
-      +'Lead data:\n'
-      +'Name: '+l.name+'\n'
-      +'Category: '+getCatLabel(l.category)+'\n'
-      +'Location: '+(l.address||'Ahmedabad')+'\n'
-      +'Google Rating: '+(l.rating||'Not found — likely no Google Business Profile')+'\n'
-      +'Phone: '+(l.phone||'Unknown')+'\n'
-      +'Website check result: '+(websiteResult.exists?'Domain '+websiteResult.url+' responded (site may exist)':'No common domain responded — likely no website')+'\n'
-      +'Has Google Business Profile: '+(hasGBP?'Yes (has rating '+l.rating+')':'Likely no (no rating in our data)')+'\n\n'
-      +'Use your knowledge of Ahmedabad small businesses in the '+getCatLabel(l.category)+' category to judge Instagram/Facebook/JustDial presence. Be realistic — most small Ahmedabad shops have weak or no social presence.';
-
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sys},{role:'user',content:prompt}],max_tokens:600,temperature:0.3})
-    });
-    var data=await res.json();
-    var raw=data.choices&&data.choices[0]?data.choices[0].message.content.trim():'';
-    // strip any accidental markdown backticks
-    raw=raw.replace(/```json|```/g,'').trim();
-    var parsed=JSON.parse(raw);
-    parsed.website=websiteResult;
-    parsed.google_business={likely:hasGBP,confidence:hasGBP?'HIGH':'LOW'};
-    renderResearchCard(resDiv,l,id,parsed,nameEnc,cityEnc);
-    // save research to lead
-    l.aiResearched=true;l.lastResearch=parsed;
-    localStorage.setItem('yuvi_leads',JSON.stringify(leads));
-    showToast('Research done: '+l.name);
-  }catch(e){
-    // JSON parse failed — show raw text fallback
-    resDiv.innerHTML='<div class="research-card">'
-      +'<div class="research-card-title">&#128269; RESEARCH — '+l.name.toUpperCase()+'</div>'
-      +'<div class="research-verdict" style="color:var(--flash);">AI response could not be parsed. Raw output below:</div>'
-      +'<div class="research-verdict" style="font-size:8px;">'+escHtml(e.message)+'</div>'
-      +'<div class="research-links" style="margin-top:8px;">'
-      +'<a class="research-link" href="https://www.google.com/search?q='+nameEnc+'+'+cityEnc+'" target="_blank">Google</a>'
-      +'<a class="research-link" href="https://www.google.com/maps/search/'+nameEnc+'+'+cityEnc+'" target="_blank">Maps</a>'
-      +'</div></div>';
-  }
-}
-
-function renderResearchCard(resDiv,l,id,data,nameEnc,cityEnc){
-  var pitchColor=data.pitch_potential==='HIGH'?'var(--green)':data.pitch_potential==='MEDIUM'?'var(--gold)':'var(--flash)';
-  var scoreClass=(data.online_score||5)>=7?'ls-hot':(data.online_score||5)>=4?'ls-warm':'ls-cold';
-
-  // BUILD PLATFORM ROWS — only show what was found or likely
-  var platformRows='';
-
-  // Website
-  if(data.website&&data.website.exists){
-    platformRows+='<div class="rp-row rp-found">'
-      +'<span class="rp-icon">&#127758;</span>'
-      +'<span class="rp-label">Website</span>'
-      +'<span class="rp-status found">FOUND</span>'
-      +'<a class="research-link" href="'+data.website.url+'" target="_blank" rel="noopener" style="margin-left:auto;">OPEN</a>'
-      +'</div>';
-  }else{
-    platformRows+='<div class="rp-row rp-missing">'
-      +'<span class="rp-icon">&#127758;</span>'
-      +'<span class="rp-label">Website</span>'
-      +'<span class="rp-status missing">NOT FOUND</span>'
-      +'<span class="rp-opp">&#128308; Opportunity</span>'
-      +'</div>';
-  }
-
-  // Google Business
-  if(data.google_business&&data.google_business.likely){
-    platformRows+='<div class="rp-row rp-found">'
-      +'<span class="rp-icon">&#128205;</span>'
-      +'<span class="rp-label">Google Business</span>'
-      +'<span class="rp-status found">FOUND ('+(l.rating||'?')+' &#9733;)</span>'
-      +'<a class="research-link" href="https://www.google.com/maps/search/'+nameEnc+'+'+cityEnc+'" target="_blank" rel="noopener" style="margin-left:auto;">VIEW</a>'
-      +'</div>';
-  }else{
-    platformRows+='<div class="rp-row rp-missing">'
-      +'<span class="rp-icon">&#128205;</span>'
-      +'<span class="rp-label">Google Business</span>'
-      +'<span class="rp-status missing">NOT FOUND</span>'
-      +'<span class="rp-opp">&#128308; Opportunity</span>'
-      +'</div>';
-  }
-
-  // Instagram — only show if likely
-  if(data.instagram&&data.instagram.likely){
-    var igHandle=data.instagram.handle?'@'+data.instagram.handle:null;
-    var igUrl=igHandle
-      ?'https://www.instagram.com/'+data.instagram.handle.replace('@','')+'/'
-      :'https://www.instagram.com/explore/search/keyword/?q='+nameEnc;
-    platformRows+='<div class="rp-row rp-found">'
-      +'<span class="rp-icon">&#128247;</span>'
-      +'<span class="rp-label">Instagram</span>'
-      +'<span class="rp-status found">LIKELY '+(igHandle?'('+igHandle+')':'')+'</span>'
-      +'<span style="font-family:var(--mono);font-size:6px;color:var(--muted);margin:0 4px;">'+data.instagram.confidence+'</span>'
-      +'<a class="research-link" href="'+igUrl+'" target="_blank" rel="noopener" style="margin-left:auto;">CHECK</a>'
-      +'</div>';
-  }else{
-    platformRows+='<div class="rp-row rp-none">'
-      +'<span class="rp-icon">&#128247;</span>'
-      +'<span class="rp-label">Instagram</span>'
-      +'<span class="rp-status none">NOT FOUND</span>'
-      +'</div>';
-  }
-
-  // Facebook — only show if likely
-  if(data.facebook&&data.facebook.likely){
-    platformRows+='<div class="rp-row rp-found">'
-      +'<span class="rp-icon">&#128101;</span>'
-      +'<span class="rp-label">Facebook</span>'
-      +'<span class="rp-status found">LIKELY</span>'
-      +'<span style="font-family:var(--mono);font-size:6px;color:var(--muted);margin:0 4px;">'+data.facebook.confidence+'</span>'
-      +'<a class="research-link" href="https://www.facebook.com/search/top/?q='+nameEnc+'" target="_blank" rel="noopener" style="margin-left:auto;">CHECK</a>'
-      +'</div>';
-  }else{
-    platformRows+='<div class="rp-row rp-none">'
-      +'<span class="rp-icon">&#128101;</span>'
-      +'<span class="rp-label">Facebook</span>'
-      +'<span class="rp-status none">NOT FOUND</span>'
-      +'</div>';
-  }
-
-  // JustDial — only show if likely
-  if(data.justdial&&data.justdial.likely){
-    platformRows+='<div class="rp-row rp-found">'
-      +'<span class="rp-icon">&#128222;</span>'
-      +'<span class="rp-label">JustDial</span>'
-      +'<span class="rp-status found">LIKELY</span>'
-      +'<a class="research-link" href="https://www.justdial.com/search?q='+nameEnc+'&where='+cityEnc+'" target="_blank" rel="noopener" style="margin-left:auto;">CHECK</a>'
-      +'</div>';
-  }
-  // JustDial not found = skip entirely, not worth flagging
-
-  resDiv.innerHTML='<div class="research-card">'
-    +'<div class="research-card-title">&#128269; AI RESEARCH — '+l.name.toUpperCase()+'</div>'
-    // scores row
-    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
-    +'<span class="lead-score '+scoreClass+'" style="width:30px;height:30px;font-size:12px;">'+(data.online_score||'?')+'</span>'
-    +'<span style="font-family:var(--mono);font-size:8px;color:var(--muted);">Online Presence</span>'
-    +'<span style="font-family:var(--mono);font-size:8px;color:'+pitchColor+';margin-left:auto;border:1px solid '+pitchColor+';padding:2px 8px;">'+(data.pitch_potential||'?')+' POTENTIAL</span>'
-    +'</div>'
-    // platform rows
-    +'<div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;margin-bottom:5px;">PLATFORM CHECK</div>'
-    +'<div class="rp-list">'+platformRows+'</div>'
-    // AI analysis
-    +'<div class="blade-line" style="margin:8px 0;"></div>'
-    +'<div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;margin-bottom:4px;">BEST PACKAGE</div>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--gold);margin-bottom:8px;">'+(data.best_service||'Unknown')+'</div>'
-    +'<div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;margin-bottom:4px;">OPENING LINE</div>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--text);line-height:1.7;padding:7px;background:rgba(14,246,255,.04);border-left:2px solid var(--blade);margin-bottom:8px;">'+(data.opening_line?escHtml(data.opening_line):'—')+'</div>'
-    +'<div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;margin-bottom:4px;">WATCH OUT</div>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--flash);margin-bottom:8px;">&#9888; '+(data.watch_out?escHtml(data.watch_out):'—')+'</div>'
-    +'<div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;margin-bottom:4px;">YUVI VERDICT</div>'
-    +'<div class="research-verdict">'+(data.verdict?escHtml(data.verdict):'—')+'</div>'
-    // action buttons
-    +'<div style="display:flex;gap:5px;margin-top:8px;">'
-    +'<button class="btn success" style="flex:1;font-size:7px;padding:6px;" onclick="sendWA('+id+')">WA NOW</button>'
-    +'<button class="btn primary" style="flex:1;font-size:7px;padding:6px;" onclick="moveToPipeline('+id+')">&#8594; PIPELINE</button>'
-    +'</div>'
-    +'</div>';
-}
-
-// DUPLICATE FILTER — runs on import and on leads render
-// ============================================================
-// BULK OUTREACH (Feature 2)
-// ============================================================
-var outreachType='both';var flyerDataUrl=null;var selectedOutreachLeads=[];
-function toggleOutreach(){
-  var panel=document.getElementById('outreach-panel');
-  var visible=panel.style.display!=='none';
-  panel.style.display=visible?'none':'block';
-  if(!visible){renderOutreachLeadList();updateOutreachCounter();}
-}
-function setOutreachType(type){
-  outreachType=type;
-  var labels={message:'MESSAGE ONLY',image:'IMAGE ONLY — flyer required',both:'IMAGE + MESSAGE'};
-  document.getElementById('outreach-type-indicator').textContent='MODE: '+labels[type];
-}
-function handleFlyerUpload(input){
-  var file=input.files[0];if(!file)return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    flyerDataUrl=e.target.result;
-    document.getElementById('flyer-name').textContent=file.name;
-    document.getElementById('flyer-img').src=flyerDataUrl;
-    document.getElementById('flyer-preview').style.display='block';
-    document.getElementById('flyer-clear').style.display='inline-block';
-    showToast('Flyer uploaded: '+file.name);
-  };
-  reader.readAsDataURL(file);
-  input.value='';
-}
-function clearFlyer(){
-  flyerDataUrl=null;
-  document.getElementById('flyer-name').textContent='No flyer uploaded';
-  document.getElementById('flyer-preview').style.display='none';
-  document.getElementById('flyer-clear').style.display='none';
-}
-function renderOutreachLeadList(){
-  var list=document.getElementById('outreach-lead-list');
-  if(!leads.length){list.innerHTML='<div style="font-family:var(--mono);font-size:8px;color:var(--muted);padding:10px;">No leads yet. Add leads first.</div>';return;}
-  list.innerHTML=leads.filter(function(l){return l.phone&&l.phone.length>=10;}).map(function(l){
-    var checked=selectedOutreachLeads.indexOf(l.id)>-1;
-    var sc=getScoreClass(l.score||calcLeadScore(l));
-    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 7px;border:1px solid var(--edge2);background:rgba(14,246,255,.02);">'
-      +'<input type="checkbox" id="olead-'+l.id+'" '+(checked?'checked':'')+' onchange="toggleOutreachLead('+l.id+')" style="cursor:pointer;accent-color:var(--blade);"/>'
-      +'<label for="olead-'+l.id+'" style="flex:1;font-family:var(--mono);font-size:8px;color:var(--text);cursor:pointer;">'+l.name+'</label>'
-      +'<span style="font-family:var(--mono);font-size:7px;color:var(--muted);">'+l.phone+'</span>'
-      +'<span class="lead-score '+sc+'" style="width:20px;height:20px;font-size:8px;">'+(l.score||5)+'</span>'
-      +'</div>';
-  }).join('');
-  updateOutreachCounter();
-}
-function toggleOutreachLead(id){
-  var idx=selectedOutreachLeads.indexOf(id);
-  if(idx>-1)selectedOutreachLeads.splice(idx,1);else selectedOutreachLeads.push(id);
-  updateOutreachCounter();
-}
-function selectAllOutreachLeads(){selectedOutreachLeads=leads.filter(function(l){return l.phone&&l.phone.length>=10;}).map(function(l){return l.id;});renderOutreachLeadList();}
-function selectNoneOutreachLeads(){selectedOutreachLeads=[];renderOutreachLeadList();}
-function selectHotOutreachLeads(){selectedOutreachLeads=leads.filter(function(l){return l.phone&&l.phone.length>=10&&(l.score||0)>=8;}).map(function(l){return l.id;});renderOutreachLeadList();}
-function updateOutreachCounter(){var c=selectedOutreachLeads.length;document.getElementById('outreach-counter').textContent=c>0?c+' lead'+(c>1?'s':'')+' selected':'No leads selected';}
-
-async function generateOutreachSuggestion(){
-  var key=getGroqKey();
-  if(!key){showToast('Add Groq key in Settings first');return;}
-  var selLeads=leads.filter(function(l){return selectedOutreachLeads.indexOf(l.id)>-1;});
-  var cats=selLeads.length>0?[...new Set(selLeads.map(function(l){return getCatLabel(l.category);}))].join(', '):'general';
-  document.getElementById('outreach-msg').value='Generating...';
-  try{
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:YUVI_MASTER_PROMPT},{role:'user',content:'Write a WhatsApp outreach message for Yugantar Growth targeting '+cats+' businesses in Ahmedabad. Short, punchy, Hinglish ok. Under 3 lines. End with the "Website in 48 Hours" hook if relevant. No emojis. Give 2 variants separated by ---'}],max_tokens:200,temperature:0.6})});
-    var data=await res.json();var reply=data.choices&&data.choices[0]?data.choices[0].message.content:'';
-    if(reply)document.getElementById('outreach-msg').value=reply;
-    else document.getElementById('outreach-msg').value='';
-  }catch(e){document.getElementById('outreach-msg').value='';showToast('Generation failed');}
-}
-
-function startOutreach(){
-  var msg=document.getElementById('outreach-msg').value.trim();
-  var selLeads=leads.filter(function(l){return selectedOutreachLeads.indexOf(l.id)>-1&&l.phone&&l.phone.length>=10;});
-  if(selLeads.length===0){showToast('Select at least 1 lead with a phone number');return;}
-  if(outreachType==='message'&&!msg){showToast('Type a message first');return;}
-  if(outreachType==='image'&&!flyerDataUrl){showToast('Upload a flyer first');return;}
-  if(outreachType==='both'&&!msg){showToast('Type a message first');return;}
-  // build queue
-  var queueDiv=document.getElementById('outreach-queue');
-  var queueList=document.getElementById('outreach-queue-list');
-  queueDiv.style.display='block';
-  queueList.innerHTML=selLeads.map(function(l,i){
-    var phone=l.phone.replace(/\D/g,'');var fp=phone.startsWith('91')?phone:'91'+phone;
-    // for image-only: open WA with no text (user pastes image manually)
-    // for message/both: encode message
-    var useMsg=outreachType!=='image'?msg:getWAMessage(l);
-    var waUrl='https://wa.me/'+fp+(useMsg?'?text='+encodeURIComponent(useMsg):'');
-    var hasImage=outreachType==='image'||outreachType==='both';
-    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--edge2);background:rgba(8,15,23,.7);" id="oq-'+l.id+'">'
-      +'<span style="font-family:var(--mono);font-size:8px;color:var(--muted);width:18px;">'+(i+1)+'.</span>'
-      +'<span style="font-family:var(--mono);font-size:8px;color:var(--text);flex:1;">'+l.name+'</span>'
-      +(hasImage&&flyerDataUrl?'<img src="'+flyerDataUrl+'" style="height:22px;width:22px;object-fit:cover;border:1px solid var(--edge2);" title="Flyer attached"/>':'')
-      +'<a href="'+waUrl+'" target="_blank" onclick="markOutreachSent('+l.id+')" '
-      +'style="font-family:var(--mono);font-size:7px;padding:4px 10px;background:rgba(34,214,142,.1);border:1px solid rgba(34,214,142,.3);color:var(--green);text-decoration:none;white-space:nowrap;">SEND &#8594;</a>'
-      +'<span id="oq-status-'+l.id+'" style="font-family:var(--mono);font-size:7px;color:var(--muted);"></span>'
-      +'</div>';
-  }).join('');
-  showToast('Queue ready — click SEND for each lead!');
-  // if image mode, also copy flyer instruction
-  if((outreachType==='image'||outreachType==='both')&&flyerDataUrl){
-    showToast('Tip: WhatsApp will open — paste/attach your flyer image manually!');
-  }
-  queueDiv.scrollIntoView({behavior:'smooth'});
-}
-function markOutreachSent(id){
-  var el=document.getElementById('oq-status-'+id);if(el)el.textContent='&#10003; SENT';
-  updateLeadStatus(id,'contacted');
-}
-
-function deduplicateLeads(){
-  var seen={};var before=leads.length;
-  leads=leads.filter(function(l){
-    // dedupe by phone if available, else by normalized name
-    var key=l.phone&&l.phone.length>=10?l.phone:l.name.toLowerCase().replace(/\s+/g,'');
-    if(seen[key])return false;
-    seen[key]=true;return true;
-  });
-  var removed=before-leads.length;
-  if(removed>0){localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();showToast('Removed '+removed+' duplicate(s)!');}
-  else showToast('No duplicates found.');
-}
-
-function importCSV(input){var file=input.files[0];if(!file)return;var r=new FileReader();r.onload=function(e){try{var text=e.target.result;var lines=text.split('\n');var headers=lines[0].split(',').map(function(h){return h.trim().toLowerCase().replace(/"/g,'');});var ti=headers.findIndex(function(h){return h.includes('title')||h.includes('name');});var pi=headers.findIndex(function(h){return h.includes('phone');});var ai=headers.findIndex(function(h){return h.includes('address');});var ri=headers.findIndex(function(h){return h.includes('rating');});var nl=[];for(var i=1;i<lines.length;i++){if(!lines[i].trim())continue;var cols=lines[i].split(',').map(function(c){return c.trim().replace(/"/g,'');});var name=ti>=0?cols[ti]:'';if(!name)continue;var lead={id:Date.now()+i,name:name,phone:pi>=0?cols[pi]:'',address:ai>=0?cols[ai]:'Ahmedabad',rating:ri>=0?parseFloat(cols[ri])||0:0,category:guessCategory(name),status:'new',notes:''};lead.score=calcLeadScore(lead);nl.push(lead);}leads=leads.concat(nl);localStorage.setItem('yuvi_leads',JSON.stringify(leads));
-// auto dedup after import
-var seenD={};leads=leads.filter(function(l){var dk=l.phone&&l.phone.length>=10?l.phone:l.name.toLowerCase().replace(/\s+/g,'');if(seenD[dk])return false;seenD[dk]=true;return true;});
-localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();scoreAllLeads();showToast('Imported '+nl.length+' leads! Duplicates removed.');}catch(err){showToast('CSV error');}};r.readAsText(file);input.value='';}
-function guessCategory(name){var n=name.toLowerCase();if(n.includes('restaurant')||n.includes('cafe')||n.includes('food')||n.includes('hotel'))return'smm';if(n.includes('furniture')||n.includes('hardware')||n.includes('retail')||n.includes('shop'))return'website';if(n.includes('clinic')||n.includes('doctor')||n.includes('hospital'))return'digital';if(n.includes('school')||n.includes('college'))return'seo';return'unknown';}
-function updateStats(){document.getElementById('kpi-contacted').textContent=contactedToday;document.getElementById('contacted-bar').style.width=Math.min(100,(contactedToday/10)*100)+'%';}
-function loadSampleLeads(){leads=[{id:1,name:'Ravi Electronics',phone:'9825001234',category:'website',status:'new',address:'Ahmedabad',rating:4.2,notes:''},{id:2,name:'Mehta Restaurant',phone:'9825002345',category:'smm',status:'interested',address:'Ahmedabad',rating:4.5,notes:'Very interested in social media management'},{id:3,name:'Kumar Textiles',phone:'9825003456',category:'digital',status:'new',address:'Ahmedabad',rating:4.0,notes:''},{id:4,name:'Shah Jewellers',phone:'9825005678',category:'seo',status:'interested',address:'Ahmedabad',rating:4.7,notes:'High budget available'},{id:5,name:'Gupta Pharmacy',phone:'9825006789',category:'digital',status:'contacted',address:'Ahmedabad',rating:4.1,notes:''},{id:6,name:'Patel Clinic',phone:'9825007890',category:'website',status:'follow_up',address:'Ahmedabad',rating:3.9,notes:'Needs follow up this week'},];scoreAllLeads();localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();showToast('Sample leads loaded!');}
-function openAddLead(){document.getElementById('add-lead-panel').classList.add('open');}
-function closeAddLead(){document.getElementById('add-lead-panel').classList.remove('open');}
-function submitAddLead(){var name=document.getElementById('al-name').value.trim();if(!name){showToast('Name required');return;}var lead={id:Date.now(),name:name,phone:document.getElementById('al-phone').value.trim(),category:document.getElementById('al-cat').value,address:document.getElementById('al-addr').value||'Ahmedabad',status:document.getElementById('al-status').value,rating:0,notes:document.getElementById('al-notes').value};lead.score=calcLeadScore(lead);leads.push(lead);localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();closeAddLead();showToast('Lead added: '+name);['al-name','al-phone','al-notes'].forEach(function(id){document.getElementById(id).value='';});}
-
-// ============================================================
-// PIPELINE
-// ============================================================
-function renderPipeline(){
-  var board=document.getElementById('kanban-board');board.innerHTML='';
-  PIPE_STAGES.forEach(function(stage){
-    var col=document.createElement('div');col.className='kanban-col';
-    var sc=pipeline.filter(function(c){return c.stage===stage;});
-    col.innerHTML='<div class="col-title">'+PIPE_LABELS[stage]+' <span style="color:var(--muted);">('+sc.length+')</span></div>';
-    sc.forEach(function(card){
-      var el=document.createElement('div');el.className='kanban-card panel';
-      var ln=card.notes&&card.notes.length>0?card.notes[card.notes.length-1].text:'No notes';
-      var ld=new Date(card.lastTouched||Date.now()).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
-      el.innerHTML='<div class="kc-name">'+card.name+'</div>'
-        +'<div class="kc-contact">'+(card.contact||card.phone||'\u2014')+'</div>'
-        +'<div class="kc-service">'+card.service+'</div>'
-        +'<div class="kc-note">'+escHtml(ln.substring(0,55))+(ln.length>55?'...':'')+'</div>'
-        +'<div class="kc-date">'+ld+'</div>'
-        +'<div class="kc-actions"><button class="wa-btn" onclick="event.stopPropagation();sendWAPipe('+card.id+')">WA</button>'
-        +'<button class="pipe-btn" style="font-size:7px;padding:2px 5px;" onclick="event.stopPropagation();setReminderFromPipe('+card.id+')">&#9201;</button></div>';
-      el.onclick=function(){openPipeDetail(card.id);};col.appendChild(el);
-    });
-    var add=document.createElement('div');add.className='col-add';add.textContent='+ ADD';add.onclick=function(){document.getElementById('ap-stage').value=stage;openAddPipeline();};col.appendChild(add);board.appendChild(col);
-  });
-}
-function setReminderFromPipe(id){var c=pipeline.find(function(x){return x.id===id;});if(!c)return;var days=prompt('Remind me about '+c.name+' in how many days?','3');if(days)addReminder('Follow up: '+c.name,days,id);}
-function sendWAPipe(id){var c=pipeline.find(function(x){return x.id===id;});if(!c||!c.phone)return;var phone=c.phone.replace(/\D/g,'');var fp=phone.startsWith('91')?phone:'91'+phone;window.open('https://wa.me/'+fp+'?text='+encodeURIComponent('Hi! Shlok here from Yugantar Growth. Following up on '+c.service+' for '+c.name+'. Ready to proceed?'),'_blank');c.lastTouched=new Date().toISOString();localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));}
-function openPipeDetail(id){var card=pipeline.find(function(x){return x.id===id;});if(!card)return;renderPipeDetail(card);document.getElementById('pipe-detail-panel').classList.add('open');}
-function renderPipeDetail(card){
-  var content=document.getElementById('psp-content');
-  var wonField=card.stage==='closed'?'<div style="margin-top:8px;"><div class="form-lbl">WON AMOUNT (\u20B9)</div><input type="number" class="form-inp" id="psp-won-amt" value="'+(card.wonAmount||'')+'" placeholder="14999" onchange="setPipeWon('+card.id+',this.value)"/></div>':'';
-  var notesHtml=(card.notes||[]).map(function(n){return'<div class="note-entry"><div class="ne-date">'+new Date(n.date).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+'</div><div class="ne-text">'+escHtml(n.text)+'</div></div>';}).join('');
-  content.innerHTML='<div class="sp-title" style="font-size:17px;padding-right:36px;">'+card.name+'</div>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--blade2);margin-bottom:10px;letter-spacing:.08em;">'+PIPE_LABELS[card.stage]+' \u00B7 '+card.service+'</div>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:4px;">MOVE STAGE</div>'
-    +'<div class="psp-stage-btns">'+PIPE_STAGES.map(function(s){return'<div class="psp-stage-btn'+(s===card.stage?' current':'')+'" onclick="movePipeStage('+card.id+',\''+s+'\')">'+PIPE_LABELS[s]+'</div>';}).join('')+'</div>'
-    +wonField
-    +'<div class="blade-line" style="margin:10px 0;"></div>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:5px;">NOTES & HISTORY</div>'
-    +notesHtml
-    +'<div style="display:flex;gap:5px;margin-top:7px;"><input type="text" class="form-inp" id="psp-new-note" placeholder="Add note..." style="flex:1;"/><button class="btn primary" onclick="addPipeNote('+card.id+')">ADD</button></div>'
-    +'<div class="blade-line" style="margin:10px 0;"></div>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:5px;">NEXT ACTION</div>'
-    +'<input type="text" class="form-inp" id="psp-next-action" value="'+(card.nextAction||'')+'" placeholder="Call back Monday..." onchange="setPipeNextAction('+card.id+',this.value)"/>'
-    +'<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin:8px 0 4px;">REMINDER</div>'
-    +'<div style="display:flex;gap:5px;margin-bottom:10px;"><input type="number" id="psp-rem-days" class="form-inp" placeholder="Days" style="width:70px;"/><button class="btn" style="flex:1;font-size:7px;" onclick="setReminderFromDetail('+card.id+')">SET REMINDER</button></div>'
-    +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
-    +'<button class="btn success" onclick="sendWAPipe('+card.id+')">WHATSAPP</button>'
-    +'<button class="btn danger" onclick="deletePipeCard('+card.id+')">DELETE</button>'
-    +'</div>';
-}
-function setReminderFromDetail(id){var c=pipeline.find(function(x){return x.id===id;});if(!c)return;var el=document.getElementById('psp-rem-days');var days=el?parseInt(el.value)||3:3;addReminder('Follow up: '+c.name,days,id);}
-function movePipeStage(id,stage){var c=pipeline.find(function(x){return x.id===id;});if(!c)return;c.stage=stage;c.lastTouched=new Date().toISOString();localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));renderPipeline();renderPipeDetail(c);showToast(c.name+' \u2192 '+PIPE_LABELS[stage]);}
-function addPipeNote(id){var c=pipeline.find(function(x){return x.id===id;});if(!c)return;var el=document.getElementById('psp-new-note');var txt=el?el.value.trim():'';if(!txt)return;if(!c.notes)c.notes=[];c.notes.push({date:new Date().toISOString(),text:txt});c.lastTouched=new Date().toISOString();el.value='';localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));renderPipeline();renderPipeDetail(c);showToast('Note added!');}
-function setPipeWon(id,val){var c=pipeline.find(function(x){return x.id===id;});if(!c)return;c.wonAmount=parseInt(val)||0;localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));}
-function setPipeNextAction(id,val){var c=pipeline.find(function(x){return x.id===id;});if(!c)return;c.nextAction=val;localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));}
-function deletePipeCard(id){showConfirmModal('DELETE DEAL','Permanently delete this pipeline card?',function(){pipeline=pipeline.filter(function(x){return x.id!==id;});localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));renderPipeline();closePipeDetail();showToast('Deleted.');});}
-function closePipeDetail(){document.getElementById('pipe-detail-panel').classList.remove('open');}
-function openAddPipeline(){document.getElementById('add-pipe-panel').classList.add('open');}
-function submitAddPipeline(){var name=document.getElementById('ap-name').value.trim();if(!name){showToast('Name required');return;}pipeline.push({id:Date.now(),name:name,contact:document.getElementById('ap-contact').value,phone:document.getElementById('ap-phone').value,service:document.getElementById('ap-service').value,stage:document.getElementById('ap-stage').value,notes:[{date:new Date().toISOString(),text:document.getElementById('ap-note').value||'Added.'}],lastTouched:new Date().toISOString()});localStorage.setItem('yuvi_pipeline',JSON.stringify(pipeline));renderPipeline();document.getElementById('add-pipe-panel').classList.remove('open');showToast('Deal added: '+name);['ap-name','ap-contact','ap-phone','ap-note'].forEach(function(id){document.getElementById(id).value='';});}
-
-// ============================================================
-// CLIENTS
-// ============================================================
-function getDefaultClients(){return [{id:1,name:'JFS',fullName:'Jangid Furniture Studio',type:'FURNITURE RETAILER',location:'Ahmedabad',tier:'Digital Foundation',amount:7999,status:'active',payment:'paid',tasks:[{text:'Website delivered',done:true},{text:'Instagram page created',done:true},{text:'Follow up for referral',done:false}],notes:'Great client. Ask for referral.'},{id:2,name:'FinEdge Advisory',fullName:'FinEdge Advisory',type:'FINANCIAL ADVISORY',location:'Ahmedabad',tier:'Growth \u20B914,999/month',amount:14999,status:'active',payment:'pending',tasks:[{text:'Campaign running',done:true},{text:'Monthly report due',done:false},{text:'Check ad performance',done:false}],notes:'Finance client. Report due.'}];}
-function renderClients(){
-  var grid=document.getElementById('clients-grid');
-  var pcol={paid:'rs-paid',pending:'rs-pending',overdue:'rs-overdue'};var scol={active:'var(--green)',inactive:'var(--muted)',onboarding:'var(--blade)'};
-  grid.innerHTML=clients.map(function(c){
-    return '<div class="client-card panel">'
-      +'<div class="cc-name">'+c.name+'</div><div class="cc-type">'+(c.fullName||c.name)+'</div>'
-      +'<div class="cc-type" style="color:var(--muted);">'+(c.type||'')+(c.location?' \u00B7 '+c.location:'')+'</div>'
-      +'<div class="cc-meta"><span style="font-family:var(--mono);font-size:8px;color:'+(scol[c.status]||'var(--blade)')+';">'+c.status.toUpperCase()+'</span>'
-      +'<span class="rev-status '+(pcol[c.payment]||'rs-pending')+'">'+(c.payment||'PENDING').toUpperCase()+'</span>'
-      +'<span style="font-family:var(--mono);font-size:8px;color:var(--gold);">\u20B9'+(c.amount||0).toLocaleString('en-IN')+'</span></div>'
-      +'<div style="font-family:var(--mono);font-size:7px;color:var(--muted);margin-bottom:7px;">'+c.tier+'</div>'
-      +'<div class="blade-line"></div>'
-      +'<div class="cc-tasks-list">'+(c.tasks||[]).map(function(t,ti){return'<div class="cct"><div class="cct-check'+(t.done?' cct-done':'')+'" onclick="toggleClientTask('+c.id+','+ti+')">'+(t.done?'&#10003;':'')+'</div><span class="cct-text'+(t.done?' cct-done':'')+'">'+t.text+'</span></div>';}).join('')
-      +'<button class="btn" style="font-size:7px;padding:2px 7px;margin-top:5px;width:100%;" onclick="addClientTask('+c.id+')">+ TASK</button></div>'
-      +'<div class="blade-line"></div>'
-      +'<textarea class="cc-note" placeholder="Notes..." onchange="saveClientNote('+c.id+',this.value)">'+escHtml(c.notes||'')+'</textarea>'
-      +'<div style="display:flex;gap:4px;margin-top:7px;flex-wrap:wrap;">'
-      +'<button class="btn success" style="flex:1;padding:5px;" onclick="messageClient('+c.id+')">MSG</button>'
-      +'<button class="btn primary" style="flex:1;padding:5px;" onclick="buildClientReport('+c.id+')">REPORT</button>'
-      +'<button class="btn gold" style="flex:1;padding:5px;" onclick="cycleClientPayment('+c.id+')">PAY &#8635;</button>'
-      +'</div></div>';
-  }).join('')+'<div class="client-card panel" onclick="openAddClient()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-style:dashed;min-height:100px;"><div style="font-size:24px;color:var(--dim);margin-bottom:6px;">+</div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);">ADD CLIENT</div></div>';
-  document.getElementById('kpi-clients').textContent=clients.filter(function(c){return c.status==='active';}).length;
-  renderHomeClientsMini();
-}
-function renderHomeClientsMini(){var el=document.getElementById('home-clients-mini');if(!el)return;var pcol={paid:'rs-paid',pending:'rs-pending',overdue:'rs-overdue'};el.innerHTML=clients.map(function(c){return'<div class="rev-row"><span class="rev-name">'+c.name+'</span><span class="rev-status '+(pcol[c.payment]||'rs-pending')+'">'+c.status.toUpperCase()+'</span></div>';}).join('');}
-function toggleClientTask(cid,ti){var c=clients.find(function(x){return x.id===cid;});if(!c||!c.tasks[ti])return;c.tasks[ti].done=!c.tasks[ti].done;localStorage.setItem('yuvi_clients',JSON.stringify(clients));renderClients();}
-function addClientTask(cid){var txt=prompt('Task:');if(!txt)return;var c=clients.find(function(x){return x.id===cid;});if(!c)return;if(!c.tasks)c.tasks=[];c.tasks.push({text:txt,done:false});localStorage.setItem('yuvi_clients',JSON.stringify(clients));renderClients();}
-function saveClientNote(cid,val){var c=clients.find(function(x){return x.id===cid;});if(!c)return;c.notes=val;localStorage.setItem('yuvi_clients',JSON.stringify(clients));}
-function cycleClientPayment(cid){var c=clients.find(function(x){return x.id===cid;});if(!c)return;c.payment={paid:'pending',pending:'overdue',overdue:'paid'}[c.payment]||'paid';localStorage.setItem('yuvi_clients',JSON.stringify(clients));renderClients();showToast(c.name+' \u2192 '+c.payment.toUpperCase());}
-function messageClient(cid){var c=clients.find(function(x){return x.id===cid;});if(!c)return;window.open('https://wa.me/?text='+encodeURIComponent('Hi! Shlok here from Yugantar Growth. Following up on your '+c.tier+' package. Let me know if you need anything.'),'_blank');}
-function buildClientReport(cid){var c=clients.find(function(x){return x.id===cid;});if(!c)return;nav('command');setModeByName('plan');setTimeout(function(){document.getElementById('chat-inp').value='Build a monthly performance report for '+c.name+' ('+c.fullName+'). Service: '+c.tier+'. Focus on ROI and digital improvements.';document.getElementById('chat-inp').focus();},200);showToast('Report prompt loaded!');}
-function openAddClient(){var name=prompt('Client display name:');if(!name)return;var full=prompt('Full business name:')||name;var type=(prompt('Business type:')||'BUSINESS').toUpperCase();var tier=prompt('Service tier:')||'Digital Foundation';var amt=parseInt(prompt('Monthly value (\u20B9):')||'0');clients.push({id:Date.now(),name:name,fullName:full,type:type,location:'Ahmedabad',tier:tier,amount:amt,status:'active',payment:'pending',tasks:[{text:'Onboarding in progress',done:false}],notes:''});localStorage.setItem('yuvi_clients',JSON.stringify(clients));renderClients();showToast('Client added: '+name);}
-
-// ============================================================
-// SETTINGS
-// ============================================================
-function openSettings(){document.getElementById('settings-panel').classList.add('open');document.getElementById('settings-overlay').classList.add('show');}
-function closeSettings(){document.getElementById('settings-panel').classList.remove('open');document.getElementById('settings-overlay').classList.remove('show');}
-function saveSettGroqKey(){var k=document.getElementById('s-groq-key').value.trim();if(!k){showToast('Enter API key');return;}localStorage.setItem('yuvi_groq_key',k);showToast('Groq key saved!');fetchBriefingFromGroq();}
-async function testGroqKey(){var k=document.getElementById('s-groq-key').value.trim();if(!k){showToast('Enter key first');return;}showToast('Testing...');try{var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:'ping'}],max_tokens:5})});var data=await res.json();if(data.choices)showToast('\u2713 Groq CONNECTED');else showToast('\u2717 Groq FAIL');}catch(e){showToast('Failed: '+e.message);}}
-function saveDefaultMode(){var m=document.getElementById('s-default-mode').value;localStorage.setItem('yuvi_default_mode',m);currentMode=m;setModeByName(m);showToast('Default mode: '+m.toUpperCase());}
-function savePersonality(){localStorage.setItem('yuvi_personality',document.getElementById('s-personality').value);showToast('Personality saved!');}
-function saveBizCtx(){localStorage.setItem('yuvi_biz_ctx',document.getElementById('s-biz-ctx').value);showToast('Business context saved!');}
-
-// ============================================================
-// GITHUB MEMORY
-// ============================================================
-function getGHConfig(){return{username:localStorage.getItem('yuvi_gh_user')||'',repo:localStorage.getItem('yuvi_gh_repo')||'',token:localStorage.getItem('yuvi_gh_token')||''};}
-async function loadMemory(){
-  var cfg=getGHConfig();if(!cfg.username||!cfg.repo||!cfg.token)return null;
-  try{
-    var url='https://api.github.com/repos/'+cfg.username+'/'+cfg.repo+'/contents/memory.json';
-    var res=await fetch(url,{headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}});
-    if(!res.ok)return null;
-    var data=await res.json();var content=JSON.parse(atob(data.content.replace(/\n/g,'')));
-    memory=content;localStorage.setItem('yuvi_memory_sha',data.sha);return content;
-  }catch(e){return null;}
-}
-async function saveMemory(updates){
-  var cfg=getGHConfig();if(!cfg.token)return;
-  try{
-    var sha=localStorage.getItem('yuvi_memory_sha');var updated=Object.assign({},memory,updates);updated.lastUpdated=new Date().toISOString();
-    updated.leads={total:leads.length,contacted:contactedToday,interested:leads.filter(function(l){return l.status==='interested';}).length,closed:leads.filter(function(l){return l.status==='closed';}).length};
-    var url='https://api.github.com/repos/'+cfg.username+'/'+cfg.repo+'/contents/memory.json';
-    var encoded=btoa(unescape(encodeURIComponent(JSON.stringify(updated,null,2))));
-    var res=await fetch(url,{method:'PUT',headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'YUVI v4 memory update '+new Date().toISOString().slice(0,10),content:encoded,sha:sha})});
-    if(res.ok){var d=await res.json();localStorage.setItem('yuvi_memory_sha',d.content.sha);memory=updated;showToast('Memory saved \u2192 GitHub');}
-  }catch(e){showToast('Memory save failed: '+e.message);}
-}
-function getMemoryContext(){
-  try{
-    if(!memory)return'';
-    var ctx='\n\n=== YUVI PERSISTENT MEMORY ===\n';
-    if(memory.identity)ctx+='Owner: '+memory.identity.owner+', '+memory.identity.agency+', '+memory.identity.city+'.\n';
-    if(memory.context&&memory.context.about_shlok)ctx+=memory.context.about_shlok+'\n';
-    if(memory.context&&memory.context.first_memory)ctx+=memory.context.first_memory+'\n';
-    if(memory.leads)ctx+='Lead stats: '+JSON.stringify(memory.leads)+'.\n';
-    if(memory.logs&&memory.logs.length>0){var recent=memory.logs.slice(-5);ctx+='Recent logs:\n'+recent.map(function(l){return'- '+( l.note||l.summary||l.type||'');}).join('\n')+'\n';}
-    if(memory.plans&&memory.plans.length>0)ctx+='Plans: '+memory.plans.slice(-3).map(function(p){return p.title||p;}).join(', ')+'.\n';
-    ctx+='=== END MEMORY ===';
-    return ctx;
-  }catch(e){return'';}
-}
-async function saveAndConnectMemory(){
-  var u=document.getElementById('s-gh-user').value.trim()||'whitewolf251501-dot';var r=document.getElementById('s-gh-repo').value.trim()||'aa-os-yuvi';var t=document.getElementById('s-gh-token').value.trim();
-  if(!u||!r||!t){showToast('Fill all 3 GitHub fields');return;}
-  localStorage.setItem('yuvi_gh_user',u);localStorage.setItem('yuvi_gh_repo',r);localStorage.setItem('yuvi_gh_token',t);showToast('Connecting...');
-  var mem=await loadMemory();
-  if(mem){showToast('\u2713 Memory connected! Reading your history...');showMemStatus(true);applyMemoryToUI(mem);}
-  else{showToast('\u2717 Connection failed \u2014 check repo/token');showMemStatus(false);}
-}
-function showMemStatus(ok){var el=document.getElementById('mem-status-indicator');el.style.display='block';el.className='mem-status '+(ok?'mem-ok':'mem-no');el.textContent=ok?'\u25CF MEMORY CONNECTED \u2014 Full history active':'\u25CF NOT CONNECTED';}
-function applyMemoryToUI(mem){if(!mem)return;if(mem.clients&&mem.clients.length>0){clients=mem.clients;localStorage.setItem('yuvi_clients',JSON.stringify(clients));renderClients();}setYuviBriefingFromMemory(mem);}
-function viewMemory(){document.getElementById('mem-view-content').textContent=memory?JSON.stringify(memory,null,2):'No memory loaded. Connect GitHub first.';document.getElementById('mem-view-modal').classList.add('show');}
-function downloadMemoryBackup(){if(!memory){showToast('No memory to backup');return;}var blob=new Blob([JSON.stringify(memory,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='yuvi_memory_'+new Date().toISOString().slice(0,10)+'.json';a.click();showToast('Backup downloaded!');}
-function clearLocalMemory(){showConfirmModal('CLEAR LOCAL DATA','Clears all leads, pipeline, clients, settings from this device. GitHub memory is safe. Continue?',function(){['yuvi_leads','yuvi_pipeline','yuvi_clients','yuvi_revenue','yuvi_priorities','yuvi_contacted_today','yuvi_groq_key','yuvi_default_mode','yuvi_personality','yuvi_biz_ctx','yuvi_reminders'].forEach(function(k){localStorage.removeItem(k);});leads=[];pipeline=[];clients=getDefaultClients();revenueData=getDefaultRevenue();priorities=[{text:'Add your priorities',done:false}];contactedToday=0;reminders=[];renderLeads();renderPipeline();renderClients();renderRevenue();renderPriorities();updateStats();showToast('Local data cleared!');});}
-
-// ============================================================
-// MODALS & TOAST
-// ============================================================
-function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2500);}
-function showConfirmModal(title,body,onConfirm){document.getElementById('gm-title').textContent=title;document.getElementById('gm-body').textContent=body;document.getElementById('gm-confirm').onclick=function(){onConfirm();closeGenericModal();};document.getElementById('generic-modal').classList.add('show');}
-function closeGenericModal(){document.getElementById('generic-modal').classList.remove('show');}
-
-// ============================================================
-// v4 — EVENING / SESSION-END AUTO-SAVE TO GITHUB MEMORY
-// Fires on tab-hide (mobile-safe) AND on unload (desktop close).
-// Guarded so it only actually writes once per session.
-// ============================================================
-window.addEventListener('beforeunload',function(){if(chatHistory.length>=2)autoSaveSession();});
-var sessionSaved=false;
-async function autoSaveSession(){
-  var key=getGroqKey();if(!key||!memory||chatHistory.length<2||sessionSaved)return;
-  sessionSaved=true;
-  try{
-    var convo=chatHistory.slice(-20).map(function(m){return m.role.toUpperCase()+': '+m.content.substring(0,200);}).join(' | ');
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},keepalive:true,body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:'You are YUVI\'s memory module. Summarize this Yugantar Growth business conversation in 3-5 bullet points. Focus on: decisions made, deal/client status changes (Tradosphere, JFS, FinEdge or others), leads discussed, actions agreed, advance/payment flags. Very concise.'},{role:'user',content:'Summarize: '+convo}],max_tokens:220,temperature:0.3})});
-    var data=await res.json();var summary=data.choices&&data.choices[0]?data.choices[0].message.content:'';if(!summary)return;
-    if(!memory.logs)memory.logs=[];
-    memory.logs.push({date:new Date().toISOString().slice(0,10),time:new Date().toISOString(),type:'evening_summary',summary:summary,msgCount:chatHistory.length});
-    if(memory.logs.length>50)memory.logs=memory.logs.slice(-50);
-    await saveMemory({logs:memory.logs});
-  }catch(e){sessionSaved=false;}
-}
-</script>
+<script src="app.js"></script>
 <!-- YUVI v5 PWA Service Worker -->
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load', function(){
-    navigator.serviceWorker.register('/sw.js').then(function(reg){
-      console.log('[YUVI] PWA service worker registered:', reg.scope);
-    }).catch(function(err){
-      console.warn('[YUVI] SW registration failed:', err);
-    });
-  });
-}
-</script>
+<script src="sw-register.js"></script>
 <!-- YUVI v5 Boot — runs after all modules are loaded -->
-<script>
-(function(){
-  function yuviBoot(){
-    // 1. Load prompt skills from localStorage (before code skills, so they're available immediately)
-    if(window.YuviPromptSkillEngine){
-      window.YuviPromptSkillEngine.loadFromStorage();
-    }
-    // 2. Load installed skills from skills/installed.json
-    if(window.YuviSkillLoader){
-      window.YuviSkillLoader.loadAll().catch(function(e){
-        console.warn('[YUVI Boot] Skill loader error:', e);
-      });
-    }
-    // 3. Wire event bus listeners for skill manager live updates
-    if(window.YuviBus && window.YuviSkillManager){
-      window.YuviBus.on('skill.registered',         function(){ window.YuviSkillManager.renderSkillsManager(); });
-      window.YuviBus.on('skill.toggled',             function(){ window.YuviSkillManager.renderSkillsManager(); });
-      window.YuviBus.on('skills.loaded',             function(){ window.YuviSkillManager.renderAll(); });
-      window.YuviBus.on('prompt-skill.installed',    function(){ window.YuviSkillManager.renderSkillsManager(); });
-      window.YuviBus.on('prompt-skill.removed',      function(){ window.YuviSkillManager.renderSkillsManager(); });
-      window.YuviBus.on('prompt-skills.loaded',      function(){ window.YuviSkillManager.renderSkillsManager(); });
-      window.YuviBus.on('knowledge.added',           function(){ window.YuviSkillManager.renderKnowledgeManager(); });
-      window.YuviBus.on('knowledge.removed',         function(){ window.YuviSkillManager.renderKnowledgeManager(); });
-    }
-    // 4. Emit boot event for any automation rules listening
-    if(window.YuviBus){
-      window.YuviBus.emit('yuvi.booted', {
-        timestamp: new Date().toISOString(),
-        skills: window.YuviSkillRegistry ? window.YuviSkillRegistry.count() : 0
-      });
-    }
-    console.log('[YUVI v5] Boot complete.');
-  }
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded', yuviBoot);
-  } else {
-    setTimeout(yuviBoot, 0);
-  }
-})();
-</script>
+<script src="skill-boot.js"></script>
 </body>
 </html>

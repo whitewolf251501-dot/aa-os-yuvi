@@ -408,15 +408,19 @@
   function loadPreferences() {
     const td = document.getElementById('pref-toast-duration');
     const bt = document.getElementById('pref-briefing-time');
+    const st = document.getElementById('pref-stage-threshold-days');
     if (td) td.value = localStorage.getItem('yuvi_pref_toast_duration') || '3';
     if (bt) bt.value = localStorage.getItem('yuvi_pref_briefing_time')  || '08:00';
+    if (st) st.value = localStorage.getItem('yuvi_pref_stage_threshold_days') || '5';
   }
 
   function savePreferences() {
     const td = document.getElementById('pref-toast-duration')?.value;
     const bt = document.getElementById('pref-briefing-time')?.value;
+    const st = document.getElementById('pref-stage-threshold-days')?.value;
     if (td) localStorage.setItem('yuvi_pref_toast_duration', td);
     if (bt) localStorage.setItem('yuvi_pref_briefing_time', bt);
+    if (st) localStorage.setItem('yuvi_pref_stage_threshold_days', st);
     if (window.showToast) window.showToast('Preferences saved.');
   }
 

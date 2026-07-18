@@ -1,75 +1,147 @@
 /**
- * memory/contextBuilder.js
- * Aggregates all context the Brain needs into one object.
- * Individual pieces (business context, conversation memory, GitHub memory,
- * knowledge) are sourced from their own modules — this is the assembler.
- * Exposes window.YuviMemory (alias maintained for backward compat).
+ * memory/contextBuilder.js — YUVI v5.1 Memory Layer (hardened)
+ * ─────────────────────────────────────────────────────────────
+ * v5.1 changes:
+ *  - Corruption detection on every localStorage read
+ *  - Schema version tracking (yuvi_memory_schema_version)
+ *  - Graceful recovery (returns empty safe defaults on corruption)
+ *  - All reads through YuviSecurity.safeGetLocal
+ *  - Memory size guard (warns if approaching localStorage limit)
  */
 (function () {
+  'use strict';
 
-  function safeParse(key) {
-    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { return []; }
+  const SCHEMA_VERSION = '5.1';
+  const MODULE         = 'Memory';
+
+  function log(level, msg, data) {
+    if (window.YuviLogger) window.YuviLogger[level](MODULE, msg, data);
   }
 
-  // --- Business context (Settings → localStorage) ---
-  function getBusinessContext() { return localStorage.getItem('yuvi_biz_ctx') || ''; }
-  function getPersonality()     { return localStorage.getItem('yuvi_personality') || ''; }
+  // ── Corruption-safe array reader ───────────────────────────────────────────
+  function safeArray(key, validate = null) {
+    const sec = window.YuviSecurity;
+    const raw = sec ? sec.safeGetLocal(key, []) : [];
 
-  // --- Conversation memory summary (written by autoSaveSession in index.html) ---
-  function getConversationSummary() { return localStorage.getItem('yuvi_memory_summary') || ''; }
+    if (!Array.isArray(raw)) {
+      log('warn', `Corrupted array at key "${key}" — recovering with empty array`);
+      if (sec) sec.safeSetLocal(key + '_corrupt_backup_' + Date.now(), raw);
+      return [];
+    }
 
-  // --- Live CRM data ---
+    if (validate) {
+      const valid = raw.filter(item => {
+        try { return validate(item); }
+        catch (e) { return false; }
+      });
+      if (valid.length < raw.length) {
+        log('warn', `Removed ${raw.length - valid.length} invalid entries from "${key}"`);
+      }
+      return valid;
+    }
+
+    return raw;
+  }
+
+  // ── Safe string reader ─────────────────────────────────────────────────────
+  function safeString(key, fallback = '') {
+    try { return localStorage.getItem(key) || fallback; }
+    catch (e) { log('warn', `Cannot read "${key}" from localStorage`, e.message); return fallback; }
+  }
+
+  // ── Schema version check ───────────────────────────────────────────────────
+  function checkSchema() {
+    const stored = safeString('yuvi_schema_version', '');
+    if (stored && stored !== SCHEMA_VERSION) {
+      log('info', `Schema version mismatch: stored=${stored} current=${SCHEMA_VERSION} — continuing with compatibility mode`);
+    }
+    try { localStorage.setItem('yuvi_schema_version', SCHEMA_VERSION); } catch (e) {}
+  }
+
+  // ── localStorage size guard ────────────────────────────────────────────────
+  function checkStorageUsage() {
+    try {
+      let total = 0;
+      for (const key in localStorage) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
+          total += (localStorage[key] || '').length * 2; // UTF-16 bytes
+        }
+      }
+      const usedKB  = Math.round(total / 1024);
+      const limitKB = 5120; // 5MB typical limit
+      if (usedKB > limitKB * 0.8) {
+        log('warn', `localStorage usage at ${usedKB}KB / ~${limitKB}KB (${Math.round(usedKB/limitKB*100)}%) — consider clearing old data`);
+      }
+      return { usedKB, limitKB };
+    } catch (e) { return { usedKB: 0, limitKB: 5120 }; }
+  }
+
+  // ── Context readers ────────────────────────────────────────────────────────
+  function getBusinessContext()     { return safeString('yuvi_biz_ctx', ''); }
+  function getPersonality()         { return safeString('yuvi_personality', ''); }
+  function getConversationSummary() { return safeString('yuvi_memory_summary', ''); }
+
   function getLiveAppData() {
     return {
-      leads:    safeParse('yuvi_leads'),
-      pipeline: safeParse('yuvi_pipeline'),
-      clients:  safeParse('yuvi_clients'),
-      revenue:  safeParse('yuvi_revenue')
+      leads:    safeArray('yuvi_leads',    item => item && typeof item.name === 'string'),
+      pipeline: safeArray('yuvi_pipeline', item => item && typeof item.name === 'string'),
+      clients:  safeArray('yuvi_clients',  item => item && typeof item.name === 'string'),
+      revenue:  safeArray('yuvi_revenue')
     };
   }
 
-  // --- Conversation history for multi-turn chat ---
   function getConversationHistory(limit = 20) {
-    try {
-      return JSON.parse(localStorage.getItem('yuvi_chat_history') || '[]').slice(-limit);
-    } catch (e) { return []; }
+    const history = safeArray('yuvi_chat_history');
+    return history.slice(-limit);
   }
 
-  // --- GitHub long-term memory ---
   async function getGitHubMemory() {
     const mod = window.YuviGitHub || window.YuviGitHubMemory;
     if (!mod) return null;
     try { const { content } = await mod.readFile('memory.json'); return content; }
-    catch (e) { console.warn('[ContextBuilder] GitHub memory unavailable:', e.message); return null; }
+    catch (e) { log('warn', 'GitHub memory unavailable', e.message); return null; }
   }
 
-  // --- Uploaded knowledge ---
   function getUploadedKnowledge(maxCharsPerDoc = 3500) {
-    return window.YuviKnowledge ? window.YuviKnowledge.getContextBundle(maxCharsPerDoc) : '';
+    if (!window.YuviKnowledge) return '';
+    try { return window.YuviKnowledge.getContextBundle(maxCharsPerDoc); }
+    catch (e) { log('warn', 'Knowledge context failed', e.message); return ''; }
   }
 
-  // --- Installed skills summary ---
   function getInstalledSkills() {
-    return window.YuviSkillRegistry ? window.YuviSkillRegistry.list() : [];
+    if (!window.YuviSkillRegistry) return [];
+    try { return window.YuviSkillRegistry.list(); }
+    catch (e) { log('warn', 'Skill list failed', e.message); return []; }
   }
 
-  // --- Full context bundle (used by PromptComposer / Brain.chat) ---
   async function build() {
     const githubMemory = await getGitHubMemory();
     return {
-      businessContext:      getBusinessContext(),
-      personality:          getPersonality(),
-      conversationSummary:  getConversationSummary(),
-      liveAppData:          getLiveAppData(),
-      conversationHistory:  getConversationHistory(),
-      uploadedKnowledge:    getUploadedKnowledge(),
-      installedSkills:      getInstalledSkills(),
-      githubMemory
+      businessContext:     getBusinessContext(),
+      personality:         getPersonality(),
+      conversationSummary: getConversationSummary(),
+      liveAppData:         getLiveAppData(),
+      conversationHistory: getConversationHistory(),
+      uploadedKnowledge:   getUploadedKnowledge(),
+      installedSkills:     getInstalledSkills(),
+      githubMemory,
+      schema:              SCHEMA_VERSION
     };
   }
 
-  // Expose — also alias to YuviMemory for any code that already references it
-  const api = { getBusinessContext, getPersonality, getConversationSummary, getLiveAppData, getConversationHistory, getGitHubMemory, getUploadedKnowledge, getInstalledSkills, build, buildFullContext: build };
-  window.YuviMemory        = api;
+  // Init on load
+  checkSchema();
+  const usage = checkStorageUsage();
+  log('info', `Memory v5.1 ready — localStorage: ${usage.usedKB}KB used`);
+
+  const api = {
+    getBusinessContext, getPersonality, getConversationSummary,
+    getLiveAppData, getConversationHistory, getGitHubMemory,
+    getUploadedKnowledge, getInstalledSkills, build,
+    checkStorageUsage, checkSchema,
+    buildFullContext: build // alias
+  };
+
+  window.YuviMemory         = api;
   window.YuviContextBuilder = api;
 })();

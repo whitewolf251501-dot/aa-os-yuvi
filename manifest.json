@@ -4,7 +4,7 @@
   "description": "AI Business Operating System for Yugantar Growth",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "landscape",
   "background_color": "#050a0f",
   "theme_color": "#0ef6ff",
   "categories": ["business", "productivity"],
