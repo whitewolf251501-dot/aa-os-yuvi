@@ -231,6 +231,7 @@ function initDashboard(){
   renderRevenue();renderPriorities();
   scoreAllLeads();
   renderLeads();renderPipeline();renderClients();renderHomeClientsMini();
+  renderRecentActivity();
   updateStats();checkReminders();
   setInterval(checkReminders,60000);
   runProactiveBriefing();
@@ -305,7 +306,11 @@ function postProactiveBriefingToChat(text){
 // ============================================================
 // CLOCK & GREET
 // ============================================================
-function updateClock(){document.getElementById('livetime').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' IST';}
+function updateClock(){
+  document.getElementById('livetime').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' IST';
+  var hc=document.getElementById('home-clock-time');
+  if(hc)hc.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+}
 function setGreeting(){
   var h=new Date().getHours();
   document.getElementById('greet-time').textContent=h<12?'MORNING':h<17?'AFTERNOON':'EVENING';
@@ -365,6 +370,78 @@ function renderRevenue(){
   document.getElementById('rev-total-val').textContent='\u20B9'+total.toLocaleString('en-IN');
   document.getElementById('kpi-revenue').textContent='\u20B9'+total.toLocaleString('en-IN');
   localStorage.setItem('yuvi_revenue',JSON.stringify(revenueData));
+  logRevenueHistoryPoint(total);
+  renderRevenueOverviewChart();
+}
+// v6.2 — Home 'Revenue Overview' chart. Rather than fabricate a trend, this
+// logs one REAL data point per calendar month (keyed by 'YYYY-MM', updated
+// in place if today's total changes again the same month) so the chart is
+// always genuine — it just starts as a single point and grows honestly
+// month over month as the business actually runs.
+var REV_HIST_KEY='yuvi_revenue_history';
+function logRevenueHistoryPoint(total){
+  var hist=safeParseLS(REV_HIST_KEY,[]);
+  var monthKey=new Date().toISOString().slice(0,7); // 'YYYY-MM'
+  var idx=hist.findIndex(function(h){return h.month===monthKey;});
+  if(idx===-1)hist.push({month:monthKey,total:total});
+  else hist[idx].total=total;
+  hist.sort(function(a,b){return a.month<b.month?-1:1;});
+  hist=hist.slice(-12); // keep last 12 months
+  localStorage.setItem(REV_HIST_KEY,JSON.stringify(hist));
+}
+function renderRevenueOverviewChart(){
+  var el=document.getElementById('revenue-overview-chart');
+  if(!el)return;
+  var hist=safeParseLS(REV_HIST_KEY,[]);
+  if(!hist.length){el.innerHTML='<div style="font-size:10px;color:var(--muted);">No revenue history yet.</div>';return;}
+  var monthLabels=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var labels=hist.map(function(h){return monthLabels[parseInt(h.month.slice(5,7),10)-1];});
+  var values=hist.map(function(h){return h.total;});
+  var deltaTxt='';
+  if(values.length>1){
+    var prev=values[values.length-2],cur=values[values.length-1];
+    if(prev>0){var pct=Math.round(((cur-prev)/prev)*100);deltaTxt='<span class="rev-ov-delta">'+(pct>=0?'+':'')+pct+'% vs last month</span>';}
+  }
+  el.innerHTML='<div class="rev-ov-big">\u20B9'+values[values.length-1].toLocaleString('en-IN')+deltaTxt+'</div>'
+    +renderSparklineSVG(values,labels);
+}
+// v6.2 — Recent Activity feed (Home dashboard). Logs real widget-generation
+// events, tagged to a known client when the command/title names one, so the
+// feed shows genuine YUVI-generated work per client (not placeholder data).
+var ACTIVITY_KEY='yuvi_recent_activity';
+function logRecentActivity(widgetTitle,commandText){
+  var list=safeParseLS(ACTIVITY_KEY,[]);
+  var matchedClient=clients.find(function(c){
+    return (commandText||'').toLowerCase().indexOf(c.name.toLowerCase())!==-1
+      || (widgetTitle||'').toLowerCase().indexOf(c.name.toLowerCase())!==-1;
+  });
+  list.push({
+    client:matchedClient?matchedClient.name:'Yugantar',
+    title:widgetTitle,
+    time:new Date().toISOString()
+  });
+  list=list.slice(-20);
+  localStorage.setItem(ACTIVITY_KEY,JSON.stringify(list));
+  renderRecentActivity();
+}
+function timeAgo(iso){
+  var mins=Math.round((Date.now()-new Date(iso).getTime())/60000);
+  if(mins<1)return 'just now';
+  if(mins<60)return mins+'m ago';
+  var hrs=Math.round(mins/60);
+  if(hrs<24)return hrs+'h ago';
+  return Math.round(hrs/24)+'d ago';
+}
+function renderRecentActivity(){
+  var el=document.getElementById('recent-activity-list');
+  if(!el)return;
+  var list=safeParseLS(ACTIVITY_KEY,[]).slice().reverse().slice(0,6);
+  if(!list.length){el.innerHTML='<div style="font-size:10px;color:var(--muted);">No activity yet \u2014 ask YUVI to build something.</div>';return;}
+  el.innerHTML=list.map(function(a){
+    return '<div class="activity-card"><div class="activity-client">'+escHtml(a.client)+'</div>'
+      +'<div class="activity-title">'+escHtml(a.title)+'</div>'
+      +'<div class="activity-time">'+timeAgo(a.time)+'</div></div>';
+  }).join('');
 }
 function getRevSC(s){return{paid:'rs-paid',pending:'rs-pending',overdue:'rs-overdue'}[s]||'rs-pending';}
 function cycleRevStatus(id){var r=revenueData.find(function(x){return x.id===id;});if(!r)return;r.status={paid:'pending',pending:'overdue',overdue:'paid'}[r.status]||'paid';renderRevenue();}
@@ -377,6 +454,8 @@ function renderPriorities(){
       +'<input class="pri-inp'+(p.done?' done-txt':'')+'" value="'+p.text.replace(/"/g,'&quot;')+'" onchange="updatePriorityText('+i+',this.value)"/></div>';
   }).join('')+'<div style="padding:5px 0;"><button class="btn" style="font-size:7px;padding:3px 7px;width:100%;" onclick="addPriorityRow()">+ TASK</button></div>';
   localStorage.setItem('yuvi_priorities',JSON.stringify(priorities));
+  var kf=document.getElementById('kpi-followups');
+  if(kf)kf.textContent=priorities.filter(function(p){return !p.done;}).length;
 }
 function togglePriority(i){priorities[i].done=!priorities[i].done;renderPriorities();}
 function updatePriorityText(i,v){priorities[i].text=v;localStorage.setItem('yuvi_priorities',JSON.stringify(priorities));}
@@ -679,47 +758,47 @@ function parseCommand(msg){
 }
 
 function setStatusDot(t){var dot=document.getElementById('cmd-status-dot');if(t)dot.classList.add('thinking');else dot.classList.remove('thinking');}
-// v6.1 — every YUVI response (and Shlok's own messages) now renders as a
-// live widget card directly in the canvas — there is no separate chat-bubble
-// strip anymore. makeResponseWidget() builds the widget object; the actual
-// card look is handled by renderWidgetBody()'s 'response' case below.
-function makeResponseWidget(role,text,label,extra){
-  var now=new Date().toISOString();
-  var time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-  return {
-    id:'r_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-    type:'response',
-    title:label,
-    subtitle:time,
-    data:Object.assign({role:role,text:text},extra||{}),
-    pinned:false,locked:false,createdAt:now,updatedAt:now
-  };
+// v6.2 — YUVI's replies/status no longer stack as cards in the canvas.
+// setCaption() updates the single live caption line above the input box
+// IN PLACE (see #yuvi-caption in index.html) — it never grows into a list.
+// The canvas itself is reserved for real generated widgets (charts, lists,
+// calendars, proposals-with-actions) via YuviWidgetEngine.applyWidget().
+function setCaption(text){
+  var cap=document.getElementById('yuvi-caption');
+  if(cap)cap.textContent=text;
 }
 function renderCanvasAndScroll(){
   renderCanvas();
   var wrap=document.getElementById('yuvi-canvas-wrap');
   if(wrap)wrap.scrollTop=wrap.scrollHeight;
 }
+// Plain chat replies/status (errors, memory saves, reminders, briefings,
+// regular AI replies) — just update the caption line. type:'user' instead
+// flashes the command chip with what was just asked (already-existing UI).
 function appendMsg(type,text,label){
-  var w=makeResponseWidget(type,text,label);
-  canvasWidgets.push(w);
-  renderCanvasAndScroll();
+  if(type==='user')showCommandChip(text);
+  else setCaption(text);
   logConversationMessage(type,text,label);
-  return document.getElementById('yc-card-'+w.id);
+  return null;
 }
+// Proposal-ready output keeps its PDF/COPY/DESIGN BRIEF buttons, so it's a
+// real, kept widget in the canvas grid (not a transient status message).
 function appendMsgWithActions(type,text,label){
-  var w=makeResponseWidget(type,text,label,{actions:true});
-  canvasWidgets.push(w);
+  var time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  var widgetData={type:'text',title:label,subtitle:time,data:{text:text,actions:true}};
+  canvasWidgets=window.YuviWidgetEngine.applyWidget(canvasWidgets,widgetData,null);
+  persistCanvas();
   renderCanvasAndScroll();
   logConversationMessage(type,text,label);
-  return document.getElementById('yc-card-'+w.id);
+  logRecentActivity(label,text);
+  var created=canvasWidgets[canvasWidgets.length-1];
+  return document.getElementById('yc-card-'+created.id);
 }
 function appendTyping(){
-  var w=makeResponseWidget('ai','','YUVI \u00B7 THINKING',{typing:true});
-  canvasWidgets.push(w);
-  renderCanvasAndScroll();
-  return {remove:function(){canvasWidgets=canvasWidgets.filter(function(x){return x.id!==w.id;});renderCanvasAndScroll();}};
+  setCaption('Thinking...');
+  return {remove:function(){/* the next setCaption() call (below) replaces this — nothing to clean up */}};
 }
+
 
 // ============================================================
 // v6 PHASE 3 — CHAT CANVAS (blank-canvas dynamic widget surface)
@@ -732,6 +811,9 @@ function initCanvas(){
   canvasWidgets=window.YuviWidgetEngine?window.YuviWidgetEngine.load():[];
   startNewConversation();
   renderCanvas();
+  var h=new Date().getHours();
+  var partOfDay=h<12?'Morning':h<17?'Afternoon':'Evening';
+  setCaption('Good '+partOfDay+', Sir. What shall we build today?');
 }
 function renderCanvas(){
   var grid=document.getElementById('yuvi-canvas');
@@ -810,52 +892,30 @@ function showCommandChip(text){
 }
 function hideCommandChip(){var chip=document.getElementById('yuvi-command-chip');if(chip)chip.classList.remove('show');}
 
-// Thinking-state card — real step progression (not a canned animation):
-// step 0 lights up immediately, step 1 once the prompt is built, step 2 while
-// the Groq call is actually in flight.
-function showThinkingCard(steps){
-  var grid=document.getElementById('yuvi-canvas');
-  document.getElementById('yuvi-canvas-empty').style.display='none';
-  var card=document.createElement('div');
-  card.className='yc-thinking';card.id='yc-thinking-live';
-  card.innerHTML='<div class="yc-thinking-head"><span class="hud-ring sm"></span> YUVI IS WORKING</div>'
-    +'<div class="yc-thinking-steps">'+steps.map(function(s,i){return '<div class="yc-thinking-step" id="yc-step-'+i+'"><span class="yc-step-mark">&#9675;</span>'+escHtml(s)+'</div>';}).join('')+'</div>';
-  grid.prepend(card);
-  return card;
-}
-function advanceThinkingStep(i){
-  var el=document.getElementById('yc-step-'+i);if(!el)return;
-  var prev=document.getElementById('yc-step-'+(i-1));
-  if(prev){prev.classList.remove('active');prev.classList.add('done');prev.querySelector('.yc-step-mark').innerHTML='&#10003;';}
-  el.classList.add('active');
-}
-function removeThinkingCard(){
-  var el=document.getElementById('yc-thinking-live');
-  if(el){var last=el.querySelectorAll('.yc-thinking-step');if(last.length){var l=last[last.length-1];l.classList.remove('active');l.classList.add('done');l.querySelector('.yc-step-mark').innerHTML='&#10003;';}setTimeout(function(){el.remove();},250);}
-}
-
 // Main entry point — called from sendChat() when classifyIntent() says this
-// command wants a widget rather than a plain chat reply.
+// command wants a widget rather than a plain chat reply. v6.2: progress is
+// now shown as live caption-line updates instead of an in-canvas "thinking"
+// card — existing widgets stay visible in the grid the whole time.
 async function handleWidgetCommand(commandText,targetWidgetId){
-  var steps=['Reading context','Analyzing request','Generating widget'];
-  showThinkingCard(steps);
-  advanceThinkingStep(0);
+  setCaption('Thinking...');
   setStatusDot(true);
   try{
     var bizCtx=(localStorage.getItem('yuvi_biz_ctx')||'Yugantar Growth. Digital agency, Ahmedabad.')+'\n\n'+getLiveBusinessContext();
     var target=targetWidgetId?canvasWidgets.find(function(w){return w.id===targetWidgetId;}):null;
-    await new Promise(function(r){setTimeout(r,150);}); // let step 1 be visible, not instant-skip
-    advanceThinkingStep(1);
+    setCaption('Reading brand information');
+    await new Promise(function(r){setTimeout(r,150);}); // let the step be visible, not instant-skip
+    setCaption('Analyzing request');
     var messages=window.YuviWidgetEngine.buildWidgetPrompt(commandText,bizCtx,target);
-    advanceThinkingStep(2);
+    setCaption('Building your widget');
     var raw=await window.YuviBrain.rawChat(messages,{maxTokens:500,temperature:0.4,mode:'widget',force:true});
     var widgetData=window.YuviWidgetEngine.parseWidgetResponse(raw);
     canvasWidgets=window.YuviWidgetEngine.applyWidget(canvasWidgets,widgetData,targetWidgetId);
     persistCanvas();
-    removeThinkingCard();
     renderCanvas();
+    setCaption((targetWidgetId?'Updated \u201c':'Created \u201c')+widgetData.title+'\u201d.');
+    logRecentActivity(widgetData.title,commandText);
   }catch(e){
-    removeThinkingCard();
+    setCaption('Widget generation failed.');
     showToast('Widget generation failed: '+e.message);
     console.warn('[YUVI:Canvas] widget generation error',e);
   }finally{
@@ -863,13 +923,12 @@ async function handleWidgetCommand(commandText,targetWidgetId){
   }
 }
 
+
 function buildWidgetCardEl(w){
   var el=document.createElement('div');
-  var roleClass=w.type==='response'?(' yc-msg yc-msg-'+(w.data&&w.data.role==='user'?'user':'ai')):'';
-  el.className='yc-card'+roleClass+(w.pinned?' pinned':'')+(w.locked?' locked':'');
+  el.className='yc-card'+(w.pinned?' pinned':'')+(w.locked?' locked':'');
   el.id='yc-card-'+w.id;
-  var isTyping=w.type==='response'&&w.data&&w.data.typing;
-  var actions=isTyping?'':'<div class="yc-card-actions">'
+  var actions='<div class="yc-card-actions">'
     +'<button class="'+(w.pinned?'on':'')+'" title="Pin" onclick="toggleWidgetPin(\''+w.id+'\')">&#128204;</button>'
     +'<button class="'+(w.locked?'on':'')+'" title="Lock" onclick="toggleWidgetLock(\''+w.id+'\')">&#128274;</button>'
     +'<button title="Save to Library" onclick="saveWidgetToLibrary(\''+w.id+'\')">&#128190;</button>'
@@ -906,12 +965,9 @@ function renderWidgetBody(w){
       }).join('')+'</div>';
     case 'chart':
       return renderSparklineSVG(Array.isArray(d.values)?d.values:[],Array.isArray(d.labels)?d.labels:[]);
-    case 'response':
-      if(d.typing)return '<div class="typing"><span></span><span></span><span></span></div>';
-      return '<div class="yc-msg-text">'+escHtml(d.text||'')+'</div>'+(d.actions?'<div class="msg-actions"></div>':'');
     case 'text':
     default:
-      return escHtml(d.text||'');
+      return '<div class="yc-msg-text">'+escHtml(d.text||'')+'</div>'+(d.actions?'<div class="msg-actions"></div>':'');
   }
 }
 
@@ -1634,7 +1690,7 @@ function importCSV(input){
     }catch(ex){showToast('Import failed: '+ex.message);if(window.YuviLogger)window.YuviLogger.error('CSV','Import error',ex.message);}
   };r.readAsText(file);input.value='';}
 function guessCategory(name){var n=name.toLowerCase();if(n.includes('restaurant')||n.includes('cafe')||n.includes('food')||n.includes('hotel'))return'smm';if(n.includes('furniture')||n.includes('hardware')||n.includes('retail')||n.includes('shop'))return'website';if(n.includes('clinic')||n.includes('doctor')||n.includes('hospital'))return'digital';if(n.includes('school')||n.includes('college'))return'seo';return'unknown';}
-function updateStats(){document.getElementById('kpi-contacted').textContent=contactedToday;document.getElementById('contacted-bar').style.width=Math.min(100,(contactedToday/10)*100)+'%';}
+function updateStats(){var kc=document.getElementById('kpi-contacted');if(kc)kc.textContent=contactedToday;var cb=document.getElementById('contacted-bar');if(cb)cb.style.width=Math.min(100,(contactedToday/10)*100)+'%';}
 function loadSampleLeads(){leads=[{id:1,name:'Ravi Electronics',phone:'9825001234',category:'website',status:'new',address:'Ahmedabad',rating:4.2,notes:''},{id:2,name:'Mehta Restaurant',phone:'9825002345',category:'smm',status:'interested',address:'Ahmedabad',rating:4.5,notes:'Very interested in social media management'},{id:3,name:'Kumar Textiles',phone:'9825003456',category:'digital',status:'new',address:'Ahmedabad',rating:4.0,notes:''},{id:4,name:'Shah Jewellers',phone:'9825005678',category:'seo',status:'interested',address:'Ahmedabad',rating:4.7,notes:'High budget available'},{id:5,name:'Gupta Pharmacy',phone:'9825006789',category:'digital',status:'contacted',address:'Ahmedabad',rating:4.1,notes:''},{id:6,name:'Patel Clinic',phone:'9825007890',category:'website',status:'follow_up',address:'Ahmedabad',rating:3.9,notes:'Needs follow up this week'},];scoreAllLeads();localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();showToast('Sample leads loaded!');}
 function openAddLead(){document.getElementById('add-lead-panel').classList.add('open');}
 function closeAddLead(){document.getElementById('add-lead-panel').classList.remove('open');}

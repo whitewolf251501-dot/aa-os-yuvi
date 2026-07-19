@@ -172,14 +172,22 @@
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="home-greet">
-    <h1>GOOD <span id="greet-time">MORNING</span>, SHLOK</h1>
-    <p id="greet-date">LOADING...</p>
+    <div class="home-greet-main">
+      <h1>GOOD <span id="greet-time">MORNING</span>, SHLOK <span class="home-greet-sir">SIR</span></h1>
+      <p class="home-greet-sub">Here's what's happening across your business.</p>
+    </div>
+    <div class="home-greet-clock">
+      <div id="home-clock-time">--:--</div>
+      <div id="greet-date">LOADING...</div>
+    </div>
   </div>
   <div class="kpi-row">
     <div class="kpi panel"><div class="kpi-val" id="kpi-clients">2</div><div class="kpi-lbl">Active Clients</div><div class="kpi-bar"><div class="kpi-fill" style="width:40%;background:var(--green);box-shadow:0 0 6px var(--green);"></div></div></div>
     <div class="kpi panel"><div class="kpi-val" id="kpi-leads">0</div><div class="kpi-lbl">Total Leads</div><div class="kpi-bar"><div class="kpi-fill" style="width:60%"></div></div></div>
-    <div class="kpi panel"><div class="kpi-val" id="kpi-contacted">0</div><div class="kpi-lbl">Contacted Today</div><div class="kpi-bar"><div class="kpi-fill" id="contacted-bar" style="width:0%"></div></div></div>
-    <div class="kpi panel"><div class="kpi-val" id="kpi-revenue">&#8377;0</div><div class="kpi-lbl">Monthly Revenue</div><div class="kpi-bar"><div class="kpi-fill" style="width:20%;background:var(--gold);box-shadow:0 0 6px var(--gold);"></div></div></div>
+    <div class="kpi panel"><div class="kpi-val" id="kpi-followups">0</div><div class="kpi-lbl">Follow-ups Today</div><div class="kpi-bar"><div class="kpi-fill" style="width:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);"></div></div></div>
+    <div class="kpi panel"><div class="kpi-val" id="kpi-revenue">&#8377;0</div><div class="kpi-lbl">Revenue This Month</div><div class="kpi-bar"><div class="kpi-fill" style="width:20%;background:var(--blade);box-shadow:0 0 6px var(--blade);"></div></div></div>
+    <!-- legacy Contacted Today tracking kept alive (used elsewhere in the app) but no longer shown as its own KPI slot -->
+    <div style="display:none;"><div id="kpi-contacted">0</div><div id="contacted-bar"></div></div>
   </div>
   <div class="home-grid">
     <div>
@@ -192,6 +200,11 @@
         <div class="briefing-msg" id="yuvi-briefing">Initializing...</div>
         <div class="blade-line"></div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+          <div class="ptitle" style="font-size:11px;">REVENUE OVERVIEW</div>
+        </div>
+        <div id="revenue-overview-chart"></div>
+        <div class="blade-line" style="margin-top:10px;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;margin-top:8px;">
           <div class="ptitle" style="font-size:11px;">REVENUE TRACKER</div>
           <button class="btn primary" style="font-size:7px;padding:3px 7px;" onclick="addRevenueRow()">+ ADD</button>
         </div>
@@ -223,6 +236,10 @@
         <div id="home-clients-mini"></div>
       </div>
     </div>
+  </div>
+  <div class="panel" style="padding:12px;margin-top:10px;">
+    <div class="ptitle" style="font-size:11px;margin-bottom:8px;">RECENT ACTIVITY</div>
+    <div id="recent-activity-list" class="activity-row"></div>
   </div>
 </div>
 <!-- COMMAND -->
@@ -261,12 +278,13 @@
     <div id="yuvi-canvas"></div>
   </div>
   <div id="file-preview-bar" style="display:none;padding:4px 14px;border-top:1px solid var(--edge2);"></div>
+  <div id="yuvi-caption">Good Afternoon, Sir. What shall we build today?</div>
   <div class="chat-input-area">
     <button class="attach-btn" onclick="document.getElementById('chat-file-input').click()" id="attach-btn" title="Attach file">&#128206;</button>
     <input type="file" id="chat-file-input" style="display:none" accept=".txt,.pdf,.csv,.json,.md,image/*" onchange="handleFileAttach(this)"/>
+    <textarea class="chat-inp" id="chat-inp" placeholder="Talk or type your command..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
     <button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice input">&#127908;</button>
-    <textarea class="chat-inp" id="chat-inp" placeholder="Talk to YUVI... (Enter = send, Shift+Enter = newline)" rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
-    <button class="chat-send" onclick="sendChat()" id="send-btn">SEND</button>
+    <button class="chat-send" onclick="sendChat()" id="send-btn" title="Send">&#8593;</button>
   </div>
 </div>
 <!-- LEADS -->

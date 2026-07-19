@@ -18,7 +18,13 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
+  const { messages, model, temperature, max_tokens, testKey } = req.body || {};
+
+  // testKey: only used by Settings' "Test Key" button, to check a key the
+  // user just typed in but hasn't saved yet. If present, use it instead of
+  // the saved server key for THIS request only — it is never stored, and
+  // never leaves the server (the browser still never talks to Groq itself).
+  const apiKey = testKey || process.env.GROQ_API_KEY;
   if (!apiKey) {
     // This fires only if the Vercel env variable hasn't been added yet.
     res.status(500).json({
@@ -27,7 +33,6 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const { messages, model, temperature, max_tokens } = req.body || {};
   if (!Array.isArray(messages) || !messages.length) {
     res.status(400).json({ error: 'messages array is required.' });
     return;

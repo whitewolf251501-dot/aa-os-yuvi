@@ -7,7 +7,6 @@
  * of duplicating fetch boilerplate everywhere.
  */
 (function () {
-  const ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
   const DEFAULT_MODEL = 'llama-3.3-70b-versatile';
 
   function getKey() {
@@ -19,8 +18,8 @@
 
   async function chat(messages, opts = {}) {
     // If a specific key was handed in (this only happens from the Settings
-    // "Test" button, where the user is testing a key they just typed),
-    // call Groq directly with that one-off key — nothing to proxy there.
+    // "Test" button, testing a key the user just typed but hasn't saved),
+    // route it through the proxy as a one-off testKey instead.
     if (opts.apiKey) return chatDirect(messages, opts);
 
     // Normal path: every real AI call in the app now goes through the
@@ -50,28 +49,31 @@
     return data.choices?.[0]?.message?.content || '';
   }
 
-  // Used only by the Settings "Test" button — calls Groq directly with a
-  // key the user just typed in (not yet saved), so it can't go through the
-  // server proxy (the server doesn't know about that key).
+  // Used only by the Settings "Test" button — checks a key the user just
+  // typed in (not yet saved). Goes through the same server-side proxy as
+  // every other call, passing the unsaved key as a one-off "testKey" that
+  // the server uses for this single request only and never stores. This
+  // means the browser never needs to talk to api.groq.com directly.
   async function chatDirect(messages, opts = {}) {
-    const key = opts.apiKey;
-    const res = await fetch(ENDPOINT, {
+    const res = await fetch('/api/groq-chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${key}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: opts.model || DEFAULT_MODEL,
         messages,
         temperature: opts.temperature ?? 0.7,
-        max_tokens: opts.maxTokens ?? 1024
+        max_tokens: opts.maxTokens ?? 1024,
+        testKey: opts.apiKey
       })
     });
 
     if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Groq API error ${res.status}: ${errText}`);
+      let errMsg = `AI proxy error ${res.status}`;
+      try {
+        const errData = await res.json();
+        if (errData && errData.error) errMsg = errData.error;
+      } catch (e) { /* ignore parse failure, keep default message */ }
+      throw new Error(errMsg);
     }
 
     const data = await res.json();

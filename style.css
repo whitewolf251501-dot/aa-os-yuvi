@@ -74,9 +74,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 #reminder-bar.show{display:flex;align-items:center;gap:10px;}
 /* HOME */
 #v-home{padding:14px 14px 20px;}
-.home-greet h1{font-family:var(--disp);font-size:clamp(24px,4vw,50px);letter-spacing:.08em;color:#fff;line-height:1;}
+.home-greet{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.home-greet h1{font-family:var(--disp);font-size:clamp(22px,3.4vw,38px);letter-spacing:.06em;color:#fff;line-height:1;}
 .home-greet h1 span{color:var(--blade);}
-.home-greet p{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.18em;margin-top:4px;}
+.home-greet-sir{color:var(--muted)!important;font-size:.6em;letter-spacing:.15em;}
+.home-greet-sub{font-family:var(--sans);font-size:11px;color:var(--muted);margin-top:5px;}
+.home-greet-clock{text-align:right;flex-shrink:0;}
+.home-greet-clock #home-clock-time{font-family:var(--mono);font-size:14px;color:var(--text);letter-spacing:.05em;}
+.home-greet-clock #greet-date{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;margin-top:2px;}
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
 .kpi{padding:12px;cursor:pointer;transition:.2s;}
 .kpi-val{font-family:var(--disp);font-size:30px;color:#fff;}
@@ -92,6 +97,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 .yuvi-role-sm{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;}
 .briefing-msg{font-family:var(--mono);font-size:9px;color:var(--text);line-height:1.8;padding:9px;background:rgba(14,246,255,.04);border-left:2px solid var(--blade);margin-bottom:10px;min-height:40px;}
 .home-right{display:flex;flex-direction:column;gap:8px;}
+/* Revenue Overview chart (Home) */
+#revenue-overview-chart{padding:4px 0 2px;}
+.rev-ov-big{font-family:var(--disp);font-size:22px;color:#fff;margin-bottom:4px;display:flex;align-items:baseline;gap:8px;}
+.rev-ov-delta{font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:.05em;}
+/* Recent Activity feed (Home) */
+.activity-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
+.activity-card{border:1px solid var(--edge2);background:rgba(8,15,23,.6);padding:9px 10px;display:flex;flex-direction:column;gap:3px;transition:.2s;}
+.activity-card:hover{border-color:var(--edge);}
+.activity-client{font-family:var(--mono);font-size:8px;color:var(--blade2);letter-spacing:.1em;}
+.activity-title{font-family:var(--sans);font-size:11px;color:var(--text);line-height:1.3;}
+.activity-time{font-family:var(--mono);font-size:7px;color:var(--muted);margin-top:2px;}
 .rev-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--edge2);gap:4px;}
 .rev-name{font-family:var(--mono);font-size:8px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;}
 .rev-amt{font-family:var(--mono);font-size:8px;color:var(--gold);flex-shrink:0;}
@@ -134,19 +150,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 .typing span:nth-child(2){animation-delay:.2s;}
 .typing span:nth-child(3){animation-delay:.4s;}
 @keyframes ty{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
-.chat-input-area{flex-shrink:0;border-top:1px solid var(--edge2);padding:10px 14px;display:flex;gap:6px;align-items:flex-end;background:rgba(5,10,15,.6);}
-.chat-inp{flex:1;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;outline:none;resize:none;min-height:40px;max-height:120px;transition:.2s;line-height:1.5;}
+/* v6.2 — single live caption line above the input (replaces stacked chat bubbles) */
+#yuvi-caption{flex-shrink:0;padding:8px 18px 4px;font-family:var(--sans);font-size:13px;color:var(--text);text-align:center;letter-spacing:.01em;min-height:18px;transition:opacity .15s;}
+.chat-input-area{flex-shrink:0;border-top:1px solid var(--edge2);padding:10px 14px;display:flex;gap:8px;align-items:center;background:rgba(5,10,15,.6);}
+.chat-inp{flex:1;background:rgba(14,246,255,.04);border:1px solid var(--edge2);color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;outline:none;resize:none;min-height:40px;max-height:120px;transition:.2s;line-height:1.5;border-radius:20px;}
 .chat-inp:focus{border-color:var(--edge);}
 .chat-inp::placeholder{color:var(--muted);}
-.chat-send{font-family:var(--mono);font-size:8px;letter-spacing:.1em;padding:9px 13px;background:rgba(14,246,255,.1);border:1px solid var(--blade);color:var(--blade);cursor:pointer;transition:.2s;white-space:nowrap;min-height:40px;}
-.chat-send:hover{background:rgba(14,246,255,.2);}
+.chat-send{font-family:var(--mono);font-size:15px;letter-spacing:.1em;background:rgba(14,246,255,.12);border:1px solid var(--blade);color:var(--blade);cursor:pointer;transition:.2s;white-space:nowrap;width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.chat-send:hover{background:rgba(14,246,255,.25);box-shadow:0 0 12px rgba(14,246,255,.3);}
 .chat-send:disabled{opacity:.4;cursor:not-allowed;}
-.attach-btn{background:transparent;border:1px solid var(--edge2);color:var(--muted);width:40px;height:40px;cursor:pointer;transition:.2s;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.attach-btn{background:transparent;border:1px solid var(--edge2);color:var(--muted);width:36px;height:36px;border-radius:50%;cursor:pointer;transition:.2s;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .attach-btn:hover{border-color:var(--blade);color:var(--blade);}
 .attach-btn.has-file{border-color:var(--green);color:var(--green);}
-.voice-btn{background:transparent;border:1px solid var(--edge2);color:var(--muted);width:40px;height:40px;cursor:pointer;transition:.2s;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.voice-btn:hover{border-color:var(--blade);color:var(--blade);}
-.voice-btn.recording{border-color:var(--flash);color:var(--flash);animation:flashpulse 0.8s ease-in-out infinite;}
+.voice-btn{background:rgba(14,246,255,.06);border:1px solid var(--blade3);color:var(--blade2);width:42px;height:42px;border-radius:50%;cursor:pointer;transition:.2s;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 10px rgba(14,246,255,.15);}
+.voice-btn:hover{border-color:var(--blade);color:var(--blade);box-shadow:0 0 16px rgba(14,246,255,.3);}
+.voice-btn.recording{border-color:var(--flash);color:var(--flash);box-shadow:0 0 16px rgba(255,60,95,.35);animation:flashpulse 0.8s ease-in-out infinite;}
 .file-preview{font-family:var(--mono);font-size:8px;color:var(--green);padding:4px 8px;background:rgba(34,214,142,.08);border:1px solid rgba(34,214,142,.2);display:flex;align-items:center;gap:6px;}
 /* LEADS */
 #v-leads{padding:14px;}
@@ -327,6 +345,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
   #v-command.active{display:flex;}
   .cmd-topbar{padding:4px 8px;flex-shrink:0;}
   .chat-input-area{flex-shrink:0;padding:5px 8px;background:rgba(5,10,15,.99);border-top:1px solid var(--edge2);}
+  #yuvi-caption{font-size:11px;padding:5px 10px 2px;}
   .chat-inp{font-size:13px;max-height:60px;min-height:32px;padding:6px 10px;}
   .attach-btn,.voice-btn{width:32px;height:32px;font-size:12px;}
   .chat-send{padding:5px 10px;font-size:7px;height:32px;}
@@ -437,14 +456,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 #yuvi-command-chip{display:none;}
 #yuvi-command-chip.show{display:flex;align-items:center;gap:6px;align-self:flex-start;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--blade2);background:rgba(14,246,255,.06);border:1px solid var(--edge);padding:6px 12px;}
 
-/* Thinking-state card — step list using .hud-ring, not a generic spinner */
-.yc-thinking{border:1px solid var(--edge);background:rgba(8,15,23,.7);padding:16px;display:flex;flex-direction:column;gap:10px;align-self:flex-start;min-width:220px;}
-.yc-thinking-head{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--blade);}
-.yc-thinking-steps{display:flex;flex-direction:column;gap:6px;padding-left:2px;}
-.yc-thinking-step{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:var(--muted);transition:.2s;}
-.yc-thinking-step.active{color:var(--blade2);}
-.yc-thinking-step.done{color:var(--green);}
-.yc-thinking-step .yc-step-mark{width:10px;text-align:center;flex-shrink:0;}
+/* Thinking-state is now shown via the single live caption line above the
+   input (#yuvi-caption) instead of an in-canvas card — see setCaption(). */
 
 /* Widget grid + cards */
 #yuvi-canvas{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;align-content:start;}
@@ -455,12 +468,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 .yc-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
 .yc-card-title{font-family:var(--sans);font-size:12px;color:var(--text);font-weight:600;line-height:1.3;}
 .yc-card-sub{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.08em;margin-top:2px;}
-.yc-card-actions{display:flex;gap:4px;flex-shrink:0;}
-/* v6.1 — conversation response cards (Track A): every YUVI/Shlok message is
-   a widget now, so give it a full-width feed look instead of a grid tile. */
-.yc-card.yc-msg{grid-column:1/-1;padding:11px 14px;}
-.yc-card.yc-msg-user{border-left:2px solid var(--gold);}
-.yc-card.yc-msg-ai{border-left:2px solid var(--blade);}
+/* v6.2 — action icons (pin/lock/save/remove) reveal on hover, like the
+   reference design, but stay visible once a widget is pinned or locked so
+   its state is never hidden from view. */
+.yc-card-actions{display:flex;gap:4px;flex-shrink:0;opacity:0;transition:opacity .15s;}
+.yc-card:hover .yc-card-actions,.yc-card:focus-within .yc-card-actions{opacity:1;}
+.yc-card.pinned .yc-card-actions,.yc-card.locked .yc-card-actions{opacity:1;}
 .yc-msg-text{font-family:var(--sans);font-size:12px;line-height:1.55;color:var(--text);white-space:pre-wrap;}
 
 /* v6.1 — TRACK A #3: previous-conversations side panel (right-side drawer) */
@@ -476,6 +489,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var
 .yc-card-actions button:hover{border-color:var(--blade);color:var(--blade);}
 .yc-card-actions button.on{border-color:var(--blade);color:var(--blade);background:rgba(14,246,255,.08);}
 .yc-card-body{font-family:var(--sans);font-size:11px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word;}
+
 
 /* type-specific bodies */
 .yc-metric-val{font-family:var(--disp);font-size:26px;color:var(--blade);text-shadow:0 0 16px rgba(14,246,255,.3);}
