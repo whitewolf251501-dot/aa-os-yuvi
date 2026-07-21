@@ -234,6 +234,8 @@ function initDashboard(){
   renderRecentActivity();
   updateStats();checkReminders();
   setInterval(checkReminders,60000);
+  renderAttentionPanel();
+  initN8nBridge();
   runProactiveBriefing();
   initCanvas();
   initLibrary();
@@ -247,12 +249,25 @@ function initDashboard(){
 // auto-fetch memory.json -> auto-generate briefing -> no user input needed
 // ============================================================
 async function runProactiveBriefing(){
-  document.getElementById('yuvi-briefing').textContent='YUVI is reading memory & pulling status\u2026';
+  document.getElementById('yuvi-briefing').textContent='Reading memory and pulling live status, Sir\u2026';
   var cfg=getGHConfig();
   var mem=null;
   if(cfg.username&&cfg.repo&&cfg.token){
     mem=await loadMemory().catch(function(){return null;});
     if(mem){applyMemoryToUI(mem);showMemStatus(true);}
+  }
+  // v6.2 — JARVIS MODE: ask the n8n orchestrator for the real briefing
+  // first (Task Log + Leads + Clients sheet state). Falls back to the
+  // local Groq brain, then to the rule-based briefing — always proactive.
+  if(window.YuviN8N&&window.YuviN8N.isConfigured()){
+    var n8nBrief=await window.YuviN8N.fetchYuviBrief();
+    if(n8nBrief){
+      document.getElementById('yuvi-briefing').textContent=n8nBrief;
+      postProactiveBriefingToChat(n8nBrief);
+      autoBriefingDone=true;
+      speakReply(n8nBrief);
+      return;
+    }
   }
   var key=getGroqKey();
   if(!key){
@@ -265,10 +280,17 @@ async function runProactiveBriefing(){
 
 function localFallbackBriefing(){
   var h=new Date().getHours();var lc=leads.length,ic=leads.filter(function(l){return l.status==='interested';}).length;
+  var hotIdle=leads.filter(function(l){return(l.score||0)>=8&&l.status==='new';}).length;
   var overdueCount=revenueData.filter(function(r){return r.status==='overdue';}).length;
-  if(h<12)return'Morning bhai. '+lc+' leads, '+ic+' interested'+(overdueCount?', '+overdueCount+' payment(s) overdue.':'.')+' Add your Groq key in Settings so I can give you the full proactive briefing automatically.';
-  if(h<17)return'Afternoon. '+ic+' interested leads waiting on follow-up. Add Groq key in Settings for full auto-briefing.';
-  return'Evening. Log today\'s contacts and prep tomorrow. Add Groq key in Settings for full auto-briefing.';
+  var pending=pipeline.filter(function(p){return p.stage==='proposal_sent'||p.stage==='advance_pending';}).length;
+  var facts=[];
+  if(hotIdle)facts.push(hotIdle+' hot lead'+(hotIdle>1?'s':'')+' sitting untouched');
+  if(pending)facts.push(pending+' deal'+(pending>1?'s':'')+' waiting on proposal or advance');
+  if(overdueCount)facts.push(overdueCount+' payment'+(overdueCount>1?'s':'')+' overdue');
+  var state=facts.length?'While you were away: '+facts.join(', ')+'.':lc+' leads on the board, '+ic+' interested \u2014 nothing on fire.';
+  if(h<12)return'Morning, Sir. '+state+' Connect the workspace or add a Groq key in Settings and I\u2019ll brief you properly, unprompted.';
+  if(h<17)return'Afternoon, Sir. '+state+' Wire up Settings > Connections and I\u2019ll start briefing you the moment you open this screen.';
+  return'Evening, Sir. '+state+' Log today\u2019s contacts and I\u2019ll prep tomorrow\u2019s plan.';
 }
 
 // This is the core v4 feature: fires automatically on load, no user message needed.
@@ -290,6 +312,7 @@ async function generateProactiveMorningBriefing(mem){
       // also drop it into Command chat as the opening message, unprompted
       postProactiveBriefingToChat(reply);
       autoBriefingDone=true;
+      speakReply(reply); // Jarvis speaks the briefing (respects mute toggle)
     }else{
       document.getElementById('yuvi-briefing').textContent=localFallbackBriefing();
     }
@@ -301,6 +324,78 @@ async function generateProactiveMorningBriefing(mem){
 function postProactiveBriefingToChat(text){
   appendMsg('ai',text,'YUVI \u00B7 MORNING BRIEFING (AUTO)');
   chatHistory.push({role:'assistant',content:text});
+}
+
+// ============================================================
+// v6.2 — JARVIS LAYER: ambient agent status + needs-attention
+// ============================================================
+// Connects the dashboard to the n8n Task Log poller. Polling is
+// lightweight by design: YuviN8N polls every 8s ONLY while a task
+// is In Progress and stops itself when idle (see integrations/n8n.js).
+function initN8nBridge(){
+  if(!window.YuviN8N)return;
+  window.YuviN8N.onTasks(function(tasks){
+    updateAgentStrip(tasks);
+    renderAttentionPanel();
+  });
+  if(window.YuviN8N.isConfigured()){
+    window.YuviN8N.ping().then(function(){renderN8nStatus();});
+    window.YuviN8N.startTaskPolling(); // one boot check; stops itself if idle
+  }
+}
+// Ambient status strip — "Sherlock is analyzing Petpooja..." while
+// agents work; disappears when the floor is quiet.
+function updateAgentStrip(tasks){
+  var strip=document.getElementById('agent-strip');
+  var txt=document.getElementById('agent-strip-text');
+  if(!strip||!txt)return;
+  var active=(tasks||[]).filter(function(t){return /progress/i.test(String(t.status||''));});
+  if(!active.length){strip.classList.remove('show');return;}
+  var t=active[0];
+  var agentName=String(t.agent||'An agent');
+  agentName=agentName.charAt(0).toUpperCase()+agentName.slice(1).toLowerCase();
+  txt.textContent=agentName+' is on it \u2014 '+(t.task||'working')+(active.length>1?' (+'+(active.length-1)+' more running)':'');
+  strip.classList.add('show');
+}
+// "Needs your attention" — decisions surfaced without being asked:
+// proposals awaiting approval, hot leads with no action, overdue
+// payments, and failed agent tasks from the Task Log.
+function renderAttentionPanel(){
+  var list=document.getElementById('attention-list');
+  var count=document.getElementById('attn-count');
+  if(!list)return;
+  var items=[];
+  pipeline.filter(function(p){return p.stage==='proposal_sent';}).forEach(function(p){
+    items.push({icon:'\u{1F4C4}',color:'var(--gold)',text:p.name+' \u2014 proposal is out. Chase the yes.',go:function(){nav('pipeline');}});
+  });
+  pipeline.filter(function(p){return p.stage==='advance_pending';}).forEach(function(p){
+    items.push({icon:'\u20B9',color:'var(--flash)',text:p.name+' \u2014 advance pending. No advance, no work.',go:function(){nav('pipeline');}});
+  });
+  leads.filter(function(l){return(l.score||0)>=8&&l.status==='new';}).slice(0,3).forEach(function(l){
+    items.push({icon:'\u{1F525}',color:'var(--flash)',text:l.name+' scored hot and nobody\u2019s touched it.',go:function(){nav('leads');}});
+  });
+  revenueData.filter(function(r){return r.status==='overdue';}).forEach(function(r){
+    items.push({icon:'\u26A0',color:'var(--flash)',text:r.name+' payment is overdue \u2014 Ledger says send the reminder today.',go:function(){nav('home');}});
+  });
+  if(window.YuviN8N){
+    window.YuviN8N.getLastTasks().filter(function(t){return /fail/i.test(String(t.status||''));}).slice(0,3).forEach(function(t){
+      items.push({icon:'\u2717',color:'var(--flash)',text:String(t.agent||'Agent')+' failed: '+(t.task||'a task')+'. Wants a retry call.',go:function(){nav('command');}});
+    });
+  }
+  if(count){
+    if(items.length){count.style.display='inline-block';count.textContent=items.length;}
+    else count.style.display='none';
+  }
+  if(!items.length){
+    list.innerHTML='<div style="font-family:var(--mono);font-size:8px;color:var(--muted);padding:6px 0;letter-spacing:.1em;">All clear, Sir. Nothing waiting on you right now.</div>';
+    return;
+  }
+  list.innerHTML=items.slice(0,6).map(function(it,i){
+    return '<div class="attn-item" data-attn="'+i+'"><span class="attn-ic" style="color:'+it.color+';">'+it.icon+'</span><span>'+it.text+'</span></div>';
+  }).join('');
+  list.querySelectorAll('.attn-item').forEach(function(el){
+    el.onclick=function(){var it=items[parseInt(el.getAttribute('data-attn'),10)];if(it&&it.go)it.go();};
+  });
 }
 
 // ============================================================
@@ -651,7 +746,9 @@ async function sendChat(){
   var msg=inp.value.trim();
   if(!msg&&!attachedFileContent)return;
   var key=getGroqKey();
-  if(!key){showToast('Add Groq API key in Settings \u2699');return;}
+  // v6.2 — a connected n8n workspace is a valid brain even without a Groq key
+  var n8nReady=window.YuviN8N&&window.YuviN8N.isConfigured();
+  if(!key&&!n8nReady){showToast('Connect the workspace or add a Groq key in Settings \u2699');return;}
   var fullMsg=msg+(attachedFileContent?'\n\n'+attachedFileContent:'');
   inp.value='';inp.style.height='auto';
   clearAttachment();
@@ -688,6 +785,36 @@ async function sendChat(){
     }
   }
 
+  // v6.2 — WORKSPACE ROUTE: when the n8n orchestrator is connected, every
+  // chat message goes through the Dashboard Action Webhook contract
+  // ({input_text, session_id}) and YUVI's agents do the real work. The
+  // local Groq brain below stays as the fallback when n8n is unreachable.
+  if(n8nReady){
+    chatHistory.push({role:'user',content:fullMsg});
+    var typingN=appendTyping();
+    try{
+      var resp=await window.YuviN8N.send({input_text:fullMsg});
+      var out=resp&&(resp.output||resp.text||resp.message||resp.reply||resp.brief);
+      if(typeof out!=='string'||!out.trim())out='Handled, Sir \u2014 the workspace processed it but returned nothing readable. Check the Task Log.';
+      chatHistory.push({role:'assistant',content:out});
+      typingN.remove();
+      appendMsg('ai',out,'YUVI \u00B7 WORKSPACE');
+      if(currentMode==='brief'||currentMode==='chat')speakReply(out);
+      window.YuviN8N.kick(); // agents may still be working — start ambient polling
+      document.getElementById('send-btn').disabled=false;setStatusDot(false);inp.focus();
+      return;
+    }catch(errN){
+      typingN.remove();
+      chatHistory.pop(); // retract — the Groq fallback below re-pushes it
+      if(!key){
+        appendMsg('ai','Workspace unreachable and no local brain configured, Sir. '+errN.message,'YUVI \u00B7 ERROR');
+        document.getElementById('send-btn').disabled=false;setStatusDot(false);
+        return;
+      }
+      showToast('Workspace offline \u2014 switching to the local brain');
+    }
+  }
+
   chatHistory.push({role:'user',content:fullMsg});
   var typing=appendTyping();
   var now=new Date();
@@ -720,8 +847,12 @@ async function sendChat(){
   document.getElementById('send-btn').disabled=false;setStatusDot(false);inp.focus();
 }
 
-// TTS (Feature 1 — voice output)
+// TTS (voice output) — v6.2: routed through core/voice.js (YuviVoice),
+// which respects the global mute toggle and prefers the uploaded voice
+// pack via synthesizeYuviVoice() once the TTS service is wired. Browser
+// TTS remains only as the interim fallback inside YuviVoice.speak().
 function speakReply(text){
+  if(window.YuviVoice){window.YuviVoice.speak(text);return;}
   if(!('speechSynthesis' in window))return;
   var utter=new SpeechSynthesisUtterance(text.substring(0,300));
   utter.lang='en-IN';utter.rate=1.05;utter.pitch=0.85;
@@ -795,7 +926,7 @@ function appendMsgWithActions(type,text,label){
   return document.getElementById('yc-card-'+created.id);
 }
 function appendTyping(){
-  setCaption('Thinking...');
+  setCaption('On it, Sir \u2014 working\u2026');
   return {remove:function(){/* the next setCaption() call (below) replaces this — nothing to clean up */}};
 }
 
@@ -1690,7 +1821,7 @@ function importCSV(input){
     }catch(ex){showToast('Import failed: '+ex.message);if(window.YuviLogger)window.YuviLogger.error('CSV','Import error',ex.message);}
   };r.readAsText(file);input.value='';}
 function guessCategory(name){var n=name.toLowerCase();if(n.includes('restaurant')||n.includes('cafe')||n.includes('food')||n.includes('hotel'))return'smm';if(n.includes('furniture')||n.includes('hardware')||n.includes('retail')||n.includes('shop'))return'website';if(n.includes('clinic')||n.includes('doctor')||n.includes('hospital'))return'digital';if(n.includes('school')||n.includes('college'))return'seo';return'unknown';}
-function updateStats(){var kc=document.getElementById('kpi-contacted');if(kc)kc.textContent=contactedToday;var cb=document.getElementById('contacted-bar');if(cb)cb.style.width=Math.min(100,(contactedToday/10)*100)+'%';}
+function updateStats(){var kc=document.getElementById('kpi-contacted');if(kc)kc.textContent=contactedToday;var cb=document.getElementById('contacted-bar');if(cb)cb.style.width=Math.min(100,(contactedToday/10)*100)+'%';if(typeof renderAttentionPanel==='function')renderAttentionPanel();}
 function loadSampleLeads(){leads=[{id:1,name:'Ravi Electronics',phone:'9825001234',category:'website',status:'new',address:'Ahmedabad',rating:4.2,notes:''},{id:2,name:'Mehta Restaurant',phone:'9825002345',category:'smm',status:'interested',address:'Ahmedabad',rating:4.5,notes:'Very interested in social media management'},{id:3,name:'Kumar Textiles',phone:'9825003456',category:'digital',status:'new',address:'Ahmedabad',rating:4.0,notes:''},{id:4,name:'Shah Jewellers',phone:'9825005678',category:'seo',status:'interested',address:'Ahmedabad',rating:4.7,notes:'High budget available'},{id:5,name:'Gupta Pharmacy',phone:'9825006789',category:'digital',status:'contacted',address:'Ahmedabad',rating:4.1,notes:''},{id:6,name:'Patel Clinic',phone:'9825007890',category:'website',status:'follow_up',address:'Ahmedabad',rating:3.9,notes:'Needs follow up this week'},];scoreAllLeads();localStorage.setItem('yuvi_leads',JSON.stringify(leads));renderLeads();showToast('Sample leads loaded!');}
 function openAddLead(){document.getElementById('add-lead-panel').classList.add('open');}
 function closeAddLead(){document.getElementById('add-lead-panel').classList.remove('open');}

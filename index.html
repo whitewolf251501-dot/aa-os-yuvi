@@ -42,6 +42,9 @@
 <script src="integrations/github.js"></script>
 <script src="integrations/canva.js"></script>
 <script src="integrations/whatsapp.js"></script>
+<!-- v6.2 — n8n workspace bridge (webhook contract to the YUVI orchestrator) + voice engine -->
+<script src="integrations/n8n.js"></script>
+<script src="core/voice.js"></script>
 
 <!-- ===== YUVI v5 — Layer 2: Knowledge ===== -->
 <script src="knowledge/fileParser.js"></script>
@@ -122,6 +125,13 @@
 </div>
 <!-- REMINDER BAR -->
 <div id="reminder-bar"></div>
+<!-- v6.2 — AMBIENT AGENT STATUS STRIP (Jarvis-style): shows live agent
+     activity from the n8n Task Log whenever work is in progress. Hidden
+     when idle. Fed by YuviN8N task polling in app.js. -->
+<div id="agent-strip" aria-live="polite">
+  <span class="as-pulse"></span>
+  <span id="agent-strip-text"></span>
+</div>
 <!-- SHELL -->
 <div id="shell">
 <header id="topbar">
@@ -197,7 +207,7 @@
           <div><div class="yuvi-name-big">YUVI</div><div class="yuvi-role-sm">YUGANTAR GROWTH COMMANDER</div></div>
           <button class="btn" style="margin-left:auto;font-size:7px;padding:3px 8px;" onclick="generateDailyDigest()">&#9889; DIGEST</button>
         </div>
-        <div class="briefing-msg" id="yuvi-briefing">Initializing...</div>
+        <div class="briefing-msg" id="yuvi-briefing">One moment, Sir &mdash; pulling up the state of the business.</div>
         <div class="blade-line"></div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
           <div class="ptitle" style="font-size:11px;">REVENUE OVERVIEW</div>
@@ -222,6 +232,16 @@
       </div>
     </div>
     <div class="home-right">
+      <!-- v6.2 — NEEDS YOUR ATTENTION: decisions surfaced proactively
+           (proposals awaiting approval, hot leads untouched, overdue
+           payments). Rendered by renderAttentionPanel() in app.js. -->
+      <div class="panel" style="padding:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+          <div class="ptitle" style="font-size:11px;color:var(--gold);">NEEDS YOUR ATTENTION</div>
+          <span id="attn-count" class="ni-badge" style="display:none;"></span>
+        </div>
+        <div id="attention-list"></div>
+      </div>
       <div class="panel" style="padding:12px;">
         <div class="ptitle" style="font-size:11px;margin-bottom:8px;">QUICK ACTIONS</div>
         <div style="display:flex;flex-direction:column;gap:5px;">
