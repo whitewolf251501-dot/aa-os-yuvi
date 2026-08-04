@@ -1,0 +1,160 @@
+{
+  "identity": {
+    "name": "YUVI",
+    "full_name": "Yugantar Growth AI Commander",
+    "agency": "Yugantar Growth",
+    "owner": "Shlok Pandya",
+    "location": "Ahmedabad, India",
+    "whatsapp": "918460045968",
+    "personality": "Sharp, money-minded, professional, like a senior business partner. Always gives specific actions, not vague advice. Focused on revenue and growth.",
+    "services": {
+      "digital_foundation": {
+        "name": "Digital Foundation",
+        "tagline": "Launch a credible presence fast",
+        "price": 7999,
+        "type": "one-time",
+        "includes": ["5-page custom website", "Mobile-responsive design", "Basic on-page SEO", "Contact form + WhatsApp CTA", "Google Analytics setup", "1 month free support", "Hosting guidance"]
+      },
+      "growth": {
+        "name": "Growth / Lead Machine",
+        "tagline": "The full growth engine",
+        "price": 14999,
+        "type": "monthly",
+        "includes": ["Everything in Digital Foundation", "Google or Meta ads management", "On-page SEO every month", "WhatsApp follow-up automation", "Monthly performance reports", "2x landing page updates/month", "Dedicated support line"]
+      },
+      "scale": {
+        "name": "Full System / Scale",
+        "tagline": "Complete growth infrastructure",
+        "price": 29999,
+        "type": "monthly",
+        "includes": ["Everything in Growth", "Full AI automation system", "Multi-channel ad campaigns", "Advanced SEO + content writing", "CRM setup + lead pipeline", "Weekly strategy calls", "Unlimited landing pages", "Priority 24h response"]
+      }
+    }
+  },
+  "shlok": {
+    "name": "Shlok Pandya",
+    "age": 16,
+    "location": "Ahmedabad, India",
+    "role": "Founder, Yugantar Growth",
+    "goals": [
+      "Set up a small office with sales team",
+      "Hand over Yugantar operations to father and younger brother",
+      "Build AA-OS — personal AI ecosystem",
+      "Scale Yugantar into sustainable revenue engine",
+      "Eventually build Velmora AI civilization"
+    ],
+    "style": "Vibe coder, execution-focused, learns through doing, needs clear step-by-step guidance",
+    "ventures": ["Yugantar Growth", "Black Compass", "Trikaal POD", "Yaantra Mobility (future)"],
+    "aaos": "AA-OS — Abyssborned Architect Operating System. Personal AI ecosystem with 6 layers: NEX, YUVI, AGNI, BHUMI, VAYU, VIC"
+  },
+  "clients": [
+    {
+      "id": 1,
+      "name": "Jangid Furniture",
+      "type": "Furniture Retailer",
+      "service": "Digital Foundation",
+      "amount": 7999,
+      "status": "active",
+      "delivered": ["Website", "Instagram page", "Visiting cards"],
+      "pending": ["Follow up for referral"],
+      "notes": "First client. Collected payments 2 times. Good relationship.",
+      "next_action": "Ask for referral — they know other business owners"
+    },
+    {
+      "id": 2,
+      "name": "Black Compass",
+      "type": "Community Business",
+      "service": "Branding + Strategy",
+      "amount": 0,
+      "status": "setup",
+      "delivered": ["Branding discussion"],
+      "pending": ["Website", "Social media setup"],
+      "notes": "Shlok's own venture. Community circles and travel.",
+      "next_action": "Complete website and social setup"
+    },
+    {
+      "id": 3,
+      "name": "Agnivra",
+      "type": "Business",
+      "service": "Growth Package",
+      "amount": 14999,
+      "status": "active",
+      "delivered": ["Campaign running", "Lead magnet"],
+      "pending": ["Monthly report", "Lead magnet copy review"],
+      "notes": "Active campaign. Good ROAS.",
+      "next_action": "Send monthly report by Friday"
+    },
+    {
+      "id": 4,
+      "name": "Yaantra Mobility",
+      "type": "Mobility Startup",
+      "service": "Digital Foundation",
+      "amount": 7999,
+      "status": "onboarding",
+      "delivered": [],
+      "pending": ["Onboarding docs", "Website"],
+      "notes": "Shlok's own venture. Local vendor platform.",
+      "next_action": "Complete onboarding documentation"
+    }
+  ],
+  "leads": {
+    "total": 170,
+    "source": "Google Maps scrape",
+    "hot_leads": [],
+    "follow_ups": [],
+    "notes": "170 leads from Google Maps. Businesses in Ahmedabad. Need to be categorized and contacted."
+  },
+  "tasks": {
+    "daily": [
+      {"task": "Contact 10 leads via WhatsApp", "priority": "high", "done": false},
+      {"task": "Follow up with interested leads", "priority": "high", "done": false},
+      {"task": "Send JFS follow up for referral", "priority": "high", "done": false},
+      {"task": "Prepare 1 proposal for interested lead", "priority": "medium", "done": false},
+      {"task": "Update client status in dashboard", "priority": "low", "done": false}
+    ],
+    "weekly": [
+      {"task": "Send Agnivra monthly report", "due": "Friday"},
+      {"task": "Review lead pipeline", "due": "Sunday"},
+      {"task": "Plan next week outreach", "due": "Sunday"}
+    ]
+  },
+  "plans": [
+    {
+      "title": "Office Setup",
+      "description": "Set up small office in Ahmedabad, hire 1-2 sales people, hand over day-to-day to father and younger brother",
+      "timeline": "6 months",
+      "status": "planning",
+      "steps": ["Earn consistent ₹50,000/month first", "Find small office space", "Train father and brother", "Hire 1 sales person", "Hand over operations"]
+    },
+    {
+      "title": "Yugantar Revenue Scale",
+      "description": "Scale from current clients to 10+ active clients",
+      "timeline": "3 months",
+      "status": "active",
+      "steps": ["Contact all 170 leads", "Close 5 new clients this month", "Build referral system from existing clients", "Create portfolio of 7 completed projects"]
+    },
+    {
+      "title": "JFS Commission Model",
+      "description": "Generate leads for JFS, earn commission when they close",
+      "timeline": "ongoing",
+      "status": "active",
+      "steps": ["Set up lead gen for JFS", "Track leads sent", "Collect commission on closed deals"]
+    }
+  ],
+  "logs": [],
+  "velmora": {
+    "aaos": "Abyssborned Architect Operating System — Shlok's personal AI ecosystem",
+    "layers": {
+      "NEX": "Velmora Agent Factory — builds and deploys all AI agents. Leader of 33 personalities.",
+      "YUVI": "Yugantar Growth AI — business companion for Shlok's digital agency",
+      "AGNI": "Trikaal POD AI — print on demand automation",
+      "BHUMI": "Black Compass AI — community and travel management",
+      "VAYU": "Yaantra Mobility AI — local vendor ecosystem (future)",
+      "VIC": "Velmora Intelligence Commander — Victor — Shlok's personal life AI like Jarvis"
+    },
+    "vic_note": "VIC (Victor) is the commander of AA-OS. Manages Shlok's personal life, health, habits, finance, and oversees all ventures. Built last after all other layers exist.",
+    "nex_note": "NEX is the builder. Creates agents, deploys them, recalls them. Leader of Velmora's 33 AI personalities.",
+    "personalities_count": 33,
+    "status": "Building layer by layer. NEX complete. YUVI in progress."
+  }
+}
