@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>YUVI v6.1 · YUGANTAR GROWTH · AA-OS</title>
+<link rel="manifest" href="manifest.json"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="YUVI"/>
+<meta name="theme-color" content="#3d7dff"/>
+<meta name="description" content="YUVI — Yugantar Growth AI Business Operating System"/>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png"/>
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png"/>
+<link rel="shortcut icon" href="icons/favicon.ico"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<!-- ===== YUVI v5.1 — Core Security & Logger (load before everything) ===== -->
+<script src="core/security.js"></script>
+<script src="core/logger.js"></script>
+
+<!-- ===== YUVI v6 — Secret Vault + Biometric (load before PIN lock runs) ===== -->
+<script src="core/webauthn.js"></script>
+<script src="core/vault.js"></script>
+
+<!-- ===== YUVI v5 — CDN libraries (no build step) ===== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="pdf-worker-init.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- ===== YUVI v5 — Layer 0: Event Bus (must load first) ===== -->
+<script src="brain/eventBus.js"></script>
+
+<!-- ===== YUVI v5 — Layer 1: Integrations ===== -->
+<script src="integrations/groq.js"></script>
+<script src="integrations/github.js"></script>
+<script src="integrations/canva.js"></script>
+<script src="integrations/whatsapp.js"></script>
+<!-- ===== YUVI v7 — n8n compatibility seam (queue contract only, no shared credentials) ===== -->
+<script src="integrations/n8n.js"></script>
+
+<!-- ===== YUVI v5 — Layer 2: Knowledge ===== -->
+<script src="knowledge/fileParser.js"></script>
+<script src="knowledge/knowledgeManager.js"></script>
+
+<!-- ===== YUVI v5 — Layer 3: Memory ===== -->
+<script src="memory/contextBuilder.js"></script>
+
+<!-- ===== YUVI v5 — Layer 4: Automation ===== -->
+<script src="automation/eventRules.js"></script>
+<script src="automation/scheduler.js"></script>
+
+<!-- ===== YUVI v5 — Layer 5: Skills ===== -->
+<script src="skills/skillRegistry.js"></script>
+<script src="skills/skillLoader.js"></script>
+<script src="skills/promptSkillEngine.js"></script>
+
+<!-- ===== YUVI v5 — Layer 6: Brain (requires all layers above) ===== -->
+<script src="brain/intentDetector.js"></script>
+<script src="brain/promptComposer.js"></script>
+<script src="brain/skillOrchestrator.js"></script>
+<script src="brain/brain.js"></script>
+<script src="brain/widgetEngine.js"></script>
+<script src="brain/libraryEngine.js"></script>
+<script src="brain/proactiveEngine.js"></script>
+
+<!-- ===== YUVI v5 — Layer 7: UI (Settings Manager) ===== -->
+<link rel="stylesheet" href="skills/skillManager.css">
+<script src="skills/skillManager.js"></script>
+
+<!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  INSTALLING A SKILL — the only 3 steps required                  ║
+  ║  1. Create skills/<id>/manifest.json                              ║
+  ║  2. Create skills/<id>/skill.js  (call YuviSkillRegistry.register) ║
+  ║  3. Add { "skill_id": "<id>", "enabled": true } to               ║
+  ║     skills/installed.json                                         ║
+  ║                                                                   ║
+  ║  DO NOT add <script> tags here. YuviSkillLoader handles loading.  ║
+  ╚══════════════════════════════════════════════════════════════════╝
+-->
+</head>
+<body>
+<div class="bg-a"></div><div class="bg-g"></div><div class="bg-s"></div>
+<div id="toast"></div>
+<!-- ROTATE-DEVICE OVERLAY (landscape-only lock, item 11) -->
+<div id="rotate-overlay">
+  <div class="ro-icon">&#8635;</div>
+  <div class="ro-title">ROTATE YOUR DEVICE</div>
+  <div class="ro-sub">YUVI runs landscape-only. Turn your phone sideways to continue.</div>
+</div>
+<div id="yuvi-suggestion-toast"></div>
+<!-- PIN LOCK -->
+<div id="pin-lock" style="position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+  <div style="font-family:var(--disp);font-size:clamp(40px,10vw,80px);letter-spacing:.15em;color:var(--blade);text-shadow:0 0 30px rgba(61,125,255,.5);">YUVI</div>
+  <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.4em;">YUGANTAR GROWTH &middot; ENTER PASSCODE</div>
+  <div style="display:flex;gap:12px;" id="pin-dots">
+    <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div><div class="pin-dot" id="pd4"></div><div class="pin-dot" id="pd5"></div>
+  </div>
+  <div id="pin-error" style="font-family:var(--mono);font-size:8px;color:var(--flash);letter-spacing:.2em;min-height:14px;"></div>
+  <div style="display:grid;grid-template-columns:repeat(3,64px);gap:8px;">
+    <button class="pin-key" onclick="pinPress('1')">1</button><button class="pin-key" onclick="pinPress('2')">2</button><button class="pin-key" onclick="pinPress('3')">3</button>
+    <button class="pin-key" onclick="pinPress('4')">4</button><button class="pin-key" onclick="pinPress('5')">5</button><button class="pin-key" onclick="pinPress('6')">6</button>
+    <button class="pin-key" onclick="pinPress('7')">7</button><button class="pin-key" onclick="pinPress('8')">8</button><button class="pin-key" onclick="pinPress('9')">9</button>
+    <button class="pin-key" onclick="pinPress('del')" style="font-size:18px;">&#9003;</button>
+    <button class="pin-key" onclick="pinPress('0')">0</button>
+    <button class="pin-key" onclick="pinPress('ok')" style="background:rgba(61,125,255,.12);border-color:var(--blade);color:var(--blade);">OK</button>
+  </div>
+  <button id="pin-bio-btn" onclick="tryBiometricUnlock()" style="display:none;margin-top:6px;background:transparent;border:1px solid var(--edge);color:var(--blade2);font-family:var(--mono);font-size:9px;letter-spacing:.15em;padding:8px 16px;cursor:pointer;">&#128272; UNLOCK WITH FINGERPRINT</button>
+</div>
+<!-- BOOT -->
+<div id="boot" style="display:none;">
+  <div class="boot-logo">YUVI</div>
+  <div class="boot-sub">YUGANTAR GROWTH &middot; AA-OS &middot; v6.1</div>
+  <div class="boot-bar"><div class="boot-fill" id="bfill"></div></div>
+  <div class="boot-status" id="bstatus">LOADING YUVI INTELLIGENCE...</div>
+</div>
+<!-- REMINDER BAR -->
+<div id="reminder-bar"></div>
+<!-- SHELL -->
+<div id="shell">
+<header id="topbar">
+  <div class="tb-left">
+    <div class="hamburger" onclick="toggleMobSidebar()"><span></span><span></span><span></span></div>
+    <div class="logo">YUVI</div>
+    <div class="logo-sub">YUGANTAR GROWTH &middot; AA-OS</div>
+  </div>
+  <div class="tb-center"><div class="sdot"></div><span id="sys-status">YUVI v6.1 ONLINE</span></div>
+  <div class="tb-right">
+    <div class="v7-workspace-pill" id="v7-workspace-pill"><span class="v7-wp-dot"></span><span id="v7-workspace-text">WORKSPACE: OFFLINE</span></div>
+    <div id="livetime">--:--:-- IST</div>
+    <button class="gear-btn" onclick="toggleDigest()" title="Daily Digest" style="font-size:12px;">&#9881;</button>
+    <button class="gear-btn" onclick="openSettings()" title="Settings">&#9881;</button>
+  </div>
+</header>
+<nav id="sidenav">
+  <div class="nav-sec">MAIN</div>
+  <div class="nav-item active" onclick="nav('home',this)" data-view="home"><span class="ni-icon">&#9889;</span><span class="nav-label">Home</span></div>
+  <div class="nav-item" onclick="nav('command',this)" data-view="command"><span class="ni-icon">&#128172;</span><span class="nav-label">Command</span><span class="ni-badge hot">AI</span></div>
+  <div class="nav-div"></div>
+  <div class="nav-sec">OPS</div>
+  <div class="nav-item" onclick="nav('leads',this)" data-view="leads"><span class="ni-icon">&#127919;</span><span class="nav-label">Leads</span><span class="ni-badge" id="leads-badge">0</span></div>
+  <div class="nav-item" onclick="nav('pipeline',this)" data-view="pipeline"><span class="ni-icon">&#128202;</span><span class="nav-label">Pipeline</span></div>
+  <div class="nav-item" onclick="nav('clients',this)" data-view="clients"><span class="ni-icon">&#127962;</span><span class="nav-label">Clients</span></div>
+  <div class="nav-item" onclick="nav('library',this)" data-view="library"><span class="ni-icon">&#128218;</span><span class="nav-label">Library</span></div>
+  <div class="nav-div"></div>
+  <div class="nav-sec">SYSTEM</div>
+  <div class="nav-item" onclick="toggleDigest()"><span class="ni-icon">&#9889;</span><span class="nav-label">Digest</span></div>
+  <div class="nav-item" onclick="openSettings()"><span class="ni-icon">&#9881;</span><span class="nav-label">Settings</span></div>
+  <!-- v7 — item 6: Local Machine / uptime widget. Built on real v7CheckWorkspace() state — uptime tracks from when workspace last came online, not fake. -->
+  <div class="v7-machine-widget" id="v7-machine-widget">
+    <div class="v7-mw-row"><span class="v7-mw-dot" id="v7-mw-dot"></span><span class="v7-mw-label">n8n Status:</span><span class="v7-mw-val" id="v7-mw-status">OFFLINE</span></div>
+    <div class="v7-mw-row"><span class="v7-mw-label">Local Machine:</span></div>
+    <div class="v7-mw-machine" id="v7-mw-machine">Shlok's Laptop</div>
+    <div class="v7-mw-row"><span class="v7-mw-label">Uptime:</span><span class="v7-mw-val" id="v7-mw-uptime">&mdash;</span></div>
+    <div id="v7-mw-sparkline"></div>
+  </div>
+</nav>
+<div id="mob-overlay" onclick="closeMobSidebar()">
+  <div onclick="event.stopPropagation()" style="padding:0 16px;">
+    <div class="nav-sec">MAIN</div>
+    <div class="nav-item" onclick="nav('home');closeMobSidebar()"><span class="ni-icon">&#9889;</span> Home</div>
+    <div class="nav-item" onclick="nav('command');closeMobSidebar()"><span class="ni-icon">&#128172;</span> Command</div>
+    <div class="nav-div"></div>
+    <div class="nav-sec">OPS</div>
+    <div class="nav-item" onclick="nav('leads');closeMobSidebar()"><span class="ni-icon">&#127919;</span> Leads</div>
+    <div class="nav-item" onclick="nav('pipeline');closeMobSidebar()"><span class="ni-icon">&#128202;</span> Pipeline</div>
+    <div class="nav-item" onclick="nav('clients');closeMobSidebar()"><span class="ni-icon">&#127962;</span> Clients</div>
+    <div class="nav-item" onclick="nav('library');closeMobSidebar()"><span class="ni-icon">&#128218;</span> Library</div>
+    <div class="nav-div"></div>
+    <div class="nav-item" onclick="toggleDigest();closeMobSidebar()"><span class="ni-icon">&#9889;</span> Daily Digest</div>
+    <div class="nav-item" onclick="openSettings();closeMobSidebar()"><span class="ni-icon">&#9881;</span> Settings</div>
+  </div>
+</div>
+<div id="main">
+<!-- HOME -->
+<div class="view active" id="v-home">
+  <div class="v7-home-top-row">
+  <div class="home-greet">
+    <div class="home-greet-main">
+      <h1>GOOD <span id="greet-time">MORNING</span>, SHLOK <span class="home-greet-sir">SIR</span></h1>
+      <p class="home-greet-sub">Here's what's happening across your business.</p>
+    </div>
+    <div class="home-greet-clock">
+      <div id="home-clock-time">--:--</div>
+      <div id="greet-date">LOADING...</div>
+    </div>
+  </div>
+  <!-- v7 — Business Health Score gauge (item 2). Computed by v7ComputeHealthScore() from real data, see REGRESSION_CHECK_v7.md for the formula. -->
+  <div class="v7-health-card panel">
+    <div class="v7-health-label">Business Health Score</div>
+    <div class="v7-health-gauge" id="v7-health-gauge">
+      <div class="v7-health-gauge-ring" id="v7-health-ring"></div>
+      <div class="v7-health-gauge-inner">
+        <span id="v7-health-score">--</span><small>/100</small>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="kpi-row">
+    <div class="kpi panel"><div class="kpi-val" id="kpi-clients">2</div><div class="kpi-lbl">Active Clients</div><div class="kpi-bar"><div class="kpi-fill" style="width:40%;background:var(--green);box-shadow:0 0 6px var(--green);"></div></div></div>
+    <div class="kpi panel"><div class="kpi-val" id="kpi-leads">0</div><div class="kpi-lbl">Total Leads</div><div class="kpi-bar"><div class="kpi-fill" style="width:60%"></div></div></div>
+    <div class="kpi panel"><div class="kpi-val" id="kpi-followups">0</div><div class="kpi-lbl">Follow-ups Today</div><div class="kpi-bar"><div class="kpi-fill" style="width:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);"></div></div></div>
+    <div class="kpi panel"><div class="kpi-val" id="kpi-revenue">&#8377;0</div><div class="kpi-lbl">Revenue This Month</div><div class="kpi-bar"><div class="kpi-fill" style="width:20%;background:var(--blade);box-shadow:0 0 6px var(--blade);"></div></div></div>
+    <!-- legacy Contacted Today tracking kept alive (used elsewhere in the app) but no longer shown as its own KPI slot -->
+    <div style="display:none;"><div id="kpi-contacted">0</div><div id="contacted-bar"></div></div>
+  </div>
+  <div class="home-grid">
+    <div>
+      <div class="panel briefing-panel" style="margin-bottom:10px;">
+        <div class="briefing-yuvi">
+          <div class="yuvi-av">Y</div>
+          <div><div class="yuvi-name-big">YUVI</div><div class="yuvi-role-sm">YUGANTAR GROWTH COMMANDER</div></div>
+          <button class="btn" style="margin-left:auto;font-size:7px;padding:3px 8px;" onclick="generateDailyDigest()">&#9889; DIGEST</button>
+        </div>
+        <div class="briefing-msg" id="yuvi-briefing">Initializing...</div>
+        <div class="blade-line"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+          <div class="ptitle" style="font-size:11px;">REVENUE OVERVIEW</div>
+        </div>
+        <div id="revenue-overview-chart"></div>
+        <div class="blade-line" style="margin-top:10px;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;margin-top:8px;">
+          <div class="ptitle" style="font-size:11px;">REVENUE TRACKER</div>
+          <button class="btn primary" style="font-size:7px;padding:3px 7px;" onclick="addRevenueRow()">+ ADD</button>
+        </div>
+        <div id="revenue-rows"></div>
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;padding-top:7px;border-top:1px solid var(--edge2);">
+          <span style="color:var(--muted);">TOTAL MRR</span><span style="color:var(--gold);" id="rev-total-val">&#8377;0</span>
+        </div>
+      </div>
+      <div class="panel" style="padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+          <div class="ptitle" style="font-size:11px;">TODAY'S PRIORITIES</div>
+          <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="resetPriorities()">RESET</button>
+        </div>
+        <div id="priorities-list"></div>
+      </div>
+    </div>
+    <div class="home-right">
+      <div class="panel" style="padding:12px;">
+        <div class="ptitle" style="font-size:11px;margin-bottom:8px;">QUICK ACTIONS</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <button class="btn primary" style="padding:8px;" onclick="openAddLead()">+ ADD LEAD</button>
+          <button class="btn" style="padding:8px;" onclick="nav('pipeline')">OPEN PIPELINE</button>
+          <button class="btn" style="padding:8px;" onclick="navToProposal()">NEW PROPOSAL</button>
+          <button class="btn gold" style="padding:8px;" onclick="generateDailyDigest()">&#9889; DAILY DIGEST</button>
+        </div>
+      </div>
+      <!-- v7 — item 3: LIVE ACTIVITY (distinct from Recent Activity below). Real events: new leads, pipeline stage changes, payment status changes. -->
+      <div class="panel" style="padding:12px;">
+        <div class="ptitle" style="font-size:11px;margin-bottom:7px;">LIVE ACTIVITY</div>
+        <div id="v7-live-activity-list"></div>
+      </div>
+      <div class="panel" style="padding:12px;">
+        <div class="ptitle" style="font-size:11px;margin-bottom:7px;">CLIENT STATUS</div>
+        <div id="home-clients-mini"></div>
+      </div>
+      <!-- v7 — item 4: UPCOMING EVENTS. Derived from real pipeline/client state (proposal deadlines, advance-pending follow-ups, overdue payment calls) — no invented events. -->
+      <div class="panel" style="padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+          <div class="ptitle" style="font-size:11px;">UPCOMING EVENTS</div>
+          <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="nav('pipeline')">VIEW CALENDAR</button>
+        </div>
+        <div id="v7-upcoming-events-list"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel" style="padding:12px;margin-top:10px;">
+    <div class="ptitle" style="font-size:11px;margin-bottom:8px;">RECENT ACTIVITY</div>
+    <div id="recent-activity-list" class="activity-row"></div>
+  </div>
+  <!-- v7 — HOME DASHBOARD PANELS (reference layout: AI Team Live / Command Center / Sales Pipeline / Clients / Knowledge Base, all visible on Home, not just buried in nav) -->
+  <div class="home-v7-grid">
+    <div class="panel" style="padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+        <div class="ptitle" style="font-size:11px;">AI TEAM LIVE</div>
+        <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="nav('command')">MANAGE TEAM</button>
+      </div>
+      <div class="v7-agent-grid v7-agent-grid-home"></div>
+    </div>
+    <div class="panel" style="padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+        <div class="ptitle" style="font-size:11px;">COMMAND CENTER</div>
+        <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="nav('command')">OPEN</button>
+      </div>
+      <div class="v7-cmd-suggest v7-cmd-suggest-home"></div>
+      <div class="v7-cmd-history v7-cmd-history-home" style="margin-top:8px;"></div>
+    </div>
+    <div class="panel" style="padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+        <div class="ptitle" style="font-size:11px;">SALES PIPELINE</div>
+        <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="nav('pipeline')">OPEN PIPELINE</button>
+      </div>
+      <div class="v7-pipeline-summary"></div>
+    </div>
+    <div class="panel" style="padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+        <div class="ptitle" style="font-size:11px;">CLIENTS</div>
+        <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="nav('clients')">VIEW ALL CLIENTS</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="v7-clients-table v7-clients-table-home"><thead><tr><th>CLIENT</th><th>STATUS</th><th>PLAN</th><th>REVENUE</th><th>NEXT ACTION</th></tr></thead><tbody class="v7-clients-summary-tbody-home"></tbody></table>
+      </div>
+    </div>
+    <div class="panel" style="padding:12px;grid-column:1/-1;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+        <div class="ptitle" style="font-size:11px;">KNOWLEDGE BASE</div>
+        <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="nav('library')">OPEN LIBRARY</button>
+      </div>
+      <div class="v7-knowledge-grid"></div>
+    </div>
+  </div>
+</div>
+<!-- COMMAND -->
+<div class="view" id="v-command">
+  <div class="v7-transcript-dock">
+    <div class="v7-transcript-title">TRANSCRIPT LOG</div>
+    <div id="v7-transcript-list"></div>
+  </div>
+  <div class="v7-cmd-main">
+  <div class="cmd-topbar">
+    <div class="yuvi-av yuvi-av-sm">Y</div>
+    <div><div class="cmd-yuvi-name">YUVI</div><div class="cmd-yuvi-sub">YUGANTAR GROWTH AI &middot; SHLOK PANDYA</div></div>
+    <div class="status-dot" id="cmd-status-dot"></div>
+    <div class="mode-pills">
+      <div class="mode-pill active" onclick="setMode('chat',this)" data-mode="chat">CHAT</div>
+      <div class="mode-pill" onclick="setMode('plan',this)" data-mode="plan">PLAN</div>
+      <div class="mode-pill" onclick="setMode('outreach',this)" data-mode="outreach">OUTREACH</div>
+      <div class="mode-pill" onclick="setMode('proposal',this)" data-mode="proposal">PROPOSAL</div>
+      <div class="mode-pill" onclick="setMode('brief',this)" data-mode="brief">BRIEF</div>
+    </div>
+    <button class="btn" style="margin-left:8px;font-size:7px;padding:3px 8px;" onclick="toggleHistoryPanel()" title="Previous conversations">&#9776; HISTORY</button>
+  </div>
+  <!-- v6.1 — TRACK A #3: side panel to browse previous conversations -->
+  <div id="history-panel" class="history-panel">
+    <div class="history-panel-head">
+      <div class="ptitle" style="font-size:11px;">PREVIOUS CONVERSATIONS</div>
+      <button class="btn" style="font-size:7px;padding:3px 7px;" onclick="toggleHistoryPanel()">&#10005;</button>
+    </div>
+    <select id="history-select" class="history-select" onchange="loadConversationFromHistory(this.value)">
+      <option value="">Select a past conversation\u2026</option>
+    </select>
+    <div id="history-list" class="history-list"></div>
+  </div>
+  <!-- v7 — AI TEAM agent cards (Groq-driven; work regardless of n8n status) -->
+  <div class="panel" style="padding:12px;margin-bottom:10px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+      <div class="ptitle" style="font-size:11px;">AI TEAM &mdash; DIGITAL EMPLOYEES</div>
+      <div class="v7-tabs" style="margin:0;border:none;">
+        <div class="v7-tab active" onclick="v7SetTeamTab('floor',this)">TEAM FLOOR</div>
+        <div class="v7-tab" onclick="v7SetTeamTab('queue',this)">TASK QUEUE</div>
+        <div class="v7-tab" onclick="v7SetTeamTab('workflows',this)">WORKFLOWS</div>
+        <div class="v7-tab" onclick="v7SetTeamTab('logs',this)">LOGS</div>
+      </div>
+    </div>
+    <div id="v7-team-floor" class="v7-agent-grid"></div>
+    <div id="v7-team-queue" style="display:none;"></div>
+    <div id="v7-team-workflows" style="display:none;"></div>
+    <div id="v7-team-logs" style="display:none;font-family:var(--mono);font-size:8px;color:var(--muted);max-height:200px;overflow-y:auto;"></div>
+  </div>
+  <!-- v7 — COMMAND CENTER (suggested commands + history), additive to existing chat below -->
+  <div class="v7-cmd-panel" style="margin-bottom:10px;">
+    <div class="ptitle" style="font-size:11px;">SUGGESTED COMMANDS</div>
+    <div class="v7-cmd-suggest" id="v7-suggested-commands"></div>
+  </div>
+  <div class="v7-cmd-split">
+    <canvas id="v7-rain-canvas"></canvas>
+    <div class="v7-blank-canvas"><span class="v7-blank-cursor">_</span></div>
+    <div class="v7-chat-dock">
+      <!-- BLANK-CANVAS WIDGET SURFACE (Phase 3) -->
+      <div id="yuvi-canvas-wrap">
+        <div id="yuvi-canvas-empty">
+          <div class="yuvi-canvas-greet">What shall we build today?</div>
+        </div>
+        <div id="yuvi-command-chip"></div>
+        <div id="yuvi-canvas"></div>
+      </div>
+      <div id="file-preview-bar" style="display:none;padding:4px 18px;border-top:1px solid var(--edge2);"></div>
+      <div id="yuvi-caption">Good Afternoon, Sir. What shall we build today?</div>
+      <div class="chat-input-area">
+        <button class="attach-btn" onclick="document.getElementById('chat-file-input').click()" id="attach-btn" title="Attach file">&#128206;</button>
+        <input type="file" id="chat-file-input" style="display:none" accept=".txt,.pdf,.csv,.json,.md,image/*" onchange="handleFileAttach(this)"/>
+        <textarea class="chat-inp" id="chat-inp" placeholder="Talk or type your command..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice input">&#127908;</button>
+        <button class="chat-send" onclick="sendChat()" id="send-btn" title="Send">&#8593;</button>
+      </div>
+    </div>
+  </div>
+  </div><!-- end v7-cmd-main -->
+</div>
+<!-- LEADS -->
+<div class="view" id="v-leads">
+  <div class="leads-controls">
+    <input type="text" class="search-inp" placeholder="Search leads..." id="lead-search" oninput="renderLeads()"/>
+    <div class="fpill active" onclick="setCatFilter('all',this)">ALL</div>
+    <div class="fpill" onclick="setCatFilter('website',this)">WEB</div>
+    <div class="fpill" onclick="setCatFilter('seo',this)">SEO</div>
+    <div class="fpill" onclick="setCatFilter('smm',this)">SMM</div>
+    <div class="fpill" onclick="setCatFilter('digital',this)">DIGITAL</div>
+    <button class="btn" onclick="document.getElementById('csv-file').click()">CSV</button>
+    <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="importCSV(this)"/>
+    <button class="btn" onclick="deduplicateLeads()" title="Remove duplicate leads">DEDUP</button>
+    <button class="btn primary" onclick="openAddLead()">+ ADD</button>
+    <button class="btn gold" onclick="toggleOutreach()" style="white-space:nowrap;">&#128226; OUTREACH</button>
+  </div>
+  <div class="leads-layout">
+    <div class="panel" style="overflow:hidden;">
+      <div class="leads-table-wrap">
+        <table class="leads-table"><thead><tr><th>#</th><th>BUSINESS</th><th>PHONE</th><th>CAT</th><th>SCORE</th><th>STATUS</th><th>WA</th><th>ACT</th></tr></thead>
+        <tbody id="leads-tbody"></tbody></table>
+        <div id="leads-empty" style="padding:28px;text-align:center;font-family:var(--mono);font-size:9px;color:var(--muted);display:none;">
+          No leads yet.<br><br><button class="btn primary" onclick="loadSampleLeads()">LOAD SAMPLE LEADS</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel ldp" id="lead-detail-panel"><div class="ldp-empty">&#8592; Select a lead</div></div>
+  </div>
+<!-- OUTREACH PANEL — inside leads view, below everything -->
+<div id="outreach-panel" style="display:none;margin-top:12px;">
+  <div class="panel" style="padding:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div><div class="ptitle" style="font-size:13px;">&#128226; BULK OUTREACH</div><div class="psub">Send messages + flyer to multiple leads</div></div>
+      <button class="btn danger" style="font-size:7px;padding:3px 8px;" onclick="toggleOutreach()">CLOSE</button>
+    </div>
+    <div class="blade-line"></div>
+    <!-- Step 1: Upload flyer -->
+    <div style="margin-bottom:10px;">
+      <div class="form-lbl">STEP 1 — UPLOAD DIGITAL FLYER (optional)</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn primary" style="padding:6px 12px;" onclick="document.getElementById('flyer-input').click()">&#128247; UPLOAD FLYER</button>
+        <input type="file" id="flyer-input" accept="image/*" style="display:none" onchange="handleFlyerUpload(this)"/>
+        <span id="flyer-name" style="font-family:var(--mono);font-size:8px;color:var(--muted);">No flyer uploaded</span>
+        <button class="btn danger" style="font-size:7px;padding:3px 6px;display:none;" id="flyer-clear" onclick="clearFlyer()">&#10005;</button>
+      </div>
+      <div id="flyer-preview" style="margin-top:6px;display:none;">
+        <img id="flyer-img" style="max-height:80px;max-width:200px;border:1px solid var(--edge);" alt="flyer"/>
+      </div>
+    </div>
+    <!-- Step 2: Message -->
+    <div style="margin-bottom:10px;">
+      <div class="form-lbl">STEP 2 — MESSAGE</div>
+      <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+        <button class="btn" style="font-size:7px;padding:3px 8px;" onclick="setOutreachType('message')">MESSAGE ONLY</button>
+        <button class="btn" style="font-size:7px;padding:3px 8px;" onclick="setOutreachType('image')">IMAGE ONLY</button>
+        <button class="btn primary" style="font-size:7px;padding:3px 8px;" onclick="setOutreachType('both')">IMAGE + MESSAGE</button>
+        <button class="btn gold" style="font-size:7px;padding:3px 8px;" onclick="generateOutreachSuggestion()">&#9889; YUVI SUGGEST</button>
+      </div>
+      <textarea class="form-ta" id="outreach-msg" placeholder="Type your message... or click YUVI SUGGEST for an AI-generated message based on selected leads" style="min-height:80px;font-size:12px;"></textarea>
+      <div id="outreach-type-indicator" style="font-family:var(--mono);font-size:7px;color:var(--blade);margin-top:4px;letter-spacing:.1em;">MODE: IMAGE + MESSAGE</div>
+    </div>
+    <!-- Step 3: Select leads -->
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div class="form-lbl">STEP 3 — SELECT LEADS TO SEND TO</div>
+        <div style="display:flex;gap:5px;">
+          <button class="btn" style="font-size:7px;padding:3px 6px;" onclick="selectAllOutreachLeads()">ALL</button>
+          <button class="btn" style="font-size:7px;padding:3px 6px;" onclick="selectNoneOutreachLeads()">NONE</button>
+          <button class="btn gold" style="font-size:7px;padding:3px 6px;" onclick="selectHotOutreachLeads()">HOT ONLY</button>
+        </div>
+      </div>
+      <div id="outreach-lead-list" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;"></div>
+    </div>
+    <!-- Step 4: Send -->
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="btn primary" style="padding:10px 20px;font-size:9px;" onclick="startOutreach()">&#128226; START OUTREACH</button>
+      <div id="outreach-counter" style="font-family:var(--mono);font-size:8px;color:var(--muted);"></div>
+    </div>
+    <div id="outreach-queue" style="margin-top:10px;display:none;">
+      <div class="blade-line"></div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:6px;">OUTREACH QUEUE — click each to open WhatsApp</div>
+      <div id="outreach-queue-list" style="display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+</div><!-- end v-leads -->
+<!-- PIPELINE -->
+<div class="view" id="v-pipeline">
+  <div class="pipe-header">
+    <div><div class="ptitle">PIPELINE</div><div class="psub">ACTIVE DEAL TRACKER</div></div>
+    <button class="btn primary" onclick="openAddPipeline()">+ ADD DEAL</button>
+  </div>
+  <div class="kanban" id="kanban-board"></div>
+</div>
+<!-- CLIENTS -->
+<div class="view" id="v-clients">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div><div class="ptitle">CLIENT MATRIX</div><div class="psub">ACTIVE MANAGEMENT</div></div>
+    <button class="btn primary" onclick="openAddClient()">+ ADD</button>
+  </div>
+  <!-- v7 — quick-glance summary table (reference-style), read-only, additive.
+       Does NOT replace the detailed card grid below: that keeps 100% of its
+       existing task/package/notes functionality untouched. -->
+  <div class="panel" style="overflow-x:auto;padding:0;margin-bottom:12px;">
+    <table class="v7-clients-table" id="v7-clients-summary-table">
+      <thead><tr><th>CLIENT</th><th>STATUS</th><th>PLAN</th><th>REVENUE</th><th>NEXT ACTION</th></tr></thead>
+      <tbody id="v7-clients-summary-tbody"></tbody>
+    </table>
+  </div>
+  <div class="clients-grid" id="clients-grid"></div>
+</div>
+<!-- LIBRARY (Phase 4) -->
+<div class="view" id="v-library">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div><div class="ptitle">LIBRARY</div><div class="psub">ARCHIVE &amp; TEMPLATES</div></div>
+  </div>
+  <div class="lib-tabs">
+    <div class="lib-tab active" id="lib-tab-archive" onclick="setLibraryTab('archive')">ARCHIVE</div>
+    <div class="lib-tab" id="lib-tab-templates" onclick="setLibraryTab('templates')">TEMPLATES</div>
+  </div>
+  <div id="lib-archive-panel">
+    <div id="lib-archive-content"></div>
+  </div>
+  <div id="lib-templates-panel" style="display:none;">
+    <button class="btn primary" style="margin-bottom:10px;" onclick="saveCurrentPromptAsTemplate()">+ SAVE CURRENT CHAT INPUT AS TEMPLATE</button>
+    <div id="lib-templates-content"></div>
+  </div>
+</div>
+</div><!-- #main -->
+</div><!-- #shell -->
+<!-- MOBILE NAV -->
+<div id="mobile-nav">
+  <div class="mn-wrap">
+    <div class="mn-item active" onclick="nav('home',null,this)"><div class="mn-icon">&#9889;</div>HOME</div>
+    <div class="mn-item" onclick="nav('command',null,this)"><div class="mn-icon">&#128172;</div>CMD</div>
+    <div class="mn-item" onclick="nav('leads',null,this)"><div class="mn-icon">&#127919;</div>LEADS</div>
+    <div class="mn-item" onclick="nav('pipeline',null,this)"><div class="mn-icon">&#128202;</div>PIPE</div>
+    <div class="mn-item" onclick="nav('clients',null,this)"><div class="mn-icon">&#127962;</div>CLIENTS</div>
+    <div class="mn-item" onclick="nav('library',null,this)"><div class="mn-icon">&#128218;</div>LIB</div>
+  </div>
+</div>
+<!-- DIGEST PANEL -->
+<div id="digest-panel">
+  <button class="sp-close" onclick="toggleDigest()">&#10005;</button>
+  <div class="sp-title">DAILY DIGEST</div>
+  <div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.2em;margin-bottom:14px;" id="digest-date"></div>
+  <div id="digest-content"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;padding:40px 0;">Click Generate to get<br>your daily action plan.</div></div>
+  <button class="btn primary" style="width:100%;padding:10px;margin-top:10px;" onclick="generateDailyDigest()">&#9889; GENERATE DIGEST</button>
+</div>
+<!-- ADD LEAD PANEL -->
+<div class="slide-panel" id="add-lead-panel">
+  <button class="sp-close" onclick="closeAddLead()">&#10005;</button>
+  <div class="sp-title">ADD LEAD</div>
+  <div class="sp-field"><div class="form-lbl">Business Name *</div><input type="text" class="form-inp" id="al-name" placeholder="Sharma Electronics"/></div>
+  <div class="sp-field"><div class="form-lbl">Phone</div><input type="text" class="form-inp" id="al-phone" placeholder="98250XXXXX"/></div>
+  <div class="sp-field"><div class="form-lbl">Category</div>
+    <select class="form-sel" id="al-cat"><option value="website">WEBSITE</option><option value="seo">SEO</option><option value="smm">SMM</option><option value="digital">DIGITAL</option><option value="unknown">UNKNOWN</option></select></div>
+  <div class="sp-field"><div class="form-lbl">Address</div><input type="text" class="form-inp" id="al-addr" placeholder="Ahmedabad"/></div>
+  <div class="sp-field"><div class="form-lbl">Initial Status</div>
+    <select class="form-sel" id="al-status"><option value="new">NEW</option><option value="approached">APPROACHED</option><option value="contacted">CONTACTED</option><option value="interested">INTERESTED</option></select></div>
+  <div class="sp-field"><div class="form-lbl">Notes</div><textarea class="form-ta" id="al-notes" placeholder="Any notes..."></textarea></div>
+  <button class="btn primary" style="width:100%;padding:10px;margin-top:4px;" onclick="submitAddLead()">ADD LEAD</button>
+</div>
+<!-- ADD PIPELINE PANEL -->
+<div class="slide-panel" id="add-pipe-panel">
+  <button class="sp-close" onclick="document.getElementById('add-pipe-panel').classList.remove('open')">&#10005;</button>
+  <div class="sp-title">ADD DEAL</div>
+  <div class="sp-field"><div class="form-lbl">Business Name *</div><input type="text" class="form-inp" id="ap-name" placeholder="Sharma Electronics"/></div>
+  <div class="sp-field"><div class="form-lbl">Contact Person</div><input type="text" class="form-inp" id="ap-contact" placeholder="Amit Sharma"/></div>
+  <div class="sp-field"><div class="form-lbl">Phone</div><input type="text" class="form-inp" id="ap-phone" placeholder="98250XXXXX"/></div>
+  <div class="sp-field"><div class="form-lbl">Service</div>
+    <select class="form-sel" id="ap-service"><option>Digital Foundation &#8377;7,999</option><option>Growth &#8377;14,999/month</option><option>Scale &#8377;29,999/month</option><option>Custom Package</option></select></div>
+  <div class="sp-field"><div class="form-lbl">Stage</div>
+    <select class="form-sel" id="ap-stage"><option value="approached">APPROACHED</option><option value="contacted">CONTACTED</option><option value="interested">INTERESTED</option><option value="proposal_sent">PROPOSAL SENT</option><option value="advance_pending">ADVANCE PENDING</option><option value="closed">CLOSED</option></select></div>
+  <div class="sp-field"><div class="form-lbl">First Note</div><textarea class="form-ta" id="ap-note" placeholder="What happened so far..."></textarea></div>
+  <button class="btn primary" style="width:100%;padding:10px;margin-top:4px;" onclick="submitAddPipeline()">ADD DEAL</button>
+</div>
+<!-- PIPELINE DETAIL -->
+<div class="pipe-side-panel" id="pipe-detail-panel">
+  <button class="sp-close" onclick="closePipeDetail()">&#10005;</button>
+  <div id="psp-content"></div>
+</div>
+<!-- SETTINGS -->
+<div id="settings-overlay" onclick="closeSettings()"></div>
+<div id="settings-panel">
+  <button class="sp-close" onclick="closeSettings()">&#10005;</button>
+  <div class="sett-title">SETTINGS</div>
+  <div class="sett-sub">YUVI v6 &middot; AA-OS LAYER 2 &middot; PROACTIVE</div>
+
+  <!-- 1. API -->
+  <div class="sett-sec">🔑 API</div>
+  <div class="sett-field"><div class="sett-lbl">GROQ API KEY</div><input type="password" class="sett-inp" id="s-groq-key" placeholder="gsk_..."/>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;margin-top:4px;">Encrypted at rest in the local vault — never stored as plaintext.</div>
+    <div class="sett-btns"><button class="btn primary" onclick="saveSettGroqKey()">SAVE</button><button class="btn" onclick="testGroqKey()">TEST</button></div></div>
+  <div class="sett-field"><div class="sett-lbl">DEFAULT MODE</div>
+    <select class="sett-inp" id="s-default-mode"><option value="chat">CHAT</option><option value="plan">PLAN</option><option value="outreach">OUTREACH</option><option value="proposal">PROPOSAL</option><option value="brief">BRIEF</option></select>
+    <div class="sett-btns"><button class="btn primary" onclick="saveDefaultMode()">SAVE</button></div></div>
+
+  <!-- 2. GitHub Memory -->
+  <div class="sett-sec">💾 GITHUB MEMORY</div>
+  <div class="sett-field"><div class="sett-lbl">GITHUB USERNAME</div><input type="text" class="sett-inp" id="s-gh-user" placeholder="your-username"/></div>
+  <div class="sett-field"><div class="sett-lbl">REPO NAME</div><input type="text" class="sett-inp" id="s-gh-repo" placeholder="aa-os-yuvi"/></div>
+  <div class="sett-field"><div class="sett-lbl">PERSONAL ACCESS TOKEN (legacy, unused)</div><input type="password" class="sett-inp" id="s-gh-token" placeholder="ghp_..."/>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;margin-top:4px;">v6.1: the real token now lives server-side (GITHUB_TOKEN on Vercel). This field is kept only so old saved values aren't lost — it's not sent anywhere anymore.</div></div>
+  <div class="sett-btns">
+    <button class="btn primary" onclick="saveAndConnectMemory()">CONNECT</button>
+    <button class="btn" onclick="viewMemory()">VIEW</button>
+    <button class="btn gold" onclick="downloadMemoryBackup()">BACKUP</button>
+    <button class="btn danger" onclick="clearLocalMemory()">CLEAR LOCAL</button>
+  </div>
+  <div id="mem-status-indicator" class="mem-status mem-no" style="display:none;"></div>
+  <div class="sett-field" style="margin-top:10px;">
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Connected services status.</div>
+    <div class="sett-btns"><button class="btn" onclick="YuviSkillManager.renderIntegrations()">&#8635; REFRESH</button></div>
+    <div id="yuvi-integrations-status"></div>
+  </div>
+  <div class="sett-field">
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Live snapshot of everything YUVI knows about your business.</div>
+    <div class="sett-btns">
+      <button class="btn" onclick="YuviSkillManager.renderMemoryStatus()">&#8635; REFRESH</button>
+      <button class="btn danger" onclick="YuviSkillManager.clearEventLog()">CLEAR EVENT LOG</button>
+    </div>
+    <div id="yuvi-memory-status"></div>
+  </div>
+
+  <!-- 3. Skills -->
+  <div class="sett-sec">🧩 SKILLS</div>
+  <div class="sett-field">
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Install, configure, enable/disable, schedule, and remove Skills. Skills are executable capabilities.</div>
+    <div class="sett-btns"><button class="btn" onclick="YuviSkillManager.renderSkillsManager()">&#8635; REFRESH</button></div>
+  </div>
+  <div id="yuvi-skills-manager"></div>
+
+  <!-- 4. Knowledge -->
+  <div class="sett-sec">📚 KNOWLEDGE</div>
+  <div class="sett-field">
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;">Upload files — YUVI reads and uses them as knowledge automatically. PDF, DOCX, XLSX, CSV, TXT, JSON supported.</div>
+    <input type="file" class="sett-inp" id="yuvi-knowledge-input"
+      accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.json,.md"
+      onchange="YuviSkillManager.handleKnowledgeUpload(this)"/>
+    <div id="yuvi-knowledge-status" style="margin-top:6px;font-size:10px;"></div>
+  </div>
+  <div id="yuvi-knowledge-manager"></div>
+
+  <!-- 5. Password (passcode + biometric — either unlocks, neither required) -->
+  <div class="sett-sec">🔒 PASSWORD</div>
+  <div class="sett-field">
+    <div class="sett-lbl">NEW 6-DIGIT PASSCODE</div>
+    <input type="password" inputmode="numeric" maxlength="6" class="sett-inp" id="s-new-pin" placeholder="••••••"/>
+    <div class="sett-lbl" style="margin-top:6px;">CONFIRM PASSCODE</div>
+    <input type="password" inputmode="numeric" maxlength="6" class="sett-inp" id="s-new-pin-confirm" placeholder="••••••"/>
+    <div class="sett-btns"><button class="btn primary" onclick="changePasscode()">CHANGE PASSCODE</button></div>
+  </div>
+  <div class="sett-field">
+    <div class="sett-lbl">FINGERPRINT / BIOMETRIC UNLOCK</div>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;" id="s-bio-status">Checking device support...</div>
+    <div class="sett-btns" id="s-bio-btns"></div>
+  </div>
+
+  <!-- 6. YUVI (personality + business context, combined identity) -->
+  <div class="sett-sec">🤖 YUVI</div>
+  <div class="sett-field">
+    <div class="sett-lbl">PERSONALITY</div>
+    <textarea class="sett-ta" id="s-personality" rows="4">You are sharp, direct, practical. You know Ahmedabad business culture. You give real advice, not generic tips. When Shlok is stressed, be steady. When he is winning, push him to win more.</textarea>
+    <div class="sett-btns"><button class="btn primary" onclick="savePersonality()">SAVE</button></div></div>
+  <div class="sett-field">
+    <div class="sett-lbl">BUSINESS CONTEXT</div>
+    <textarea class="sett-ta" id="s-biz-ctx" rows="5">Yugantar Growth. Digital agency, Ahmedabad. Owner: Shlok Pandya, 21. Services: Digital Foundation &#8377;7,999 one-time, Growth &#8377;14,999/month, Scale &#8377;29,999/month.</textarea>
+    <div class="sett-btns"><button class="btn primary" onclick="saveBizCtx()">SAVE</button></div></div>
+  <div class="sett-field">
+    <div class="sett-lbl">DAILY BRIEFING TIME</div>
+    <input type="time" class="sett-inp" id="pref-briefing-time" placeholder="08:00"/>
+    <div class="sett-lbl" style="margin-top:6px;">TOAST DURATION (seconds)</div>
+    <input type="number" class="sett-inp" id="pref-toast-duration" min="1" max="10" placeholder="3"/>
+    <div class="sett-lbl" style="margin-top:6px;">PIPELINE STALE-STAGE THRESHOLD (days)</div>
+    <input type="number" class="sett-inp" id="pref-stage-threshold-days" min="1" max="30" placeholder="5"/>
+    <div class="sett-btns"><button class="btn primary" onclick="YuviSkillManager.savePreferences()">SAVE PREFERENCES</button></div>
+  </div>
+
+  <!-- 7. Connection to Workspace (n8n) — placeholder UI only, no logic yet -->
+  <div class="sett-sec">🔗 CONNECTION TO WORKSPACE (N8N)</div>
+  <div class="sett-field">
+    <div class="sett-lbl">WORKSPACE STATUS</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.15em;padding:6px 0;" id="s-n8n-status-line">&#9679; OFFLINE — laptop/n8n not reachable</div>
+    <div class="sett-lbl" style="margin-top:6px;">N8N BASE URL (local instance)</div>
+    <input type="text" class="sett-inp" id="s-n8n-url" placeholder="http://localhost:5678"/>
+    <div class="sett-lbl" style="opacity:0.6;font-weight:normal;font-size:10px;margin-top:4px;">Dashboard only ever exchanges a task queue with this address (no API keys crossed). Works fully on Groq alone when this is offline — tasks just wait in queue and sync automatically once n8n is back online.</div>
+    <div class="sett-btns"><button class="btn primary" onclick="saveN8nUrl()">SAVE</button></div>
+  </div>
+</div>
+<!-- MEMORY VIEW MODAL -->
+<div id="mem-view-modal">
+  <div class="mv-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="ptitle">MEMORY.JSON</div>
+      <button class="sp-close" style="position:static;" onclick="document.getElementById('mem-view-modal').classList.remove('show')">&#10005;</button>
+    </div>
+    <pre class="mv-pre" id="mem-view-content"></pre>
+  </div>
+</div>
+<!-- v7 — AGENT DETAIL MODAL (tap an agent card: today / yesterday / tomorrow) -->
+<div id="v7-agent-modal" onclick="if(event.target===this)v7CloseAgentModal()">
+  <div class="v7-agent-modal-box" id="v7-agent-modal-box"></div>
+</div>
+<!-- GENERIC MODAL -->
+<div id="generic-modal">
+  <div class="gm-box">
+    <div class="ptitle" id="gm-title" style="margin-bottom:7px;"></div>
+    <div id="gm-body" style="font-family:var(--mono);font-size:9px;color:var(--text);line-height:1.8;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:7px;">
+      <button class="btn danger" id="gm-confirm">CONFIRM</button>
+      <button class="btn" onclick="closeGenericModal()">CANCEL</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+<!-- YUVI v5 PWA Service Worker -->
+<script src="sw-register.js"></script>
+<!-- YUVI v5 Boot — runs after all modules are loaded -->
+<script src="skill-boot.js"></script>
+</body>
+</html>
