@@ -97,24 +97,8 @@
 </div>
 <div id="yuvi-suggestion-toast"></div>
 <!-- PIN LOCK -->
-<div id="pin-lock" style="position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-  <div style="font-family:var(--disp);font-size:clamp(40px,10vw,80px);letter-spacing:.15em;color:var(--blade);text-shadow:0 0 30px rgba(61,125,255,.5);">YUVI</div>
-  <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.4em;">YUGANTAR GROWTH &middot; ENTER PASSCODE</div>
-  <div style="display:flex;gap:12px;" id="pin-dots">
-    <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div>
-    <div class="pin-dot" id="pd3"></div><div class="pin-dot" id="pd4"></div><div class="pin-dot" id="pd5"></div>
-  </div>
-  <div id="pin-error" style="font-family:var(--mono);font-size:8px;color:var(--flash);letter-spacing:.2em;min-height:14px;"></div>
-  <div style="display:grid;grid-template-columns:repeat(3,64px);gap:8px;">
-    <button class="pin-key" onclick="pinPress('1')">1</button><button class="pin-key" onclick="pinPress('2')">2</button><button class="pin-key" onclick="pinPress('3')">3</button>
-    <button class="pin-key" onclick="pinPress('4')">4</button><button class="pin-key" onclick="pinPress('5')">5</button><button class="pin-key" onclick="pinPress('6')">6</button>
-    <button class="pin-key" onclick="pinPress('7')">7</button><button class="pin-key" onclick="pinPress('8')">8</button><button class="pin-key" onclick="pinPress('9')">9</button>
-    <button class="pin-key" onclick="pinPress('del')" style="font-size:18px;">&#9003;</button>
-    <button class="pin-key" onclick="pinPress('0')">0</button>
-    <button class="pin-key" onclick="pinPress('ok')" style="background:rgba(61,125,255,.12);border-color:var(--blade);color:var(--blade);">OK</button>
-  </div>
-  <button id="pin-bio-btn" onclick="tryBiometricUnlock()" style="display:none;margin-top:6px;background:transparent;border:1px solid var(--edge);color:var(--blade2);font-family:var(--mono);font-size:9px;letter-spacing:.15em;padding:8px 16px;cursor:pointer;">&#128272; UNLOCK WITH FINGERPRINT</button>
-</div>
+<div id="pin-lock" style="position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow-y:auto;padding:16px 12px;box-sizing:border-box;">
+  <div style="font-family:var(--disp);font-size:clamp(28px,10vw,80px);letter-spacing:.15em;color:var(--blade);text-shadow:0 0 30px rgba(61,125,255,.5);">YUVI</div>
 <!-- BOOT -->
 <div id="boot" style="display:none;">
   <div class="boot-logo">YUVI</div>
